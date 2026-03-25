@@ -1,7 +1,7 @@
-# ggPSE <img src="man/figures/logo.png" align="right" height="139" alt="" />
+# ggPSE <img src="man/figures/logo.png" align="right" height="139"/>
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/yourname/ggPSE/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/yourname/ggPSE/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/VJGeiger/ggPSE/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/VJGeiger/ggPSE/actions/workflows/R-CMD-check.yaml)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
