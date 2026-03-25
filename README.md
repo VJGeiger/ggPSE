@@ -16,7 +16,7 @@ composed with `patchwork` and `cowplot`.
 
 ```r
 # Install from GitHub (requires remotes)
-remotes::install_github("yourname/ggPSE")
+remotes::install_github("VJGeiger/ggPSE")
 ```
 
 ---
@@ -134,5 +134,5 @@ If you use ggPSE in a publication, please cite it as:
 
 ```
 Your Name (2025). ggPSE: Periodic Table Visualization with ggplot2.
-R package version 0.1.0. https://github.com/yourname/ggPSE
+R package version 0.1.0. https://github.com/VJGeiger/ggPSE
 ```
