@@ -1,0 +1,30 @@
+Package: ggPSE
+Title: Periodic Table Visualization Using ggplot2
+Version: 0.1.0
+Authors@R: person("Your", "Name", email = "your@email.com",
+    role = c("aut", "cre"), comment = c(ORCID = "0000-0000-0000-0000"))
+Description: A ggplot2-based toolkit for visualizing data on the periodic
+    table of elements. Supports continuous color gradients, bubble size
+    encoding, selective element highlighting, and country-of-origin badges.
+    Returns ggplot2 objects that can be further modified with standard
+    ggplot2 syntax, including faceting and custom themes.
+    Initial code scaffolding assisted by Claude (Anthropic, 2025).
+License: MIT + file LICENSE
+Encoding: UTF-8
+RoxygenNote: 7.3.1
+Depends:
+    R (>= 4.1.0)
+Imports:
+    ggplot2 (>= 3.4.0),
+    rlang (>= 1.1.0)
+Suggests:
+    ggiraph (>= 0.8.0),
+    ggchicklet,
+    periodicdata,
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+URL: https://github.com/yourusername/ggPSE
+BugReports: https://github.com/yourusername/ggPSE/issues

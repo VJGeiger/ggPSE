@@ -1,0 +1,119 @@
+---
+title: "Getting started with ggPSE"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with ggPSE}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse  = TRUE,
+  comment   = "#>",
+  fig.width = 10, fig.height = 4.5, dpi = 150, out.width = "100%"
+)
+library(ggPSE)
+library(ggplot2)
+```
+
+## Basic gradient map
+
+Supply a data frame with element symbols and a numeric column.
+`ggPSE()` maps the column to a fill gradient and returns a standard
+ggplot2 object.
+
+```{r basic}
+battery <- data.frame(
+  symbol     = c("Li", "Co", "Ni", "Mn", "Fe", "P", "C"),
+  importance = c(0.95, 0.88, 0.75, 0.60, 0.45, 0.40, 0.35)
+)
+ggPSE(battery, value_col = "importance", legend_title = "Battery relevance")
+```
+
+Elements with no data appear in neutral grey. Because the result is
+a plain ggplot2 object, you can keep adding layers:
+
+```{r custom-theme}
+ggPSE(battery,
+      value_col    = "importance",
+      color_low    = "#f7fbff",
+      color_high   = "#08519c",
+      legend_title = "Battery relevance") +
+  labs(title = "Critical elements for Li-ion batteries") +
+  theme(plot.title = element_text(size = 11, face = "bold", hjust = 0.5))
+```
+
+## Highlighting element groups
+
+`ggPSE_highlight()` is pipe-friendly and can be stacked to show multiple
+groups simultaneously.
+
+```{r highlight}
+ggPSE() |>
+  ggPSE_highlight(c("Li", "Co", "Ni", "Mn", "Fe", "P"),
+                  color = "#2166ac") |>
+  ggPSE_highlight(c("Nd", "Dy", "Tb", "Pr", "La", "Ce"),
+                  color = "#e63946")
+```
+
+## Bubble size encoding
+
+When you want a size signal instead of (or alongside) color:
+
+```{r bubble}
+supply_risk <- data.frame(
+  symbol = c("Li", "Co", "Nd", "Dy", "Pt", "Rh", "In", "Ga"),
+  risk   = c(0.62, 0.91, 0.84, 0.88, 0.52, 0.70, 0.78, 0.65)
+)
+ggPSE_bubble(supply_risk, size_col = "risk",
+             bubble_color = "#d73027", legend_title = "Supply risk score")
+```
+
+## Country-of-origin badges
+
+`ggPSE_badge()` overlays ISO country codes showing the primary production
+country — useful for critical raw materials analysis.
+
+```{r badges}
+supply <- data.frame(
+  symbol  = c("Li", "Co", "Nd", "Pt", "Cu", "Ni", "Ga", "In"),
+  country = c("CL", "CD", "CN", "ZA", "CL", "PH", "CN", "CN"),
+  value   = c(0.70, 0.91, 0.85, 0.60, 0.50, 0.55, 0.80, 0.75)
+)
+ggPSE(supply, value_col = "value",
+      color_high = "#b2182b", legend_title = "Criticality") |>
+  ggPSE_badge(supply, country_col = "country")
+```
+
+## Faceting across conditions
+
+Because `ggPSE()` returns a ggplot2 object, `facet_wrap()` works out of the box:
+
+```{r facet}
+set.seed(42)
+elements <- c("Fe", "Cu", "Zn", "Ni", "Co", "Mn", "Cr", "Mo", "W", "V")
+ph_data  <- do.call(rbind, lapply(c(5, 7, 9), function(ph) {
+  data.frame(
+    symbol = elements,
+    value  = pmax(0, pmin(1, rnorm(length(elements), mean = ph / 10, sd = 0.15))),
+    pH     = paste0("pH ", ph)
+  )
+}))
+
+ggPSE(ph_data, value_col = "value", legend_title = "Affinity") +
+  facet_wrap(~pH) +
+  labs(title = "Oxophilicity across pH conditions") +
+  theme(strip.text = element_text(face = "bold"),
+        plot.title = element_text(hjust = 0.5))
+```
+
+## Saving figures
+
+```{r save, eval=FALSE}
+p <- ggPSE(battery, value_col = "importance")
+
+ggsave("pse.pdf", p, width = 18, height = 8, units = "cm")        # vector PDF
+ggsave("pse.png", p, width = 18, height = 8, units = "cm", dpi = 300)
+ggsave("pse.svg", p, width = 18, height = 8, units = "cm")        # web / HTML
+```
