@@ -1,7 +1,7 @@
 # ggPSE <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/yourname/ggPSE/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/yourname/ggPSE/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/VJGeiger/ggPSE/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/VJGeiger/ggPSE/actions/workflows/R-CMD-check.yaml)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
@@ -16,7 +16,7 @@ composed with `patchwork` and `cowplot`.
 
 ```r
 # Install from GitHub (requires remotes)
-remotes::install_github("yourname/ggPSE")
+remotes::install_github("VJGeiger/ggPSE")
 ```
 
 ---
@@ -134,5 +134,5 @@ If you use ggPSE in a publication, please cite it as:
 
 ```
 Your Name (2025). ggPSE: Periodic Table Visualization with ggplot2.
-R package version 0.1.0. https://github.com/yourname/ggPSE
+R package version 0.1.0. https://github.com/VJGeiger/ggPSE
 ```
