@@ -92,7 +92,7 @@ ggPSE() +
 Because `ggPSE()` returns a plain ggplot2 object, the full ggplot2 grammar works naturally:
 
 ```r
-ggPSE(dat, value_col = "price") +
+ggPSE(df, value_col = "price") +
   ggPSE_highlight(c("Li", "Co", "Ni"), color = "#1565c0") +
   ggPSE_badge(supply, badge_col = "country") +
   scale_fill_viridis_c(name = "Price (USD/kg)", na.value = "#eeeeee") +
@@ -104,8 +104,8 @@ ggPSE(dat, value_col = "price") +
 ### Small multiples with facet_wrap()
 
 ```R
-# dat_multi has columns: symbol, value, condition
-ggPSE(dat_multi, value_col = "value") +
+# df_multi has columns: symbol, value, condition
+ggPSE(df_multi, value_col = "value") +
   facet_wrap(~condition)
 ```
 
