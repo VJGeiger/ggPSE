@@ -5,16 +5,18 @@
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-**ggPSE** is a ggplot2-based toolkit for visualizing element-resolved data on
-the periodic table of elements. It returns standard `ggplot2` objects — so
-every plot can be extended with additional layers, scales, and themes, or
-composed with `patchwork` and `cowplot`.
+**ggPSE** is a ggplot2-based toolkit for visualizing element-resolved data on the periodic table of elements. It returns standard `ggplot2` objects - so every plot can be extended with additional layers, scales, and themes, or composed with `patchwork` and `cowplot`.
+
+---
+
+## Disclaimer
+This is an old script I wrote back in the day of my PhD thesis and never uploaded. Right now, this is a small pet project with low maintenance and I do not put in SERIOUS effort but rather keep it slowly and low ambition.
 
 ---
 
 ## Installation
 
-```r
+```R
 # Install from GitHub (requires remotes)
 remotes::install_github("VJGeiger/ggPSE")
 ```
@@ -23,7 +25,7 @@ remotes::install_github("VJGeiger/ggPSE")
 
 ## Quick start
 
-```r
+```R
 library(ggPSE)
 library(ggplot2)
 
@@ -31,31 +33,30 @@ library(ggplot2)
 ggPSE()
 
 # Color gradient from your own data
-dat <- data.frame(
+df <- data.frame(
   symbol = c("Li", "Co", "Ni", "Mn", "Cu", "Fe"),
   price  = c(22, 55, 14, 3, 9, 1)
 )
-ggPSE(dat, value_col = "price", legend_title = "Price (USD/kg)")
+ggPSE(df, value_col = "price", legend_title = "Price (USD/kg)")
 ```
 
 ---
 
 ## Visualization modes
 
-### Color gradient — `ggPSE()`
+### Color gradient - `ggPSE()`
 
 Map any numeric variable to a fill color gradient across all elements.
 
-```r
-ggPSE(dat, value_col = "price", color_low = "#f7fbff", color_high = "#08306b")
+```R
+ggPSE(df, value_col = "price", color_low = "#f7fbff", color_high = "#08306b")
 ```
 
-### Highlight selected elements — `ggPSE_highlight()`
+### Highlight selected elements - `ggPSE_highlight()`
 
-Add colored borders to a named subset of elements. Call multiple times for
-multiple groups.
+Add colored borders to a named subset of elements. Call multiple times for multiple groups.
 
-```r
+```R
 ggPSE() +
   ggPSE_highlight(c("Li", "Co", "Ni", "Mn"), color = "#1565c0",
                 label = "Battery metals") +
@@ -63,22 +64,20 @@ ggPSE() +
                 label = "Magnet REEs")
 ```
 
-### Size encoding — `ggPSE_bubble()`
+### Size encoding - `ggPSE_bubble()`
 
-Map a numeric variable to bubble size inside each tile. Combine with a
-gradient for dual encoding.
+Map a numeric variable to bubble size inside each tile. Combine with a gradient for dual encoding.
 
-```r
-ggPSE(dat, value_col = "price") +
-  ggPSE_bubble(dat, value_col = "demand", color = "#333333", alpha = 0.4)
+```R
+ggPSE(df, value_col = "price") +
+  ggPSE_bubble(df, value_col = "demand", color = "#333333", alpha = 0.4)
 ```
 
 ### Text badges — `ggPSE_badge()`
 
-Overlay short text on tiles — useful for ISO country codes showing primary
-production sources.
+Overlay short text on tiles - useful for ISO country codes showing primary production sources.
 
-```r
+```R
 supply <- data.frame(
   symbol  = c("Co", "Li", "Nd", "Ga"),
   country = c("CD", "CL", "CN", "CN")
@@ -90,8 +89,7 @@ ggPSE() +
 
 ### Composing layers
 
-Because `ggPSE()` returns a plain ggplot2 object, the full ggplot2 grammar
-works naturally:
+Because `ggPSE()` returns a plain ggplot2 object, the full ggplot2 grammar works naturally:
 
 ```r
 ggPSE(dat, value_col = "price") +
@@ -105,7 +103,7 @@ ggPSE(dat, value_col = "price") +
 
 ### Small multiples with facet_wrap()
 
-```r
+```R
 # dat_multi has columns: symbol, value, condition
 ggPSE(dat_multi, value_col = "value") +
   facet_wrap(~condition)
@@ -115,9 +113,7 @@ ggPSE(dat_multi, value_col = "value") +
 
 ## Roadmap
 
-See [TODO.md](TODO.md) for the full roadmap including planned interactivity
-via `ggiraph`, sparkline tiles for time-series data, and supply chain
-visualization features.
+See [TODO.md](TODO.md) for the full roadmap including planned interactivity via `ggiraph`, sparkline tiles for time-series data, and supply chain visualization features.
 
 ---
 
@@ -133,6 +129,6 @@ significant work so we can discuss the approach first.
 If you use ggPSE in a publication, please cite it as:
 
 ```
-Your Name (2025). ggPSE: Periodic Table Visualization with ggplot2.
+Valentin Geiger (2025). ggPSE: Periodic Table Visualization with ggplot2.
 R package version 0.1.0. https://github.com/VJGeiger/ggPSE
 ```
