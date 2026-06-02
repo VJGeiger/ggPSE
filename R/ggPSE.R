@@ -55,7 +55,7 @@ ggPSE <- function(
     highlight          = NULL,
     legend_title       = NULL,
     show_atomic_number = FALSE,
-    base_size          = 8
+    base_size          = 10
 ) {
   grid <- .ggpse_elements()
   
