@@ -1,97 +1,147 @@
 #' Plot a periodic table with bubble size encoding
 #'
-#' Maps a value to the radius of a circle drawn inside each element tile.
-#' Useful when combining a categorical fill with a continuous size signal,
-#' or when color is already used for another variable.
+#' Maps a continuous value to the size of a circle drawn inside each element
+#' tile. All tiles are drawn in a neutral background color so the bubbles
+#' are the primary visual signal. Useful when color is already used for
+#' another variable, or when you want to show magnitude without implying
+#' a color direction.
 #'
-#' @inheritParams ggPSE
+#' @param data A data frame containing element symbols and a value column.
+#'   If NULL, a blank table is drawn.
 #' @param size_col Character. Column in data to map to bubble size.
-#' @param fill_col Character. Optional column to map to tile fill color.
-#' @param size_range Numeric vector of length 2. Min and max bubble size in pt.
-#'   Default c(1, 8).
-#' @param bubble_color Character. Fill color for bubbles. Default "#2166ac".
-#' @param bubble_alpha Numeric. Bubble opacity 0-1. Default 0.7.
+#' @param symbol_col Character. Column in data containing element symbols.
+#'   Default "symbol".
+#' @param color_na Hex color for tile backgrounds. Default "#f0f0f0".
+#' @param tile_border Hex color for tile borders. Default "transparent".
+#' @param bubble_color Hex fill color for bubbles. Default "#2166ac".
+#' @param bubble_border Hex border color for bubbles. Default "white".
+#' @param bubble_alpha Numeric. Bubble opacity 0-1. Default 0.85.
+#' @param size_range Numeric vector of length 2. Min and max bubble size.
+#'   Default c(1, 9).
+#' @param legend_title Character. Legend title. Defaults to size_col.
+#' @param show_atomic_number Logical. Show atomic numbers. Default FALSE.
+#' @param base_size Numeric. Base font size in pt. Default 10.
 #'
 #' @return A ggplot object.
 #' @export
 #'
 #' @examples
 #' supply_risk <- data.frame(
-#'   symbol = c("Li", "Co", "Nd", "Dy", "Pt"),
-#'   risk   = c(0.6, 0.9, 0.85, 0.88, 0.5)
+#'   symbol = c("Li", "Co", "Nd", "Dy", "Pt", "Ni", "Cu"),
+#'   risk   = c(0.62, 0.91, 0.84, 0.88, 0.52, 0.70, 0.45)
 #' )
-#' ggPSE_bubble(supply_risk, size_col = "risk", legend_title = "Supply risk")
+#' ggPSE_bubble(supply_risk, size_col = "risk",
+#'              legend_title = "Supply risk score")
 ggPSE_bubble <- function(
-    data         = NULL,
-    size_col     = NULL,
-    symbol_col   = "symbol",
-    fill_col     = NULL,
-    color_low    = "#ffffff",
-    color_high   = "#9a031e",
-    color_na     = "#e8e8e6",
-    legend_title = NULL,
-    size_range   = c(1, 8),
-    bubble_color = "#2166ac",
-    bubble_alpha = 0.7,
-    show_atomic_number = TRUE,
-    base_size    = 8
+    data               = NULL,
+    size_col           = NULL,
+    symbol_col         = "symbol",
+    color_na           = "#ffffff",
+    tile_border        = "transparent",
+    bubble_color       = "#2166ac",
+    bubble_border      = "white",
+    bubble_alpha       = 0.85,
+    size_range         = c(1, 9),
+    legend_title       = NULL,
+    show_atomic_number = FALSE,
+    base_size          = 10
 ) {
   grid <- .ggpse_elements()
-
+  
   if (!is.null(data)) {
-    cols_keep <- unique(c(symbol_col, size_col, fill_col))
-    cols_keep <- cols_keep[cols_keep %in% names(data)]
+    if (!symbol_col %in% names(data))
+      stop(sprintf("Column '%s' not found in data. Set symbol_col to the correct column name.", symbol_col))
+    if (!is.null(size_col) && !size_col %in% names(data))
+      stop(sprintf("Column '%s' not found in data. Set size_col to the correct column name.", size_col))
+    cols_keep <- unique(c(symbol_col, size_col))
+    cols_keep <- cols_keep[!is.null(cols_keep)]
+    # Separate data into elements with and without bubble values
+    # so ggplot2 doesn't warn about missing values
+    grid_bubbles <- grid[!is.na(grid[[size_col]]), , drop = FALSE]
+    grid_no_bubble <- grid[is.na(grid[[size_col]]), , drop = FALSE]
     data      <- data[, cols_keep, drop = FALSE]
     names(data)[names(data) == symbol_col] <- "symbol"
     grid <- merge(grid, data, by = "symbol", all.x = TRUE)
   }
-
+  
   legend_title <- legend_title %||% size_col %||% ""
-
+  
+  # Text is always dark on the neutral background
+  grid$text_color <- "grey20"
+  
   p <- ggplot2::ggplot(
     grid,
     ggplot2::aes(x = .data[["col"]], y = -.data[["row"]])
   ) +
+    # Neutral tile background
     ggplot2::geom_tile(
-      ggplot2::aes(
-        fill = if (!is.null(fill_col) && fill_col %in% names(grid))
-                 .data[[fill_col]] else NA_real_
-      ),
-      color = "white", width = 0.92, height = 0.92, linewidth = 0.3
+      fill      = color_na,
+      color     = tile_border,
+      width     = 0.92,
+      height    = 0.92,
+      linewidth = 0.3
     )
-
+  
+  # Bubble layer
   if (!is.null(size_col) && size_col %in% names(grid)) {
-    p <- p + ggplot2::geom_point(
-      ggplot2::aes(size = .data[[size_col]]),
-      shape  = 21,
-      fill   = bubble_color,
-      color  = "white",
-      alpha  = bubble_alpha,
-      stroke = 0.3
-    ) +
-      ggplot2::scale_size_continuous(range = size_range, name = legend_title)
+    grid_bubbles <- grid[!is.na(grid[[size_col]]), , drop = FALSE]
+    
+    p <- p +
+      ggplot2::geom_point(
+        data   = grid_bubbles,
+        ggplot2::aes(
+          x    = .data[["col"]],
+          y    = -.data[["row"]],
+          size = .data[[size_col]]
+        ),
+        shape  = 21,
+        fill   = bubble_color,
+        color  = bubble_border,
+        alpha  = bubble_alpha,
+        stroke = 0.4
+      ) +
+      ggplot2::scale_size_continuous(
+        range = size_range,
+        name  = legend_title
+      )
   }
-
+  
+  # Symbol text on top of bubble
   p <- p +
     ggplot2::geom_text(
-      ggplot2::aes(label = .data[["symbol"]]),
+      ggplot2::aes(label = .data[["symbol"]], color = .data[["text_color"]]),
       fontface = "bold",
-      size     = base_size * 0.40
-    ) +
-    { if (!is.null(fill_col) && fill_col %in% names(grid))
-        ggplot2::scale_fill_gradient(
-          low = color_low, high = color_high, na.value = color_na
-        )
-      else
-        ggplot2::scale_fill_continuous(na.value = color_na, guide = "none")
-    } +
+      size     = base_size * 0.40,
+      vjust    = 0.5
+    )
+  
+  if (show_atomic_number) {
+    p <- p +
+      ggplot2::geom_text(
+        ggplot2::aes(
+          x     = .data[["col"]] - 0.42,
+          y     = -.data[["row"]] + 0.38,
+          label = .data[["atomic_number"]],
+          color = .data[["text_color"]]
+        ),
+        hjust    = 0,
+        vjust    = 1,
+        size     = base_size * 0.22,
+        fontface = "plain"
+      )
+  }
+  
+  p <- p +
+    ggplot2::scale_color_identity() +
     ggplot2::coord_fixed() +
     ggplot2::theme_void(base_size = base_size) +
     ggplot2::theme(
       legend.position  = "bottom",
       legend.key.width = ggplot2::unit(1.5, "cm"),
+      legend.title     = ggplot2::element_text(size = base_size),
+      legend.text      = ggplot2::element_text(size = base_size * 0.85),
       plot.margin      = ggplot2::margin(4, 4, 4, 4)
     )
-
+  
   p
 }
