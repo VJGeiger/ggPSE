@@ -8,7 +8,10 @@ Currently under construction. Roughly ordered by priority within each section.
 
 ### Must-have before any public release
 - [ ] Finalize `ggPSE()` function
-- [ ] Write `data-raw/build_elements.R` - have option for built-in small data set or periodicsystem bigger data set.
+  - [x] introduce adaptive colors
+  - [ ] optimize styling for basic plots
+  - [ ] fix text overlaps when `show_atom_label = TRUE`
+- [x] Write `data-raw/prepare_element_data.R` - have option for built-in small data set or periodicsystem bigger data set.
 - [ ] Finalize `ggPSE_highlight()` - test multiple group legend behavior
 - [ ] Finalize `ggPSE_badge()` - test overflow behavior for long badge strings
 - [ ] Decide on meaningfulness and use of `ggPSE_bubble()` - validate scale_size_area interaction with ggplot2 fill scale
@@ -22,13 +25,19 @@ Currently under construction. Roughly ordered by priority within each section.
 
 ## v0.2.0— interactivity
 
+### interactivity
+
 - [ ] Add `ggPSE_interactive()` wrapper using `ggiraph`
   - Hover tooltip showing element name, atomic number, and user value
   - Tooltip content configurable via a `tooltip_cols` argument
 - [ ] Test `ggiraph` output in Quarto HTML documents
 - [ ] Test `ggiraph` output in Shiny
+
+### documentation
 - [ ] Vignette: interactive PSE in a Quarto document
 
+### new features
+- [ ] introduce optional selection of showcased groups
 ---
 
 ## v0.3.0 supply chain / critical materials features
@@ -74,6 +83,7 @@ Currently under construction. Roughly ordered by priority within each section.
 ## ideas / maybe someday
 
 - [ ] Shiny app companion: upload CSV, see PSE update live
+- [ ] Include oxidation states as information.
 - [ ] `ggPSE_left_step()` - Janet left-step periodic table layout
 - [ ] Export helper: `save_pse()` wrapping `ggsave()` with sensible PSE defaults
   (aspect ratio, resolution)
@@ -81,7 +91,7 @@ Currently under construction. Roughly ordered by priority within each section.
   idiom natively
 - [ ] Add `pse_theme()` - a few pre-built theme variants (minimal, dark, publication)
 - [ ] pkgdown site setup (`_pkgdown.yml`)
-- [ ] publishing on CRAN
+- [ ] publishing on CRAN?
 
 ---
 
