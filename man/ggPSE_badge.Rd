@@ -7,38 +7,62 @@
 ggPSE_badge(
   plot = NULL,
   data,
-  symbol_col = "symbol",
   country_col = "country",
-  badge_size = 1.8,
-  badge_color = "#333333",
-  vjust_badge = -2.2
+  badge_size = NULL,
+  base_size = NULL,
+  x_anchor = 0.38,
+  y_anchor = 0.35,
+  flag_spacing = 0.38,
+  badge_color = "#333333"
 )
 }
 \arguments{
 \item{plot}{A ggplot object to add badges to. If NULL, a blank table
 is created first.}
 
-\item{data}{A data frame with element symbols and country codes.}
+\item{data}{A data frame with element symbols and country codes.
+Multiple rows per element are allowed for multiple flags per tile.}
+
+\item{country_col}{Character. Column containing ISO 3166-1 alpha-2 country
+codes. Case insensitive. Default "country".}
+
+\item{badge_size}{Numeric. Size of flags or text badges. Default 3.5 for
+flags, base_size * 0.22 for text fallback.}
+
+\item{base_size}{Numeric. Base font size matching the ggPSE() call.
+Default NULL uses ggPSE()'s default of 10.}
+
+\item{x_anchor}{Numeric. Horizontal position of rightmost flag. Default 0.38.}
+
+\item{y_anchor}{Numeric. Vertical position of flags. Default 0.35.}
+
+\item{flag_spacing}{Numeric. Horizontal spacing between flags. Default 0.38.}
+
+\item{badge_color}{Character. Text color for text fallback badges.
+Default "#333333".}
 
 \item{symbol_col}{Character. Column containing element symbols. Default "symbol".}
-
-\item{country_col}{Character. Column containing ISO country codes. Default "country".}
-
-\item{badge_size}{Numeric. Font size for badges. Default 1.8.}
-
-\item{badge_color}{Character. Text color for badges. Default "#333333".}
-
-\item{vjust_badge}{Numeric. Vertical position within tile. Default -2.2.}
 }
 \value{
 A ggplot object.
 }
 \description{
-Adds small ISO 3166-1 alpha-2 country code labels to element tiles,
-indicating primary production country. Useful for critical raw materials
-supply chain analysis.
+Adds country flags (via \pkg{ggflags}) or ISO 3166-1 alpha-2 country code
+text labels to element tiles, indicating primary production country.
+Useful for critical raw materials supply chain analysis.
+}
+\details{
+If \pkg{ggflags} is installed, flags are rendered automatically.
+Otherwise falls back to text badges. Country codes must be ISO 3166-1
+alpha-2 (e.g. "CN", "CL", "CD"). The function converts to lowercase
+automatically for \pkg{ggflags}.
+
+Multiple countries per element are supported by passing multiple rows
+per element in \code{data}. A maximum of 3 flags per tile are shown;
+additional entries are silently dropped.
 }
 \examples{
+# Single country per element
 supply <- data.frame(
   symbol  = c("Li", "Co", "Nd", "Pt"),
   country = c("CL", "CD", "CN", "ZA"),
@@ -46,4 +70,13 @@ supply <- data.frame(
 )
 ggPSE(supply, value_col = "value") |>
   ggPSE_badge(supply, country_col = "country")
+
+# Multiple countries per element
+supply_multi <- data.frame(
+  symbol  = c("Li", "Li", "Co", "Nd", "Nd"),
+  country = c("CL", "AU", "CD", "CN", "RU"),
+  value   = c(0.70, 0.70, 0.91, 0.85, 0.85)
+)
+ggPSE(supply_multi, value_col = "value", symbol_col = "symbol") |>
+  ggPSE_badge(supply_multi, country_col = "country")
 }

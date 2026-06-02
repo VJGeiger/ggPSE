@@ -2,6 +2,7 @@
 
 export(ggPSE)
 export(ggPSE_badge)
+export(ggPSE_bar)
 export(ggPSE_bubble)
 importFrom(ggplot2,aes)
 importFrom(ggplot2,coord_fixed)

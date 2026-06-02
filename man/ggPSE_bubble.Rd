@@ -8,61 +8,60 @@ ggPSE_bubble(
   data = NULL,
   size_col = NULL,
   symbol_col = "symbol",
-  fill_col = NULL,
-  color_low = "#ffffff",
-  color_high = "#9a031e",
-  color_na = "#e8e8e6",
-  legend_title = NULL,
-  size_range = c(1, 8),
+  color_na = "#ffffff",
+  tile_border = "transparent",
   bubble_color = "#2166ac",
-  bubble_alpha = 0.7,
-  show_atomic_number = TRUE,
-  base_size = 8
+  bubble_border = "white",
+  bubble_alpha = 0.85,
+  size_range = c(1, 9),
+  legend_title = NULL,
+  show_atomic_number = FALSE,
+  base_size = 10
 )
 }
 \arguments{
 \item{data}{A data frame containing element symbols and a value column.
-If NULL, a blank table using the NA color is drawn.}
+If NULL, a blank table is drawn.}
 
 \item{size_col}{Character. Column in data to map to bubble size.}
 
 \item{symbol_col}{Character. Column in data containing element symbols.
 Default "symbol".}
 
-\item{fill_col}{Character. Optional column to map to tile fill color.}
+\item{color_na}{Hex color for tile backgrounds. Default "#f0f0f0".}
 
-\item{color_low}{Hex color for the low end of the gradient. Default "#fdf0f2".}
+\item{tile_border}{Hex color for tile borders. Default "transparent".}
 
-\item{color_high}{Hex color for the high end of the gradient. Default "#9a031e".}
+\item{bubble_color}{Hex fill color for bubbles. Default "#2166ac".}
 
-\item{color_na}{Hex color for elements with no data. Default "#f0f0f0".}
+\item{bubble_border}{Hex border color for bubbles. Default "white".}
 
-\item{legend_title}{Character. Legend title. Defaults to value_col.}
+\item{bubble_alpha}{Numeric. Bubble opacity 0-1. Default 0.85.}
 
-\item{size_range}{Numeric vector of length 2. Min and max bubble size in pt.
-Default c(1, 8).}
+\item{size_range}{Numeric vector of length 2. Min and max bubble size.
+Default c(1, 9).}
 
-\item{bubble_color}{Character. Fill color for bubbles. Default "#2166ac".}
+\item{legend_title}{Character. Legend title. Defaults to size_col.}
 
-\item{bubble_alpha}{Numeric. Bubble opacity 0-1. Default 0.7.}
+\item{show_atomic_number}{Logical. Show atomic numbers. Default FALSE.}
 
-\item{show_atomic_number}{Logical. Show atomic numbers in top-left of tile.
-Default FALSE.}
-
-\item{base_size}{Numeric. Base font size in pt. Default 8.}
+\item{base_size}{Numeric. Base font size in pt. Default 10.}
 }
 \value{
 A ggplot object.
 }
 \description{
-Maps a value to the radius of a circle drawn inside each element tile.
-Useful when combining a categorical fill with a continuous size signal,
-or when color is already used for another variable.
+Maps a continuous value to the size of a circle drawn inside each element
+tile. All tiles are drawn in a neutral background color so the bubbles
+are the primary visual signal. Useful when color is already used for
+another variable, or when you want to show magnitude without implying
+a color direction.
 }
 \examples{
 supply_risk <- data.frame(
-  symbol = c("Li", "Co", "Nd", "Dy", "Pt"),
-  risk   = c(0.6, 0.9, 0.85, 0.88, 0.5)
+  symbol = c("Li", "Co", "Nd", "Dy", "Pt", "Ni", "Cu"),
+  risk   = c(0.62, 0.91, 0.84, 0.88, 0.52, 0.70, 0.45)
 )
-ggPSE_bubble(supply_risk, size_col = "risk", legend_title = "Supply risk")
+ggPSE_bubble(supply_risk, size_col = "risk",
+             legend_title = "Supply risk score")
 }
