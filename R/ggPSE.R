@@ -79,12 +79,12 @@ ggPSE <- function(
   if (show_atomic_number) {
     p <- p + ggplot2::geom_text(
       ggplot2::aes(
-        x     = .data[["col"]] - 0.43,
+        y     = .data[["row"]] * -1 - 0.25,
         label = .data[["atomic_number"]]
       ),
-      hjust    = 0,
+      hjust    = 0.5,
       vjust    = 1,
-      size     = base_size * 0.20,
+      size     = base_size * 0.25,
       color    = "grey50",
       fontface = "plain"
     )

@@ -1,4 +1,4 @@
-# R/ggpse_elements.R
+# R/ggPSE_elements.R
 
 #' Minimal element grid for plotting
 #'
@@ -39,7 +39,7 @@
 #' For just the grid positions used internally by plotting functions, see
 #' [ggpse_grid].
 #'
-#' @format A data frame with 118 rows and 13 columns:
+#' @format A data frame with 118 rows and 17 columns:
 #' \describe{
 #'   \item{symbol}{Element symbol, e.g. "Fe"}
 #'   \item{name}{Full element name, e.g. "Iron"}
@@ -57,6 +57,10 @@
 #'     NA where not available}
 #'   \item{density_g_cm3}{Density at STP in g/cm3; NA where not determined}
 #'   \item{melting_point_K}{Melting point in Kelvin; NA where not determined}
+#'   \item{boiling_point_K}{Boiling point in Kelvin; NA where not determined}
+#'   \item{ionization_energy_eV}{First ionization energy in eV (NIST)}
+#'   \item{electron_affinity_eV}{Electron affinity in eV (NIST);
+#'     0 indicates stable negative ion does not form}
 #' }
 #'
 #' @source
@@ -88,9 +92,8 @@
 #'
 #' # Join your own measurements against it
 #' \dontrun{
-#' my_data |>
-#'   dplyr::left_join(ggpse_elements, by = "symbol") |>
-#'   ggPSE(value_col = "my_measurement")
+#'   my_data <- merge(ggpse_elements, my_data, by = "symbol", all.x = TRUE)
+#'   ggPSE(my_data, value_col = "my_measurement")
 #' }
 "ggpse_elements"
 
@@ -101,11 +104,12 @@
 # (e.g. during development without usethis::use_data() having been run yet).
 #' @keywords internal
 .ggpse_elements <- function() {
-  if (exists("ggpse_grid", envir = globalenv())) {
-    return(get("ggpse_grid", envir = globalenv()))
+  if (exists("ggpse_grid")) {
+    return(ggpse_grid)
   }
   .ggpse_elements_fallback()
 }
+
 # Hardcoded fallback — only the four columns needed for plotting.
 # Used when source()-ing R files directly without running prepare_element_data.R.
 #' @keywords internal
