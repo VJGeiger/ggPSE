@@ -7,12 +7,12 @@ Currently under construction. Roughly ordered by priority within each section.
 ## v0.1.0 — get it working (current focus)
 
 ### Must-have before any public release
-- [ ] Finalize `ggPSE()` function
+- [x] Finalize `ggPSE()` function
   - [x] introduce adaptive colors
-  - [ ] optimize styling for basic plots
-  - [ ] fix text overlaps when `show_atom_label = TRUE`
+  - [x] optimize styling for basic plots
+  - [x] fix text overlaps when `show_atom_label = TRUE`
 - [x] Write `data-raw/prepare_element_data.R` - have option for built-in small data set or periodicsystem bigger data set.
-- [ ] Finalize `ggPSE_highlight()` - test multiple group legend behavior
+- [x] Change the ggPSE_highlight() to a simple highlight option
 - [ ] Finalize `ggPSE_badge()` - test overflow behavior for long badge strings
 - [ ] Decide on meaningfulness and use of `ggPSE_bubble()` - validate scale_size_area interaction with ggplot2 fill scale
 - [ ] Write roxygen2 docs for all exported functions

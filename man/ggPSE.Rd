@@ -10,9 +10,11 @@ ggPSE(
   symbol_col = "symbol",
   label_value = TRUE,
   value_digits = 2,
-  color_low = "#ffffff",
+  color_low = "#fdf0f2",
   color_high = "#9a031e",
-  color_na = "#e8e8e6",
+  color_na = "#f0f0f0",
+  tile_border = NULL,
+  highlight = NULL,
   legend_title = NULL,
   show_atomic_number = FALSE,
   base_size = 8
@@ -31,15 +33,28 @@ Default "symbol".}
 
 \item{value_digits}{Integer. Decimal places for displayed values. Default 2.}
 
-\item{color_low}{Hex color for the low end of the gradient. Default "#ffffff".}
+\item{color_low}{Hex color for the low end of the gradient. Default "#fdf0f2".}
 
 \item{color_high}{Hex color for the high end of the gradient. Default "#9a031e".}
 
-\item{color_na}{Hex color for elements with no data. Default "#e8e8e6".}
+\item{color_na}{Hex color for elements with no data. Default "#f0f0f0".}
+
+\item{tile_border}{Hex color for tile borders. If NULL (default), grey border
+on light backgrounds, transparent on dark. Set "transparent" to suppress.}
+
+\item{highlight}{A list of highlight groups. Each group is a list with:
+\describe{
+  \item{symbols}{Character vector of element symbols to highlight.}
+  \item{color}{Fill color for highlighted tiles.}
+  \item{label}{Optional legend label for this group.}
+}
+Example: \code{list(list(symbols = c("Li","Co"), color = "#2166ac",
+label = "Battery metals"))}}
 
 \item{legend_title}{Character. Legend title. Defaults to value_col.}
 
-\item{show_atomic_number}{Logical. Show atomic numbers. Default TRUE.}
+\item{show_atomic_number}{Logical. Show atomic numbers in top-left of tile.
+Default FALSE.}
 
 \item{base_size}{Numeric. Base font size in pt. Default 8.}
 }
@@ -56,4 +71,9 @@ battery <- data.frame(
   importance = c(0.95, 0.88, 0.75, 0.60, 0.45)
 )
 ggPSE(battery, value_col = "importance", legend_title = "Battery relevance")
+
+ggPSE(highlight = list(
+  list(symbols = c("Li", "Co", "Ni"), color = "#2166ac", label = "Battery"),
+  list(symbols = c("Nd", "Dy", "Tb"), color = "#e63946", label = "Magnets")
+))
 }

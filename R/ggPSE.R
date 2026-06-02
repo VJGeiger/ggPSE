@@ -15,10 +15,19 @@
 #' @param color_na Hex color for elements with no data. Default "#f0f0f0".
 #' @param tile_border Hex color for tile borders. If NULL (default), grey border
 #'   on light backgrounds, transparent on dark. Set "transparent" to suppress.
+#' @param highlight A list of highlight groups. Each group is a list with:
+#'   \describe{
+#'     \item{symbols}{Character vector of element symbols to highlight.}
+#'     \item{color}{Fill color for highlighted tiles.}
+#'     \item{label}{Optional legend label for this group.}
+#'   }
+#'   Example: \code{list(list(symbols = c("Li","Co"), color = "#2166ac",
+#'   label = "Battery metals"))}
 #' @param legend_title Character. Legend title. Defaults to value_col.
 #' @param show_atomic_number Logical. Show atomic numbers in top-left of tile.
 #'   Default FALSE.
 #' @param base_size Numeric. Base font size in pt. Default 8.
+#'
 #' @return A ggplot object.
 #' @export
 #'
@@ -28,22 +37,28 @@
 #'   importance = c(0.95, 0.88, 0.75, 0.60, 0.45)
 #' )
 #' ggPSE(battery, value_col = "importance", legend_title = "Battery relevance")
+#'
+#' ggPSE(highlight = list(
+#'   list(symbols = c("Li", "Co", "Ni"), color = "#2166ac", label = "Battery"),
+#'   list(symbols = c("Nd", "Dy", "Tb"), color = "#e63946", label = "Magnets")
+#' ))
 ggPSE <- function(
-    data         = NULL,
-    value_col    = NULL,
-    symbol_col   = "symbol",
-    label_value  = TRUE,
-    value_digits = 2,
-    color_low    = "#fdf0f2",
-    color_high   = "#9a031e",
-    color_na     = "#f0f0f0",
-    tile_border = NULL,
-    legend_title = NULL,
+    data               = NULL,
+    value_col          = NULL,
+    symbol_col         = "symbol",
+    label_value        = TRUE,
+    value_digits       = 2,
+    color_low          = "#fdf0f2",
+    color_high         = "#9a031e",
+    color_na           = "#f0f0f0",
+    tile_border        = NULL,
+    highlight          = NULL,
+    legend_title       = NULL,
     show_atomic_number = FALSE,
-    base_size    = 8
+    base_size          = 8
 ) {
   grid <- .ggpse_elements()
-
+  
   if (!is.null(data)) {
     if (!symbol_col %in% names(data))
       stop(sprintf("Column '%s' not found in data. Set symbol_col to the correct column name.", symbol_col))
@@ -58,41 +73,98 @@ ggPSE <- function(
   legend_title <- legend_title %||% value_col %||% ""
   fill_col     <- if (!is.null(value_col) && value_col %in% names(grid)) value_col else NULL
   
-  # Compute per-tile text color based on fill value for contrast
+  # ── Bake highlight colors into grid ──────────────────────────────────────────
+  grid$highlight_label <- NA_character_
+  
+  if (!is.null(highlight)) {
+    for (grp in highlight) {
+      idx <- grid$symbol %in% grp$symbols
+      grid$highlight_label[idx] <- grp$label %||% grp$color
+    }
+  }
+  
+  # ── Text contrast color ───────────────────────────────────────────────────────
   if (!is.null(fill_col) && fill_col %in% names(grid)) {
-    val     <- grid[[fill_col]]
-    val_min <- min(val, na.rm = TRUE)
-    val_max <- max(val, na.rm = TRUE)
-    # Normalise fill value to 0-1 then interpolate toward color_high
+    val      <- grid[[fill_col]]
+    val_min  <- min(val, na.rm = TRUE)
+    val_max  <- max(val, na.rm = TRUE)
     norm_val <- ifelse(is.na(val), 0.5, (val - val_min) / (val_max - val_min))
-    # Interpolate hex color at position norm_val
     grid$text_color <- vapply(norm_val, function(ti)
       .contrast_color(.interp_hex(color_low, color_high, ti)),
       character(1)
     )
+  } else if (!is.null(highlight)) {
+    # Build a lookup of symbol -> color for contrast calculation
+    hi_colors <- rep(color_na, nrow(grid))
+    for (grp in highlight) {
+      hi_colors[grid$symbol %in% grp$symbols] <- grp$color
+    }
+    grid$text_color <- vapply(hi_colors, .contrast_color, character(1))
   } else {
     grid$text_color <- "grey20"
   }
   
-  # Tile border color
+  # ── Tile border ───────────────────────────────────────────────────────────────
   tile_border <- tile_border %||% "transparent"
-    if (color_low %in% c("#ffffff", "#fdf0f2")) "#c8c8c8" else "transparent"
   
+  # ── Build tile layer ──────────────────────────────────────────────────────────
   p <- ggplot2::ggplot(
     grid,
     ggplot2::aes(
-      x    = .data[["col"]],
-      y    = -.data[["row"]],
-      fill = if (!is.null(fill_col)) .data[[fill_col]] else NA_real_
+      x = .data[["col"]],
+      y = -.data[["row"]]
     )
-  ) +
-    ggplot2::geom_tile(
-      color     = tile_border,
-      width     = 0.92,
-      height    = 0.92,
-      linewidth = 0.3
-    ) +
-    # Symbol
+  )
+  
+  if (!is.null(highlight)) {
+    # Highlight mode: discrete fill mapped to group labels
+    hi_values <- stats::setNames(
+      vapply(highlight, function(g) g$color, character(1)),
+      vapply(highlight, function(g) g$label %||% g$color, character(1))
+    )
+    p <- p +
+      ggplot2::geom_tile(
+        ggplot2::aes(fill = .data[["highlight_label"]]),
+        color     = tile_border,
+        width     = 0.92,
+        height    = 0.92,
+        linewidth = 0.3
+      ) +
+      ggplot2::scale_fill_manual(
+        values   = hi_values,
+        na.value = color_na,
+        name     = NULL
+      )
+  } else if (!is.null(fill_col)) {
+    # Gradient mode
+    p <- p +
+      ggplot2::geom_tile(
+        ggplot2::aes(fill = .data[[fill_col]]),
+        color     = tile_border,
+        width     = 0.92,
+        height    = 0.92,
+        linewidth = 0.3
+      ) +
+      ggplot2::scale_fill_gradient(
+        low      = color_low,
+        high     = color_high,
+        na.value = color_na,
+        name     = legend_title
+      )
+  } else {
+    # Blank table
+    p <- p +
+      ggplot2::geom_tile(
+        fill      = color_na,
+        color     = tile_border,
+        width     = 0.92,
+        height    = 0.92,
+        linewidth = 0.3
+      )
+  }
+  
+  # ── Symbol text ───────────────────────────────────────────────────────────────
+  p <- p +
     ggplot2::geom_text(
       ggplot2::aes(label = .data[["symbol"]], color = .data[["text_color"]]),
       fontface = "bold",
@@ -102,7 +174,6 @@ ggPSE <- function(
     )
   
   if (show_atomic_number) {
-    # Value label
     p <- p +
       ggplot2::geom_text(
         ggplot2::aes(
@@ -117,28 +188,24 @@ ggPSE <- function(
         fontface = "plain"
       )
   }
-
+  
   if (label_value && !is.null(fill_col)) {
-    p <- p + 
+    p <- p +
       ggplot2::geom_text(
         ggplot2::aes(
           y     = .data[["row"]] * -1 - 0.25,
-          label = ifelse(is.na(.data[[fill_col]]), "",
-                         formatC(.data[[fill_col]], digits = value_digits, 
-                                 format = "f")),
+          label = ifelse(
+            is.na(.data[[fill_col]]), "",
+            formatC(.data[[fill_col]], digits = value_digits, format = "f")
+          ),
           color = .data[["text_color"]]
         ),
         size = base_size * 0.20
       )
   }
-
+  
+  # ── Scales and theme ──────────────────────────────────────────────────────────
   p <- p +
-    { if (!is.null(fill_col))
-      ggplot2::scale_fill_gradient(
-        low = color_low, high = color_high,
-        na.value = color_na, name = legend_title
-      )
-    } +
     ggplot2::scale_color_identity() +
     ggplot2::coord_fixed() +
     ggplot2::theme_void(base_size = base_size) +
@@ -149,5 +216,6 @@ ggPSE <- function(
       legend.text      = ggplot2::element_text(size = base_size * 0.85),
       plot.margin      = ggplot2::margin(4, 4, 4, 4)
     )
+  
   p
 }

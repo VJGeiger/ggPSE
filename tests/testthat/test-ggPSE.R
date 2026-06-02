@@ -39,26 +39,6 @@ test_that("ggPSE blank plot renders without data", {
   expect_no_error(ggPSE())
 })
 
-# --- ggPSE_highlight ---
-
-test_that("ggPSE_highlight returns a ggplot", {
-  expect_s3_class(ggPSE() |> ggPSE_highlight(c("Li", "Co")), "ggplot")
-})
-
-test_that("ggPSE_highlight warns on unknown symbols", {
-  expect_warning(
-    ggPSE() |> ggPSE_highlight(c("Xx", "Zz")),
-    "No matching elements"
-  )
-})
-
-test_that("ggPSE_highlight can be chained twice", {
-  p <- ggPSE() |>
-    ggPSE_highlight(c("Li", "Co"), color = "blue") |>
-    ggPSE_highlight(c("Nd", "Dy"), color = "red")
-  expect_s3_class(p, "ggplot")
-})
-
 # --- ggPSE_bubble ---
 
 test_that("ggPSE_bubble returns a ggplot", {

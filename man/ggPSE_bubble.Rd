@@ -31,11 +31,11 @@ Default "symbol".}
 
 \item{fill_col}{Character. Optional column to map to tile fill color.}
 
-\item{color_low}{Hex color for the low end of the gradient. Default "#ffffff".}
+\item{color_low}{Hex color for the low end of the gradient. Default "#fdf0f2".}
 
 \item{color_high}{Hex color for the high end of the gradient. Default "#9a031e".}
 
-\item{color_na}{Hex color for elements with no data. Default "#e8e8e6".}
+\item{color_na}{Hex color for elements with no data. Default "#f0f0f0".}
 
 \item{legend_title}{Character. Legend title. Defaults to value_col.}
 
@@ -46,7 +46,8 @@ Default c(1, 8).}
 
 \item{bubble_alpha}{Numeric. Bubble opacity 0-1. Default 0.7.}
 
-\item{show_atomic_number}{Logical. Show atomic numbers. Default TRUE.}
+\item{show_atomic_number}{Logical. Show atomic numbers in top-left of tile.
+Default FALSE.}
 
 \item{base_size}{Numeric. Base font size in pt. Default 8.}
 }
