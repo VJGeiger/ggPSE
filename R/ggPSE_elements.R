@@ -101,12 +101,11 @@
 # (e.g. during development without usethis::use_data() having been run yet).
 #' @keywords internal
 .ggpse_elements <- function() {
-  if (exists("ggpse_grid", envir = asNamespace("ggPSE"), inherits = FALSE)) {
-    return(get("ggpse_grid", envir = asNamespace("ggPSE")))
+  if (exists("ggpse_grid", envir = globalenv())) {
+    return(get("ggpse_grid", envir = globalenv()))
   }
   .ggpse_elements_fallback()
 }
-
 # Hardcoded fallback — only the four columns needed for plotting.
 # Used when source()-ing R files directly without running prepare_element_data.R.
 #' @keywords internal

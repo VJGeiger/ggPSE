@@ -43,7 +43,7 @@ ggPSE <- function(
 
   if (!is.null(data)) {
     if (!symbol_col %in% names(data))
-      stop(sprintf("Column '%s' not found in data.", symbol_col))
+      stop(sprintf("Column '%s' not found in data. Set symbol_col to the correct column name.", symbol_col))
     if (!is.null(value_col) && !value_col %in% names(data))
       stop(sprintf("Column '%s' not found in data.", value_col))
     cols_keep <- unique(c(symbol_col, value_col))
