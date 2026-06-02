@@ -43,17 +43,43 @@ ggPSE <- function(
 
   if (!is.null(data)) {
     if (!symbol_col %in% names(data))
-      stop(sprintf("Column '%s' not found in data. Set symbol_col to the correct column name.", symbol_col))
+      stop(sprintf("Column '%s' not found in data. 
+                   Set symbol_col to the correct column name.", symbol_col))
     if (!is.null(value_col) && !value_col %in% names(data))
-      stop(sprintf("Column '%s' not found in data. Set value_col to the correct column name.", value_col))
+      stop(sprintf("Column '%s' not found in data. 
+                   Set value_col to the correct column name.", value_col))
     cols_keep <- unique(c(symbol_col, value_col))
     data      <- data[, cols_keep, drop = FALSE]
     names(data)[names(data) == symbol_col] <- "symbol"
     grid <- merge(grid, data, by = "symbol", all.x = TRUE)
   }
-
   legend_title <- legend_title %||% value_col %||% ""
   fill_col     <- if (!is.null(value_col) && value_col %in% names(grid)) value_col else NULL
+  
+  # Compute per-tile text color based on fill value for contrast
+  if (!is.null(fill_col) && fill_col %in% names(grid)) {
+    val     <- grid[[fill_col]]
+    val_min <- min(val, na.rm = TRUE)
+    val_max <- max(val, na.rm = TRUE)
+    # Normalise fill value to 0-1 then interpolate toward color_high
+    t <- ifelse(is.na(val), 0.5, (val - val_min) / (val_max - val_min))
+    # Interpolate hex color at position t
+    interp_hex <- function(low, high, t) {
+      low  <- col2rgb(low)
+      high <- col2rgb(high)
+      r <- round(low[1] + (high[1] - low[1]) * t)
+      g <- round(low[2] + (high[2] - low[2]) * t)
+      b <- round(low[3] + (high[3] - low[3]) * t)
+      sprintf("#%02X%02X%02X", r, g, b)
+    }
+    grid$text_color <- vapply(t, function(ti)
+      .contrast_color(interp_hex(color_low, color_high, ti)),
+      character(1)
+    )
+  } else {
+    grid$text_color <- "grey20"
+  }
+
 
   p <- ggplot2::ggplot(
     grid,
@@ -69,51 +95,53 @@ ggPSE <- function(
       height    = 0.92,
       linewidth = 0.3
     ) +
+    # Symbol
     ggplot2::geom_text(
-      ggplot2::aes(label = .data[["symbol"]]),
+      ggplot2::aes(label = .data[["symbol"]], color = .data[["text_color"]]),
       fontface = "bold",
       size     = base_size * 0.40,
-      # vjust: shift symbol up slightly when value label is shown below
-      vjust = if (label_value && !is.null(fill_col)) 0.15 else 0.5
-    )
+      vjust    = if (label_value && !is.null(fill_col)) 0.15 else 0.5
+    ) +
 
   if (show_atomic_number) {
-    p <- p + ggplot2::geom_text(
-      ggplot2::aes(
-        y     = .data[["row"]] * -1 - 0.25,
-        label = .data[["atomic_number"]]
-      ),
-      hjust    = 0.5,
-      vjust    = 1,
-      size     = base_size * 0.25,
-      color    = "grey50",
-      fontface = "plain"
-    )
+    p <- p + # Atomic number
+      ggplot2::geom_text(
+        ggplot2::aes(
+          y     = .data[["row"]] * -1 - 0.25,
+          label = .data[["atomic_number"]],
+          color = .data[["text_color"]]
+        ),
+        hjust    = 0.5,
+        vjust    = 1,
+        size     = base_size * 0.25,
+        fontface = "plain"
+      )
   }
 
   if (label_value && !is.null(fill_col)) {
-    p <- p + ggplot2::geom_text(
-      ggplot2::aes(
-        y     = .data[["row"]] * -1 - 0.25,
-        label = ifelse(
-          is.na(.data[[fill_col]]), "",
-          formatC(.data[[fill_col]], digits = value_digits, format = "f")
-        )
-      ),
-      size  = base_size * 0.20,
-      color = "grey30"
-    )
+    p <- p + # Value label
+      ggplot2::geom_text(
+        ggplot2::aes(
+          y     = .data[["row"]] * -1 - 0.25,
+          label = ifelse(is.na(.data[[fill_col]]), "",
+                         formatC(.data[[fill_col]], digits = value_digits, 
+                                 format = "f")),
+          color = .data[["text_color"]]
+        ),
+        size = base_size * 0.20
+      )
   }
 
   p <- p +
     { if (!is.null(fill_col))
-        ggplot2::scale_fill_gradient(
-          low = color_low, high = color_high,
-          na.value = color_na, name = legend_title
-        )
+      ggplot2::scale_fill_gradient(
+        low = color_low, high = color_high,
+        na.value = color_na, name = legend_title
+      )
       else
         ggplot2::scale_fill_continuous(na.value = color_na, guide = "none")
     } +
+    ggplot2::scale_color_identity() +   # <- here
     ggplot2::coord_fixed() +
     ggplot2::theme_void(base_size = base_size) +
     ggplot2::theme(
@@ -123,6 +151,5 @@ ggPSE <- function(
       legend.text      = ggplot2::element_text(size = base_size * 0.85),
       plot.margin      = ggplot2::margin(4, 4, 4, 4)
     )
-
   p
 }
