@@ -36,7 +36,7 @@ ggPSE <- function(
     color_high   = "#9a031e",
     color_na     = "#e8e8e6",
     legend_title = NULL,
-    show_atomic_number = TRUE,
+    show_atomic_number = FALSE,
     base_size    = 8
 ) {
   grid <- .ggpse_elements()
@@ -45,7 +45,7 @@ ggPSE <- function(
     if (!symbol_col %in% names(data))
       stop(sprintf("Column '%s' not found in data. Set symbol_col to the correct column name.", symbol_col))
     if (!is.null(value_col) && !value_col %in% names(data))
-      stop(sprintf("Column '%s' not found in data.", value_col))
+      stop(sprintf("Column '%s' not found in data. Set value_col to the correct column name.", value_col))
     cols_keep <- unique(c(symbol_col, value_col))
     data      <- data[, cols_keep, drop = FALSE]
     names(data)[names(data) == symbol_col] <- "symbol"
@@ -73,7 +73,8 @@ ggPSE <- function(
       ggplot2::aes(label = .data[["symbol"]]),
       fontface = "bold",
       size     = base_size * 0.40,
-      vjust    = if (label_value && !is.null(fill_col)) 0.15 else 0.5
+      # vjust: shift symbol up slightly when value label is shown below
+      vjust = if (label_value && !is.null(fill_col)) 0.15 else 0.5
     )
 
   if (show_atomic_number) {
@@ -93,7 +94,7 @@ ggPSE <- function(
   if (label_value && !is.null(fill_col)) {
     p <- p + ggplot2::geom_text(
       ggplot2::aes(
-        y     = -.data[["row"]] - 0.27,
+        y     = .data[["row"]] * -1 - 0.25,
         label = ifelse(
           is.na(.data[[fill_col]]), "",
           formatC(.data[[fill_col]], digits = value_digits, format = "f")
