@@ -18,8 +18,7 @@ Imports:
     rlang (>= 1.1.0)
 Suggests:
     ggiraph (>= 0.8.0),
-    ggchicklet,
-    periodicdata,
+    ggflags,
     testthat (>= 3.0.0),
     knitr,
     rmarkdown
