@@ -12,3 +12,13 @@
   luminance <- 0.2126 * r + 0.7152 * g + 0.0722 * b
   if (luminance > 0.4) "grey20" else "white"
 }
+
+#' @keywords internal
+.interp_hex <- function(low, high, t) {
+  low  <- col2rgb(low)
+  high <- col2rgb(high)
+  r    <- round(low[1] + (high[1] - low[1]) * t)
+  g    <- round(low[2] + (high[2] - low[2]) * t)
+  b    <- round(low[3] + (high[3] - low[3]) * t)
+  sprintf("#%02X%02X%02X", r, g, b)
+}

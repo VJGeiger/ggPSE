@@ -10,13 +10,15 @@
 #'   Default "symbol".
 #' @param label_value Logical. Print numeric values inside tiles. Default TRUE.
 #' @param value_digits Integer. Decimal places for displayed values. Default 2.
-#' @param color_low Hex color for the low end of the gradient. Default "#ffffff".
+#' @param color_low Hex color for the low end of the gradient. Default "#fdf0f2".
 #' @param color_high Hex color for the high end of the gradient. Default "#9a031e".
-#' @param color_na Hex color for elements with no data. Default "#e8e8e6".
+#' @param color_na Hex color for elements with no data. Default "#f0f0f0".
+#' @param tile_border Hex color for tile borders. If NULL (default), grey border
+#'   on light backgrounds, transparent on dark. Set "transparent" to suppress.
 #' @param legend_title Character. Legend title. Defaults to value_col.
-#' @param show_atomic_number Logical. Show atomic numbers. Default TRUE.
+#' @param show_atomic_number Logical. Show atomic numbers in top-left of tile.
+#'   Default FALSE.
 #' @param base_size Numeric. Base font size in pt. Default 8.
-#'
 #' @return A ggplot object.
 #' @export
 #'
@@ -32,9 +34,10 @@ ggPSE <- function(
     symbol_col   = "symbol",
     label_value  = TRUE,
     value_digits = 2,
-    color_low    = "#ffffff",
+    color_low    = "#fdf0f2",
     color_high   = "#9a031e",
-    color_na     = "#e8e8e6",
+    color_na     = "#f0f0f0",
+    tile_border = NULL,
     legend_title = NULL,
     show_atomic_number = FALSE,
     base_size    = 8
@@ -43,16 +46,15 @@ ggPSE <- function(
 
   if (!is.null(data)) {
     if (!symbol_col %in% names(data))
-      stop(sprintf("Column '%s' not found in data. 
-                   Set symbol_col to the correct column name.", symbol_col))
+      stop(sprintf("Column '%s' not found in data. Set symbol_col to the correct column name.", symbol_col))
     if (!is.null(value_col) && !value_col %in% names(data))
-      stop(sprintf("Column '%s' not found in data. 
-                   Set value_col to the correct column name.", value_col))
+      stop(sprintf("Column '%s' not found in data. Set value_col to the correct column name.", value_col))
     cols_keep <- unique(c(symbol_col, value_col))
     data      <- data[, cols_keep, drop = FALSE]
     names(data)[names(data) == symbol_col] <- "symbol"
     grid <- merge(grid, data, by = "symbol", all.x = TRUE)
   }
+  
   legend_title <- legend_title %||% value_col %||% ""
   fill_col     <- if (!is.null(value_col) && value_col %in% names(grid)) value_col else NULL
   
@@ -62,25 +64,20 @@ ggPSE <- function(
     val_min <- min(val, na.rm = TRUE)
     val_max <- max(val, na.rm = TRUE)
     # Normalise fill value to 0-1 then interpolate toward color_high
-    t <- ifelse(is.na(val), 0.5, (val - val_min) / (val_max - val_min))
-    # Interpolate hex color at position t
-    interp_hex <- function(low, high, t) {
-      low  <- col2rgb(low)
-      high <- col2rgb(high)
-      r <- round(low[1] + (high[1] - low[1]) * t)
-      g <- round(low[2] + (high[2] - low[2]) * t)
-      b <- round(low[3] + (high[3] - low[3]) * t)
-      sprintf("#%02X%02X%02X", r, g, b)
-    }
-    grid$text_color <- vapply(t, function(ti)
-      .contrast_color(interp_hex(color_low, color_high, ti)),
+    norm_val <- ifelse(is.na(val), 0.5, (val - val_min) / (val_max - val_min))
+    # Interpolate hex color at position norm_val
+    grid$text_color <- vapply(norm_val, function(ti)
+      .contrast_color(.interp_hex(color_low, color_high, ti)),
       character(1)
     )
   } else {
     grid$text_color <- "grey20"
   }
-
-
+  
+  # Tile border color
+  tile_border <- tile_border %||% "transparent"
+    if (color_low %in% c("#ffffff", "#fdf0f2")) "#c8c8c8" else "transparent"
+  
   p <- ggplot2::ggplot(
     grid,
     ggplot2::aes(
@@ -90,7 +87,7 @@ ggPSE <- function(
     )
   ) +
     ggplot2::geom_tile(
-      color     = "white",
+      color     = tile_border,
       width     = 0.92,
       height    = 0.92,
       linewidth = 0.3
@@ -100,26 +97,29 @@ ggPSE <- function(
       ggplot2::aes(label = .data[["symbol"]], color = .data[["text_color"]]),
       fontface = "bold",
       size     = base_size * 0.40,
+      nudge_y  = -0.08,
       vjust    = if (label_value && !is.null(fill_col)) 0.15 else 0.5
-    ) +
-
+    )
+  
   if (show_atomic_number) {
-    p <- p + # Atomic number
+    # Value label
+    p <- p +
       ggplot2::geom_text(
         ggplot2::aes(
-          y     = .data[["row"]] * -1 - 0.25,
+          x     = .data[["col"]] - 0.42,
+          y     = -.data[["row"]] + 0.38,
           label = .data[["atomic_number"]],
           color = .data[["text_color"]]
         ),
-        hjust    = 0.5,
+        hjust    = 0,
         vjust    = 1,
-        size     = base_size * 0.25,
+        size     = base_size * 0.22,
         fontface = "plain"
       )
   }
 
   if (label_value && !is.null(fill_col)) {
-    p <- p + # Value label
+    p <- p + 
       ggplot2::geom_text(
         ggplot2::aes(
           y     = .data[["row"]] * -1 - 0.25,
@@ -138,10 +138,8 @@ ggPSE <- function(
         low = color_low, high = color_high,
         na.value = color_na, name = legend_title
       )
-      else
-        ggplot2::scale_fill_continuous(na.value = color_na, guide = "none")
     } +
-    ggplot2::scale_color_identity() +   # <- here
+    ggplot2::scale_color_identity() +
     ggplot2::coord_fixed() +
     ggplot2::theme_void(base_size = base_size) +
     ggplot2::theme(
