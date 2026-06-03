@@ -1,27 +1,6 @@
 # ggPSE — roadmap and todo
 
-Currently under construction. Roughly ordered by priority within each section.
-
----
-
-## v0.1.0 — get it working (current focus)
-
-### Must-have before any public release
-- [x] Finalize `ggPSE()` function
-  - [x] introduce adaptive colors
-  - [x] optimize styling for basic plots
-  - [x] fix text overlaps when `show_atom_label = TRUE`
-  - [x] add `highlight` parameter for discrete element groups with legend
-  - [x] add `tile_border` parameter with auto-detection
-- [x] Write `data-raw/prepare_element_data.R` - have option for built-in small data set or periodicsystem bigger data set.
-- [x] Change the ggPSE_highlight() to a simple highlight option in ggPSE()
-- [x] Finalize `ggPSE_badge()` - country flags via ggflags, text fallback, up to 3 flags per tile
-- [x] Finalize `ggPSE_bubble()` - white tile background, bubble-only signal, NA rows filtered silently
-- [x] Finalize `ggPSE_bar()` - in-tile bar encoding, 4 sides, fixed thickness, proportional length
-- [x] Write roxygen2 docs for all exported functions
-- [x] Run `rcmdcheck::rcmdcheck()` - reach zero errors, zero warnings, zero notes
-- [x] Write introduction vignette (`vignettes/getting-started.Rmd`)
-- [ ] Write a `README.md` with install instructions and a minimal example with output image
+The roadmap summarizes what features are upcoming and some ideas. Roughly ordered by priority within each section.
 
 ---
 
@@ -44,7 +23,7 @@ Currently under construction. Roughly ordered by priority within each section.
 ---
 
 ## v0.3.0 — supply chain / critical materials features
-
+*need to think about pie charts...* 
 - [ ] `pse_supply()` - pie chart per tile showing supply mix by country
   - Needs `ggforce::geom_arc_bar()` or custom grob
   - Input: data frame with symbol, country, share (%) columns
@@ -74,8 +53,8 @@ Currently under construction. Roughly ordered by priority within each section.
 
 - [ ] `ggnewscale` in Suggests: when both `value_col` and `highlight` are supplied
   simultaneously, scale conflict occurs — proper fix needs `ggnewscale::new_scale_fill()`
-- [ ] `ggPSE_bubble()` + `ggPSE()` gradient: two separate legends for fill and size
-  need manual cleanup — document workaround or fix
+- [ ] `ggPSE_bubble()` combined with `ggPSE()`: using both together requires
+  manual legend cleanup — document the recommended pattern or add a combined helper
 - [ ] `coord_fixed()` in `ggPSE()` interacts badly with `patchwork` multi-panel
   layouts — investigate and document workaround
 - [ ] Lanthanide/actinide row gap: currently hardcoded as row 9/10 offset —
@@ -112,3 +91,21 @@ Currently under construction. Roughly ordered by priority within each section.
 - [x] Tile border parameter with transparent default
 - [x] Per-tile text contrast via WCAG luminance calculation
 - [x] Atomic number display in top-left corner via `show_atomic_number`
+
+### v0.1.0 - get it working
+
+- [x] Finalize `ggPSE()` function
+  - [x] introduce adaptive colors
+  - [x] optimize styling for basic plots
+  - [x] fix text overlaps when `show_atom_label = TRUE`
+  - [x] add `highlight` parameter for discrete element groups with legend
+  - [x] add `tile_border` parameter with auto-detection
+- [x] Write `data-raw/prepare_element_data.R` - have option for built-in small data set or periodicsystem bigger data set.
+- [x] Change the ggPSE_highlight() to a simple highlight option in ggPSE()
+- [x] Finalize `ggPSE_badge()` - country flags via ggflags, text fallback, up to 3 flags per tile
+- [x] Finalize `ggPSE_bubble()` - white tile background, bubble-only signal, NA rows filtered silently
+- [x] Finalize `ggPSE_bar()` - in-tile bar encoding, 4 sides, fixed thickness, proportional length
+- [x] Write roxygen2 docs for all exported functions
+- [x] Run `rcmdcheck::rcmdcheck()` - reach zero errors, zero warnings, zero notes
+- [x] Write introduction vignette (`vignettes/getting-started.Rmd`)
+- [x] Write a `README.md` with install instructions and a minimal example with output image

@@ -1,11 +1,11 @@
 # ggPSE <img src="man/figures/logo.png" align="right" height="139"/>
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/VJGeiger/ggPSE/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/VJGeiger/ggPSE/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/VJGeiger/ggPSE/actions/workflows/r.yml/badge.svg)](https://github.com/VJGeiger/ggPSE/actions/workflows/r.yml)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-**ggPSE** is a ggplot2-based toolkit for visualizing PSE (periodic system of elements) data. Every function returns a `ggplot2` object - so plots can be extended.
+**ggPSE** is a ggplot2-based toolkit for visualizing element-resolved data  on the periodic table of elements. Every function returns a standard `ggplot2` object — so plots can be extended with themes, annotations, faceting, and `patchwork` as usual.
 
 ---
 ## Disclaimer
@@ -49,7 +49,8 @@ Adapt the tile coloring as well as its borders for the whole PSE.
 
 ```r
 ggPSE(color_na = "white", tile_border = "gray40")
-``` 
+```
+
 ![](man/figures/ggPSE_plot_tiles.png)
 
 
@@ -58,6 +59,11 @@ ggPSE(color_na = "white", tile_border = "gray40")
 Map any numeric variable to a fill color gradient across all elements.
 
 ```r
+battery <- data.frame(
+  symbol     = c("Li", "Co", "Ni", "Mn", "Fe", "P", "C"),
+  importance = c(0.95, 0.88, 0.75, 0.60, 0.45, 0.40, 0.35)
+)
+
 ggPSE(battery,
       value_col    = "importance",
       color_low    = "#f7fbff",
