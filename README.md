@@ -5,7 +5,7 @@
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-**ggPSE** is a ggplot2-based toolkit for visualizing element-resolved data  on the periodic table of elements. Every function returns a standard `ggplot2` object — so plots can be extended with themes, annotations, faceting, and `patchwork` as usual.
+**ggPSE** is a ggplot2-based toolkit for visualizing element-resolved data  on the periodic table of elements. Every function returns a standard `ggplot2` object - so plots can be extended with themes, annotations, faceting, and `patchwork` as usual.
 
 ---
 ## Disclaimer
