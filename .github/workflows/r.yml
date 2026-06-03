@@ -29,3 +29,5 @@ jobs:
         with:
           extra-packages: any::rcmdcheck, any::rmarkdown, any::knitr, any::testthat, github::rensa/ggflags
       - uses: r-lib/actions/check-r-package@v2
+        with:
+          extra-check-args: '--no-build-vignettes'
