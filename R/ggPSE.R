@@ -86,9 +86,15 @@ ggPSE <- function(
   # ── Text contrast color ───────────────────────────────────────────────────────
   if (!is.null(fill_col) && fill_col %in% names(grid)) {
     val      <- grid[[fill_col]]
-    val_min  <- min(val, na.rm = TRUE)
-    val_max  <- max(val, na.rm = TRUE)
-    norm_val <- ifelse(is.na(val), 0.5, (val - val_min) / (val_max - val_min))
+    val_min <- min(val, na.rm = TRUE)
+    val_max <- max(val, na.rm = TRUE)
+    
+    # Guard against single value or all-equal values
+    if (val_max == val_min) {
+      norm_val <- ifelse(is.na(val), 0.5, 0.5)
+    } else {
+      norm_val <- ifelse(is.na(val), 0.5, (val - val_min) / (val_max - val_min))
+    }
     grid$text_color <- vapply(norm_val, function(ti)
       .contrast_color(.interp_hex(color_low, color_high, ti)),
       character(1)

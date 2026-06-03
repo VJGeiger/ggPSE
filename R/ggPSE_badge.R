@@ -54,6 +54,7 @@
 ggPSE_badge <- function(
     plot         = NULL,
     data,
+    symbol_col = "symbol",
     country_col  = "country",
     badge_size   = NULL,
     base_size    = NULL,    

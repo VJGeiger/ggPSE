@@ -55,7 +55,7 @@ For just the grid positions used internally by plotting functions, see
 [ggpse_grid].
 }
 \examples{
-# Plot electronegativity straight from the built-in data
+data(ggpse_elements)
 ggPSE(ggpse_elements, value_col = "electronegativity",
       legend_title = "Electronegativity (Pauling)")
 

@@ -7,6 +7,7 @@
 ggPSE_badge(
   plot = NULL,
   data,
+  symbol_col = "symbol",
   country_col = "country",
   badge_size = NULL,
   base_size = NULL,
@@ -22,6 +23,8 @@ is created first.}
 
 \item{data}{A data frame with element symbols and country codes.
 Multiple rows per element are allowed for multiple flags per tile.}
+
+\item{symbol_col}{Character. Column containing element symbols. Default "symbol".}
 
 \item{country_col}{Character. Column containing ISO 3166-1 alpha-2 country
 codes. Case insensitive. Default "country".}
@@ -40,8 +43,6 @@ Default NULL uses ggPSE()'s default of 10.}
 
 \item{badge_color}{Character. Text color for text fallback badges.
 Default "#333333".}
-
-\item{symbol_col}{Character. Column containing element symbols. Default "symbol".}
 }
 \value{
 A ggplot object.

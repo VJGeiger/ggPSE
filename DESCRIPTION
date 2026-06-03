@@ -9,7 +9,7 @@ Description: A ggplot2-based toolkit for visualizing data on the periodic
     Returns ggplot2 objects that can be further modified with standard
     ggplot2 syntax, including faceting and custom themes.
     Initial code scaffolding assisted by Claude (Anthropic, 2025).
-License: GPL + file LICENSE
+License: GPL-3
 Encoding: UTF-8
 Depends:
     R (>= 4.1.0)
@@ -17,11 +17,9 @@ Imports:
     ggplot2 (>= 3.4.0),
     rlang (>= 1.1.0)
 Suggests:
-    ggiraph (>= 0.8.0),
     ggflags,
     testthat (>= 3.0.0),
-    knitr,
-    rmarkdown
+    knitr
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 URL: https://github.com/VJGeiger/ggPSE

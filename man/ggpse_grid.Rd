@@ -30,6 +30,7 @@ For a richer table including physical and chemical properties, see
 [ggpse_elements].
 }
 \examples{
+data(ggpse_grid)
 head(ggpse_grid)
 
 # Join your own data against the grid

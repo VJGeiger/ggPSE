@@ -21,6 +21,7 @@
 #' \url{https://iupac.org/what-we-do/periodic-table-of-elements/}
 #'
 #' @examples
+#' data(ggpse_grid)
 #' head(ggpse_grid)
 #'
 #' # Join your own data against the grid
@@ -76,7 +77,7 @@
 #' \url{https://webbook.nist.gov}
 #'
 #' @examples
-#' # Plot electronegativity straight from the built-in data
+#' data(ggpse_elements)
 #' ggPSE(ggpse_elements, value_col = "electronegativity",
 #'       legend_title = "Electronegativity (Pauling)")
 #'
@@ -97,7 +98,7 @@
 #' }
 "ggpse_elements"
 
-
+utils::globalVariables("ggpse_grid")
 # Internal function used by all plotting functions.
 # Points at ggpse_grid (the minimal dataset) when the package is loaded,
 # and falls back to a hardcoded data frame when sourcing files directly

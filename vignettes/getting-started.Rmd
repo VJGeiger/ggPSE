@@ -46,15 +46,13 @@ ggPSE(battery,
 
 ## Highlighting element groups
 
-`ggPSE_highlight()` is pipe-friendly and can be stacked to show multiple
-groups simultaneously.
+The highlight option is a user-friendly way of coloring certain elements of the periodic table with the option of a custom legend. 
 
 ```{r highlight}
-ggPSE() |>
-  ggPSE_highlight(c("Li", "Co", "Ni", "Mn", "Fe", "P"),
-                  color = "#2166ac") |>
-  ggPSE_highlight(c("Nd", "Dy", "Tb", "Pr", "La", "Ce"),
-                  color = "#e63946")
+ggPSE(highlight = list(
+  list(symbols = c("Li","Co","Ni","Mn","Fe","P"), color="#2166ac"),
+  list(symbols = c("Nd","Dy","Tb","Pr","La","Ce"), color="#e63946")
+))
 ```
 
 ## Bubble size encoding
@@ -86,27 +84,6 @@ ggPSE(supply, value_col = "value",
   ggPSE_badge(supply, country_col = "country")
 ```
 
-## Faceting across conditions
-
-Because `ggPSE()` returns a ggplot2 object, `facet_wrap()` works out of the box:
-
-```{r facet}
-set.seed(42)
-elements <- c("Fe", "Cu", "Zn", "Ni", "Co", "Mn", "Cr", "Mo", "W", "V")
-ph_data  <- do.call(rbind, lapply(c(5, 7, 9), function(ph) {
-  data.frame(
-    symbol = elements,
-    value  = pmax(0, pmin(1, rnorm(length(elements), mean = ph / 10, sd = 0.15))),
-    pH     = paste0("pH ", ph)
-  )
-}))
-
-ggPSE(ph_data, value_col = "value", legend_title = "Affinity") +
-  facet_wrap(~pH) +
-  labs(title = "Oxophilicity across pH conditions") +
-  theme(strip.text = element_text(face = "bold"),
-        plot.title = element_text(hjust = 0.5))
-```
 
 ## Saving figures
 
