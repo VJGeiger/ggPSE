@@ -139,7 +139,8 @@ ggPSE <- function(
       ggplot2::scale_fill_manual(
         values   = hi_values,
         na.value = color_na,
-        name     = NULL
+        name     = NULL,
+        breaks   = names(hi_values),
       )
   } else if (!is.null(fill_col)) {
     # Gradient mode

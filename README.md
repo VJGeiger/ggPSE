@@ -40,15 +40,6 @@ ggPSE()
 ```
 ![](man/figures/ggPSE_plot.png)
 
-```r
-# Color gradient from your own data
-battery <- data.frame(
-  symbol     = c("Li", "Co", "Ni", "Mn", "Fe", "P", "C"),
-  importance = c(0.95, 0.88, 0.75, 0.60, 0.45, 0.40, 0.35)
-)
-ggPSE(battery, value_col = "importance", legend_title = "Battery relevance")
-```
-
 ---
 
 ## Visualization modes
@@ -64,6 +55,7 @@ ggPSE(battery,
       color_high   = "#08306b",
       legend_title = "Battery relevance")
 ```
+![](man/figures/ggPSE_plot_custom_col_grad.png)
 
 ### Highlight element groups — `ggPSE(highlight = ...)`
 
@@ -79,7 +71,7 @@ ggPSE(highlight = list(
        label   = "Rare earth magnets")
 ))
 ```
-
+![](man/figures/ggPSE_plot_custom_tiles.png)
 ### Bubble size encoding — `ggPSE_bubble()`
 
 Map a numeric variable to bubble size on a clean white background.
@@ -91,6 +83,7 @@ supply_risk <- data.frame(
 )
 ggPSE_bubble(supply_risk, size_col = "risk", legend_title = "Supply risk")
 ```
+![](man/figures/ggPSE_plot_bubbles.png)
 
 ### In-tile bar encoding — `ggPSE_bar()`
 
@@ -103,7 +96,7 @@ ggPSE_bar(supply_risk, value_col = "risk",
           bar_color = "#2166ac",
           legend_title = "Supply risk")
 ```
-
+![](man/figures/ggPSE_plot_bars.png)
 ### Country-of-origin badges — `ggPSE_badge()`
 
 Overlay country flags (via ggflags) or ISO 3166-1 alpha-2 text codes.
@@ -118,7 +111,7 @@ supply <- data.frame(
 ggPSE(supply, value_col = "value", legend_title = "Criticality") |>
   ggPSE_badge(supply, country_col = "country")
 ```
-
+![](man/figures/ggPSE_plot_flags.png)
 ---
 
 ## Built-in element data
@@ -131,7 +124,7 @@ data(ggpse_elements)
 ggPSE(ggpse_elements, value_col = "electronegativity",
       legend_title = "Electronegativity (Pauling)")
 ```
-
+![](man/figures/ggPSE_plot_EN.png)
 ---
 
 ## Saving figures
