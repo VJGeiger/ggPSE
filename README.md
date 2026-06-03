@@ -93,6 +93,25 @@ ggPSE(ggpse_elements[ggpse_elements$block == "d", ],
 ```
 ![](man/figures/ggPSE_plot_TM_density.png)
 
+It is also possible to customize the ggplots to multigradient scales for better visualization.
+
+```r
+data(ggpse_elements)
+
+ggPSE(ggpse_elements,
+      value_col    = "density_g_cm3",
+      color_low    = "#2166ac",   
+      color_high   = "#a50026",   
+      legend_title = "Density (g/cm³)") +
+  ggplot2::scale_fill_gradientn(
+    colours  = c("#2166ac", "#1a9850", "#a50026"),
+    na.value = "#f0f0f0",
+    name     = "Density (g/cm³)"
+  ) +
+  ggplot2::labs(title = "Elemental density across the periodic table") +
+  ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"))
+```
+![](man/figures/ggPSE_plot_density_multigrad.png)
 
 ### Highlight element groups — `ggPSE(highlight = ...)`
 
