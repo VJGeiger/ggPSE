@@ -3,6 +3,11 @@
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/VJGeiger/ggPSE/actions/workflows/r.yml/badge.svg)](https://github.com/VJGeiger/ggPSE/actions/workflows/r.yml)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![Repo Status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![License: GPL-3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![GitHub release](https://img.shields.io/github/v/release/VJGeiger/ggPSE)](https://github.com/VJGeiger/ggPSE/releases)
+[![Code size](https://img.shields.io/github/languages/code-size/VJGeiger/ggPSE)](https://github.com/VJGeiger/ggPSE)
+[![Repo size](https://img.shields.io/github/repo-size/VJGeiger/ggPSE)](https://github.com/VJGeiger/ggPSE)
 <!-- badges: end -->
 
 **ggPSE** is a ggplot2-based toolkit for visualizing element-resolved data  on the periodic table of elements. Every function returns a standard `ggplot2` object - so plots can be extended with themes, annotations, faceting, and `patchwork` as usual.
@@ -204,8 +209,8 @@ significant work so we can discuss the approach first.
 ## Alternatives 
 
 ### R alternatives
-[periodicdata](https://github.com/solarchemist/periodicdata): Rich on dataset for the periodic system in R.
-[PeriodicTable](https://cran.r-project.org/web/packages/PeriodicTable/index.html): Simplest alternative for a PSE.
+- [periodicdata](https://github.com/solarchemist/periodicdata): Rich on dataset for the periodic system in R.
+- [PeriodicTable](https://cran.r-project.org/web/packages/PeriodicTable/index.html): Simplest alternative for a PSE.
 
 ### python alternatives
 [mendeelv](https://pypi.org/project/mendeleev/): Rich-dataset, feature-rich and optional interactive visualization.
