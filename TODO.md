@@ -17,7 +17,7 @@ Currently under construction. Roughly ordered by priority within each section.
 - [x] Decide on meaningfulness and use of `ggPSE_bubble()` - validate scale_size_area interaction with ggplot2 fill scale
 - [x] Write roxygen2 docs for all exported functions
 - [x] Run `rcmdcheck::rcmdcheck()` - reach zero errors, zero warnings, zero notes
-- [ ] Write introduction vignette (`vignettes/introduction.Rmd`)
+- [x] Write introduction vignette
 - [ ] Write a `README.md` with install instructions and a minimal example with output image
 
 ---

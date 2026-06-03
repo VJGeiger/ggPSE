@@ -17,6 +17,10 @@ library(ggPSE)
 library(ggplot2)
 ```
 
+ggPSE provides ggplot2-based periodic table visualizations. Every function
+returns a standard ggplot2 object, so you can add themes, annotations, and
+combine plots with patchwork as usual.
+
 ## Basic gradient map
 
 Supply a data frame with element symbols and a numeric column.
@@ -46,18 +50,25 @@ ggPSE(battery,
 
 ## Highlighting element groups
 
-The highlight option is a user-friendly way of coloring certain elements of the periodic table with the option of a custom legend. 
+The `highlight` parameter colors groups of elements and adds a legend entry
+for each group.
 
 ```{r highlight}
 ggPSE(highlight = list(
-  list(symbols = c("Li","Co","Ni","Mn","Fe","P"), color="#2166ac"),
-  list(symbols = c("Nd","Dy","Tb","Pr","La","Ce"), color="#e63946")
+  list(symbols = c("Li", "Co", "Ni", "Mn", "Fe", "P"),
+       color   = "#2166ac",
+       label   = "Battery metals"),
+  list(symbols = c("Nd", "Dy", "Tb", "Pr", "La", "Ce"),
+       color   = "#e63946",
+       label   = "Rare earth magnets")
 ))
 ```
 
 ## Bubble size encoding
 
-When you want a size signal instead of (or alongside) color:
+`ggPSE_bubble()` maps a numeric column to bubble size on a clean white
+background. Useful when color is reserved for another variable, or when
+you want to emphasize magnitude without implying a color direction.
 
 ```{r bubble}
 supply_risk <- data.frame(
@@ -68,12 +79,36 @@ ggPSE_bubble(supply_risk, size_col = "risk",
              bubble_color = "#d73027", legend_title = "Supply risk score")
 ```
 
+## In-tile bar encoding
+
+`ggPSE_bar()` draws a proportional bar inside each tile growing from a
+chosen edge. The bar length encodes the value; the tile background stays
+neutral so the bars are the primary visual signal.
+
+```{r bar}
+ggPSE_bar(supply_risk, value_col = "risk",
+          bar_side  = "bottom",
+          bar_color = "#2166ac",
+          legend_title = "Supply risk score")
+```
+
+Bars can grow from any edge:
+
+```{r bar-left}
+ggPSE_bar(supply_risk, value_col = "risk",
+          bar_side  = "left",
+          bar_color = "#e63946",
+          legend_title = "Supply risk score")
+```
+
 ## Country-of-origin badges
 
-`ggPSE_badge()` overlays ISO country codes showing the primary production
-country — useful for critical raw materials analysis.
+`ggPSE_badge()` overlays country flags (via the optional ggflags package)
+or ISO 3166-1 alpha-2 text codes showing the primary production country.
+Useful for critical raw materials supply chain analysis. Multiple countries
+per element are supported — up to three flags per tile.
 
-```{r badges}
+```{r badges, eval=requireNamespace("ggflags", quietly = TRUE)}
 supply <- data.frame(
   symbol  = c("Li", "Co", "Nd", "Pt", "Cu", "Ni", "Ga", "In"),
   country = c("CL", "CD", "CN", "ZA", "CL", "PH", "CN", "CN"),
@@ -84,13 +119,39 @@ ggPSE(supply, value_col = "value",
   ggPSE_badge(supply, country_col = "country")
 ```
 
+Install ggflags for flag icons:
+
+```{r ggflags-install, eval=FALSE}
+remotes::install_github("rensa/ggflags")
+```
+
+## Using the built-in element data
+
+ggPSE ships with `ggpse_elements`, a data frame of 17 physical and chemical
+properties for all 118 elements sourced from IUPAC 2021 and NIST WebBook.
+
+```{r builtins}
+data(ggpse_elements)
+ggPSE(ggpse_elements, value_col = "electronegativity",
+      color_low    = "#f7f7f7",
+      color_high   = "#d73027",
+      legend_title = "Electronegativity (Pauling)")
+```
+
+```{r melting}
+ggPSE(ggpse_elements, value_col = "melting_point_K",
+      color_high   = "#08519c",
+      legend_title = "Melting point (K)")
+```
 
 ## Saving figures
+
+All functions return ggplot2 objects and can be saved with `ggsave()`:
 
 ```{r save, eval=FALSE}
 p <- ggPSE(battery, value_col = "importance")
 
-ggsave("pse.pdf", p, width = 18, height = 8, units = "cm")        # vector PDF
+ggsave("pse.pdf", p, width = 18, height = 8, units = "cm")         # vector PDF
 ggsave("pse.png", p, width = 18, height = 8, units = "cm", dpi = 300)
-ggsave("pse.svg", p, width = 18, height = 8, units = "cm")        # web / HTML
+ggsave("pse.svg", p, width = 18, height = 8, units = "cm")         # web / HTML
 ```
