@@ -8,7 +8,8 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 
 ### new features
 - [ ] introduce optional selection of showcased groups, i.e. "transition-metals",...
-
+- [ ] zooming for subsets of data
+  
 ### interactivity
 
 - [ ] Add `ggPSE_interactive()` wrapper using `ggiraph`
@@ -24,7 +25,7 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 
 ## v0.3.0 — supply chain / critical materials features
 *need to think about pie charts...* 
-- [ ] `pse_supply()` - pie chart per tile showing supply mix by country
+- [ ] `pse_supply()` - doughtnut/pie chart per tile showing supply mix by country
   - Needs `ggforce::geom_arc_bar()` or custom grob
   - Input: data frame with symbol, country, share (%) columns
 - [ ] Bundle a `critical_materials` dataset
@@ -50,7 +51,6 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 ---
 
 ## known issues / technical debt
-
 - [ ] `ggnewscale` in Suggests: when both `value_col` and `highlight` are supplied
   simultaneously, scale conflict occurs — proper fix needs `ggnewscale::new_scale_fill()`
 - [ ] `ggPSE_bubble()` combined with `ggPSE()`: using both together requires
@@ -65,6 +65,17 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 ---
 
 ## ideas / maybe someday
+**here realism stops and dreams begin** 
+- [ ] `ggPSE_profile()`: Function that allows the selection of a group or a period 
+  and plots a line plots of a parameter next to it.
+- [ ] trendlines over the PSE
+- [ ] adding of brackets to describe certain groups
+- [ ] ggPSE_trends: adding the option for visualizing continous trends along the PSE.
+- [ ] ggPSE_shape(): leveraging pattern instead of tiles to magnify parts of the PSE.
+- [ ] using `ggdensity` package to visualize certain clusters
+- [ ] update ggPSE_badge(): add sizing of the flags as another parameter to create a sort of hierarchy.
+- [ ] ggPSE_sparkbar(): A per-tile bar chart displaying continous values.
+- [ ] ggPSE_connect(): connect elements in either a "graph-style" or alluvial-style
 - [ ] Vignette: interactive PSE in a Quarto document
 - [ ] Shiny app companion: upload CSV, see PSE update live
 - [ ] Include oxidation states as information
@@ -76,6 +87,7 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 - [ ] Add `pse_theme()` - a few pre-built theme variants (minimal, dark, publication)
 - [ ] pkgdown site setup (`_pkgdown.yml`)
 - [ ] Publishing on CRAN
+- [ ] Implementing flowmapper or ggarrow
 
 ---
 

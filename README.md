@@ -213,7 +213,7 @@ significant work so we can discuss the approach first.
 - [PeriodicTable](https://cran.r-project.org/web/packages/PeriodicTable/index.html): Simplest alternative for a PSE.
 
 ### python alternatives
-[mendeelv](https://pypi.org/project/mendeleev/): Rich-dataset, feature-rich and optional interactive visualization.
+- [mendeelv](https://pypi.org/project/mendeleev/): Rich-dataset, feature-rich and optional interactive visualization.
 
 
 --- 
