@@ -10,7 +10,7 @@
 ---
 ## Disclaimer
 
-This is an old script I wrote back in the day of my PhD thesis and never uploaded. Right now, this is a small pet project with low maintenance and I do not put in SERIOUS effort.
+This is an old script I wrote back in the day of my PhD thesis and never uploaded. Right now, this is a small pet project with low maintenance and I do not put SERIOUS effort in.
 Furthermore, this is my first published R project, so, keep that in mind... 
 
 ---
