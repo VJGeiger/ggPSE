@@ -43,6 +43,15 @@ ggPSE()
 ---
 
 ## Visualization modes
+### Tile borders
+
+Adapt the tile coloring as well as its borders for the whole PSE. 
+
+```r
+ggPSE(color_na = "white", tile_border = "gray40")
+``` 
+![](man/figures/ggPSE_plot_tiles.png)
+
 
 ### Color gradient — `ggPSE()`
 
@@ -96,7 +105,9 @@ ggPSE_bar(supply_risk, value_col = "risk",
           bar_color = "#2166ac",
           legend_title = "Supply risk")
 ```
-![](man/figures/ggPSE_plot_bars.png)
+
+![](man/figures/ggPSE_plot_bars_bottom.png)
+
 ### Country-of-origin badges — `ggPSE_badge()`
 
 Overlay country flags (via ggflags) or ISO 3166-1 alpha-2 text codes.
@@ -112,6 +123,21 @@ ggPSE(supply, value_col = "value", legend_title = "Criticality") |>
   ggPSE_badge(supply, country_col = "country")
 ```
 ![](man/figures/ggPSE_plot_flags.png)
+
+```r
+supply_multi <- data.frame(
+  symbol  = c("Li", "Li", "Co", "Co", "Co", "Nd", "Pt"),
+  country = c("CL", "AU", "CD", "AU", "ZM", "CN", "ZA"),
+  value   = c(0.70, 0.70, 0.91, 0.91, 0.91, 0.85, 0.60)
+)
+
+ggPSE(supply_multi, value_col = "value",
+      color_high = "#b2182b", legend_title = "Criticality") |>
+  ggPSE_badge(supply_multi, country_col = "country")
+```
+
+![](man/figures/ggPSE_plot_flags_multi.png)
+
 ---
 
 ## Built-in element data
