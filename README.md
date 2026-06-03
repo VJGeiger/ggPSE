@@ -8,7 +8,7 @@
 **ggPSE** is a ggplot2-based toolkit for visualizing PSE (periodic system of elements) data. Every function returns a `ggplot2` object - so plots can be extended.
 
 ---
-Disclaimer
+## Disclaimer
 
 This is an old script I wrote back in the day of my PhD thesis and never uploaded. Right now, this is a small pet project with low maintenance and I do not put in SERIOUS effort.
 Furthermore, this is my first published R project, so, keep that in mind... 
@@ -37,10 +37,10 @@ library(ggPSE)
 
 # Blank periodic table
 ggPSE()
-
+```
 ![](man/figures/ggPSE_plot.png)
 
-
+```r
 # Color gradient from your own data
 battery <- data.frame(
   symbol     = c("Li", "Co", "Ni", "Mn", "Fe", "P", "C"),
