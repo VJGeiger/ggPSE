@@ -5,115 +5,150 @@
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-**ggPSE** is a ggplot2-based toolkit for visualizing element-resolved data on the periodic table of elements. It returns standard `ggplot2` objects - so every plot can be extended with additional layers, scales, and themes, or composed with `patchwork` and `cowplot`.
+**ggPSE** is a ggplot2-based toolkit for visualizing PSE (periodic system of elements) data. Every function returns a `ggplot2` object - so plots can be extended.
 
 ---
+Disclaimer
 
-## Disclaimer
-This is an old script I wrote back in the day of my PhD thesis and never uploaded. Right now, this is a small pet project with low maintenance and I do not put in SERIOUS effort but rather keep it slowly and low ambition.
+This is an old script I wrote back in the day of my PhD thesis and never uploaded. Right now, this is a small pet project with low maintenance and I do not put in SERIOUS effort.
+Furthermore, this is my first published R project, so, keep that in mind... 
 
 ---
 
 ## Installation
 
-```R
+```r
 # Install from GitHub (requires remotes)
 remotes::install_github("VJGeiger/ggPSE")
+```
+
+If you want to plot with country flag badges :us: :it: :uk:, also install ggflags (not on CRAN, but GitHub):
+
+```r
+remotes::install_github("rensa/ggflags")
 ```
 
 ---
 
 ## Quick start
 
-```R
+```r
 library(ggPSE)
-library(ggplot2)
 
 # Blank periodic table
 ggPSE()
 
+![](man/figures/ggPSE_plot.png)
+
+
 # Color gradient from your own data
-df <- data.frame(
-  symbol = c("Li", "Co", "Ni", "Mn", "Cu", "Fe"),
-  price  = c(22, 55, 14, 3, 9, 1)
+battery <- data.frame(
+  symbol     = c("Li", "Co", "Ni", "Mn", "Fe", "P", "C"),
+  importance = c(0.95, 0.88, 0.75, 0.60, 0.45, 0.40, 0.35)
 )
-ggPSE(df, value_col = "price", legend_title = "Price (USD/kg)")
+ggPSE(battery, value_col = "importance", legend_title = "Battery relevance")
 ```
 
 ---
 
 ## Visualization modes
 
-### Color gradient - `ggPSE()`
+### Color gradient — `ggPSE()`
 
 Map any numeric variable to a fill color gradient across all elements.
 
-```R
-ggPSE(df, value_col = "price", color_low = "#f7fbff", color_high = "#08306b")
+```r
+ggPSE(battery,
+      value_col    = "importance",
+      color_low    = "#f7fbff",
+      color_high   = "#08306b",
+      legend_title = "Battery relevance")
 ```
 
-### Highlight selected elements - `ggPSE_highlight()`
+### Highlight element groups — `ggPSE(highlight = ...)`
 
-Add colored borders to a named subset of elements. Call multiple times for multiple groups.
-
-```R
-ggPSE() +
-  ggPSE_highlight(c("Li", "Co", "Ni", "Mn"), color = "#1565c0",
-                label = "Battery metals") +
-  ggPSE_highlight(c("Nd", "Pr", "Dy"),       color = "#e65100",
-                label = "Magnet REEs")
-```
-
-### Size encoding - `ggPSE_bubble()`
-
-Map a numeric variable to bubble size inside each tile. Combine with a gradient for dual encoding.
-
-```R
-ggPSE(df, value_col = "price") +
-  ggPSE_bubble(df, value_col = "demand", color = "#333333", alpha = 0.4)
-```
-
-### Text badges — `ggPSE_badge()`
-
-Overlay short text on tiles - useful for ISO country codes showing primary production sources.
-
-```R
-supply <- data.frame(
-  symbol  = c("Co", "Li", "Nd", "Ga"),
-  country = c("CD", "CL", "CN", "CN")
-)
-ggPSE() +
-  ggPSE_highlight(supply$symbol, color = "#c62828") +
-  ggPSE_badge(supply, badge_col = "country")
-```
-
-### Composing layers
-
-Because `ggPSE()` returns a plain ggplot2 object, the full ggplot2 grammar works naturally:
+Color named subsets of elements with a legend entry per group.
 
 ```r
-ggPSE(df, value_col = "price") +
-  ggPSE_highlight(c("Li", "Co", "Ni"), color = "#1565c0") +
-  ggPSE_badge(supply, badge_col = "country") +
-  scale_fill_viridis_c(name = "Price (USD/kg)", na.value = "#eeeeee") +
-  labs(title = "Critical battery metal prices and primary producers",
-       caption = "Source: USGS Mineral Commodity Summaries 2024") +
-  theme(plot.title = element_text(size = 11, face = "bold"))
+ggPSE(highlight = list(
+  list(symbols = c("Li", "Co", "Ni", "Mn", "Fe", "P"),
+       color   = "#2166ac",
+       label   = "Battery metals"),
+  list(symbols = c("Nd", "Dy", "Tb", "Pr", "La", "Ce"),
+       color   = "#e63946",
+       label   = "Rare earth magnets")
+))
 ```
 
-### Small multiples with facet_wrap()
+### Bubble size encoding — `ggPSE_bubble()`
 
-```R
-# df_multi has columns: symbol, value, condition
-ggPSE(df_multi, value_col = "value") +
-  facet_wrap(~condition)
+Map a numeric variable to bubble size on a clean white background.
+
+```r
+supply_risk <- data.frame(
+  symbol = c("Li", "Co", "Nd", "Dy", "Pt", "Rh", "In", "Ga"),
+  risk   = c(0.62, 0.91, 0.84, 0.88, 0.52, 0.70, 0.78, 0.65)
+)
+ggPSE_bubble(supply_risk, size_col = "risk", legend_title = "Supply risk")
+```
+
+### In-tile bar encoding — `ggPSE_bar()`
+
+Draw a proportional bar inside each tile growing from a chosen edge
+(`"bottom"`, `"top"`, `"left"`, or `"right"`).
+
+```r
+ggPSE_bar(supply_risk, value_col = "risk",
+          bar_side  = "bottom",
+          bar_color = "#2166ac",
+          legend_title = "Supply risk")
+```
+
+### Country-of-origin badges — `ggPSE_badge()`
+
+Overlay country flags (via ggflags) or ISO 3166-1 alpha-2 text codes.
+Up to three flags per tile are supported.
+
+```r
+supply <- data.frame(
+  symbol  = c("Li", "Co", "Nd", "Pt"),
+  country = c("CL", "CD", "CN", "ZA"),
+  value   = c(0.70, 0.91, 0.85, 0.60)
+)
+ggPSE(supply, value_col = "value", legend_title = "Criticality") |>
+  ggPSE_badge(supply, country_col = "country")
+```
+
+---
+
+## Built-in element data
+
+ggPSE ships with `ggpse_elements`, a data frame of 17 physical and chemical
+properties for all 118 elements (IUPAC 2021, NIST WebBook, Pauling 1960):
+
+```r
+data(ggpse_elements)
+ggPSE(ggpse_elements, value_col = "electronegativity",
+      legend_title = "Electronegativity (Pauling)")
+```
+
+---
+
+## Saving figures
+
+```r
+p <- ggPSE(battery, value_col = "importance")
+ggsave("pse.pdf", p, width = 18, height = 8, units = "cm")
+ggsave("pse.png", p, width = 18, height = 8, units = "cm", dpi = 300)
 ```
 
 ---
 
 ## Roadmap
 
-See [TODO.md](TODO.md) for the full roadmap including planned interactivity via `ggiraph`, sparkline tiles for time-series data, and supply chain visualization features.
+See [TODO.md](TODO.md) for the full roadmap including planned interactivity
+via `ggiraph`, sparkline tiles for time-series data, and supply chain
+visualization features.
 
 ---
 
