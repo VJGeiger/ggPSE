@@ -4,7 +4,10 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 
 ---
 
-## v0.2.0 — interactivity
+## v0.2.0 — updates for usecases
+
+### new features
+- [ ] introduce optional selection of showcased groups, i.e. "transition-metals",...
 
 ### interactivity
 
@@ -14,11 +17,8 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 - [ ] Test `ggiraph` output in Quarto HTML documents
 - [ ] Test `ggiraph` output in Shiny
 
-### documentation
-- [ ] Vignette: interactive PSE in a Quarto document
 
-### new features
-- [ ] introduce optional selection of showcased groups
+
 
 ---
 
@@ -65,7 +65,7 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 ---
 
 ## ideas / maybe someday
-
+- [ ] Vignette: interactive PSE in a Quarto document
 - [ ] Shiny app companion: upload CSV, see PSE update live
 - [ ] Include oxidation states as information
 - [ ] `ggPSE_left_step()` - Janet left-step periodic table layout

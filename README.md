@@ -32,6 +32,7 @@ remotes::install_github("rensa/ggflags")
 
 ## Quick start
 
+
 ```r
 library(ggPSE)
 
@@ -43,6 +44,12 @@ ggPSE()
 ---
 
 ## Visualization modes
+### Numeration
+The numeration can be switched on with `show_atomic_number = TRUE`, default is `FALSE`to avoid crowded tiles.
+```r
+ggPSE(show_atomic_number = TRUE)
+``` 
+![](man/figures/ggPSE_plot_numbering.png)
 ### Tile borders
 
 Adapt the tile coloring as well as its borders for the whole PSE. 
@@ -71,6 +78,16 @@ ggPSE(battery,
       legend_title = "Battery relevance")
 ```
 ![](man/figures/ggPSE_plot_custom_col_grad.png)
+
+The mapping can also be applied to a selection of the PSE. 
+
+```r
+data(ggpse_elements)
+ggPSE(ggpse_elements[ggpse_elements$block == "d", ],
+      value_col = "density_g_cm3", legend_title = "Density (g/cm3)")
+```
+![](man/figures/ggPSE_plot_TM_density.png)
+
 
 ### Highlight element groups — `ggPSE(highlight = ...)`
 
