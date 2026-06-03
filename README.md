@@ -201,6 +201,18 @@ significant work so we can discuss the approach first.
 
 ---
 
+## Alternatives 
+
+### R alternatives
+[periodicdata](https://github.com/solarchemist/periodicdata): Rich on dataset for the periodic system in R.
+[PeriodicTable](https://cran.r-project.org/web/packages/PeriodicTable/index.html): Simplest alternative for a PSE.
+
+### python alternatives
+[mendeelv](https://pypi.org/project/mendeleev/): Rich-dataset, feature-rich and optional interactive visualization.
+
+
+--- 
+
 ## Citation
 
 If you use ggPSE in a publication, please cite it as:
