@@ -7,8 +7,7 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 ## v0.2.0 — updates for usecases
 
 ### new features
-- [ ] introduce optional selection of showcased groups, i.e. "transition-metals",...
-- [ ] zooming for subsets of data
+- [x] zooming for subsets of data
   
 ### interactivity
 

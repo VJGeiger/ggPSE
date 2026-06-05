@@ -27,6 +27,15 @@
 #' @param show_atomic_number Logical. Show atomic numbers in top-left of tile.
 #'   Default FALSE.
 #' @param base_size Numeric. Base font size in pt. Default 8.
+#' @param groups Integer vector of length 2. Range of IUPAC groups (columns)
+#'   to display, e.g. \code{c(3, 12)} for transition metals only. Default NULL
+#'   shows all groups.
+#' @param periods Integer vector of length 2. Range of periods (rows 1-7) to
+#'   display, e.g. \code{c(4, 6)} for periods 4 to 6. Default NULL shows all
+#'   periods. Note: lanthanides and actinides are controlled separately via
+#'   \code{lanthanides} and \code{actinides}.
+#' @param lanthanides Logical. Show the lanthanide row. Default TRUE.
+#' @param actinides Logical. Show the actinide row. Default TRUE.
 #'
 #' @return A ggplot object.
 #' @export
@@ -42,6 +51,9 @@
 #'   list(symbols = c("Li", "Co", "Ni"), color = "#2166ac", label = "Battery"),
 #'   list(symbols = c("Nd", "Dy", "Tb"), color = "#e63946", label = "Magnets")
 #' ))
+#'
+#' # Show only transition metals (groups 3-12, periods 4-6)
+#' ggPSE(groups = c(3, 12), periods = c(4, 6), lanthanides = FALSE, actinides = FALSE)
 ggPSE <- function(
     data               = NULL,
     value_col          = NULL,
@@ -55,9 +67,29 @@ ggPSE <- function(
     highlight          = NULL,
     legend_title       = NULL,
     show_atomic_number = FALSE,
-    base_size          = 10
+    base_size          = 10,
+    groups             = NULL,
+    periods            = NULL,
+    lanthanides        = TRUE,
+    actinides          = TRUE
 ) {
   grid <- .ggpse_elements()
+
+  # ── Subset grid by groups / periods / lanthanides / actinides ────────────────
+  if (!is.null(groups)) {
+    if (length(groups) != 2 || !is.numeric(groups))
+      stop("'groups' must be a numeric vector of length 2, e.g. c(3, 12).")
+    grid <- grid[grid$col >= min(groups) & grid$col <= max(groups), ]
+  }
+
+  if (!is.null(periods)) {
+    if (length(periods) != 2 || !is.numeric(periods))
+      stop("'periods' must be a numeric vector of length 2, e.g. c(4, 6).")
+    grid <- grid[grid$row > 7 | (grid$row >= min(periods) & grid$row <= max(periods)), ]
+  }
+  
+  if (!lanthanides) grid <- grid[grid$row != 9L, ]
+  if (!actinides)   grid <- grid[grid$row != 10L, ]
   
   if (!is.null(data)) {
     if (!symbol_col %in% names(data))

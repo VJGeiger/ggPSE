@@ -17,7 +17,11 @@ ggPSE(
   highlight = NULL,
   legend_title = NULL,
   show_atomic_number = FALSE,
-  base_size = 10
+  base_size = 10,
+  groups = NULL,
+  periods = NULL,
+  lanthanides = TRUE,
+  actinides = TRUE
 )
 }
 \arguments{
@@ -57,6 +61,19 @@ label = "Battery metals"))}}
 Default FALSE.}
 
 \item{base_size}{Numeric. Base font size in pt. Default 8.}
+
+\item{groups}{Integer vector of length 2. Range of IUPAC groups (columns)
+to display, e.g. \code{c(3, 12)} for transition metals only. Default NULL
+shows all groups.}
+
+\item{periods}{Integer vector of length 2. Range of periods (rows 1-7) to
+display, e.g. \code{c(4, 6)} for periods 4 to 6. Default NULL shows all
+periods. Note: lanthanides and actinides are controlled separately via
+\code{lanthanides} and \code{actinides}.}
+
+\item{lanthanides}{Logical. Show the lanthanide row. Default TRUE.}
+
+\item{actinides}{Logical. Show the actinide row. Default TRUE.}
 }
 \value{
 A ggplot object.
@@ -76,4 +93,7 @@ ggPSE(highlight = list(
   list(symbols = c("Li", "Co", "Ni"), color = "#2166ac", label = "Battery"),
   list(symbols = c("Nd", "Dy", "Tb"), color = "#e63946", label = "Magnets")
 ))
+
+# Show only transition metals (groups 3-12, periods 4-6)
+ggPSE(groups = c(3, 12), periods = c(4, 6), lanthanides = FALSE, actinides = FALSE)
 }

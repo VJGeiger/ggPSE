@@ -65,8 +65,21 @@ ggPSE(color_na = "white", tile_border = "gray40")
 
 ![](man/figures/ggPSE_plot_tiles.png)
 
+### Show Selection
 
-### Color gradient — `ggPSE()`
+If you are interested ind displaying only a part of the PSE you can specify this via
+the `periods` and `groups` as a default lanthanides and actinides are always set to 
+be displayed and have to be set to `lanthanides = FALSE`
+
+```r
+# Periods 4-6 with lanthanides
+ggPSE(periods = c(4, 6), groups = c(3,4), lanthanides= FALSE, actinides = FALSE)
+```
+
+![](man/figures/ggPSE_plot_selection.png)
+
+
+### Color Gradient — `ggPSE()`
 
 Map any numeric variable to a fill color gradient across all elements.
 

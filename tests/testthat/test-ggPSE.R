@@ -1,5 +1,7 @@
 # tests/testthat/test-ggPSE.R
 
+# --- ggPSE core ---
+
 test_that("ggPSE returns a ggplot object", {
   expect_s3_class(ggPSE(), "ggplot")
 })
@@ -39,6 +41,75 @@ test_that("ggPSE blank plot renders without data", {
   expect_no_error(ggPSE())
 })
 
+test_that("ggPSE highlight mode returns a ggplot", {
+  expect_s3_class(
+    ggPSE(highlight = list(
+      list(symbols = c("Li", "Co"), color = "#2166ac", label = "Group A"),
+      list(symbols = c("Nd", "Dy"), color = "#e63946", label = "Group B")
+    )),
+    "ggplot"
+  )
+})
+
+test_that("ggPSE highlight mode works without labels", {
+  expect_no_error(ggPSE(highlight = list(
+    list(symbols = c("Fe", "Cu"), color = "#2166ac")
+  )))
+})
+
+# --- groups / periods / lanthanides / actinides ---
+
+test_that("ggPSE groups filter reduces tile count", {
+  p_full    <- ggPSE()
+  p_subset  <- ggPSE(groups = c(3, 12))
+  full_n    <- nrow(p_full$data)
+  subset_n  <- nrow(p_subset$data)
+  expect_lt(subset_n, full_n)
+})
+
+test_that("ggPSE periods filter reduces tile count", {
+  p_full   <- ggPSE()
+  p_subset <- ggPSE(periods = c(4, 6))
+  expect_lt(nrow(p_subset$data), nrow(p_full$data))
+})
+
+test_that("ggPSE lanthanides = FALSE removes lanthanide row", {
+  p <- ggPSE(lanthanides = FALSE)
+  expect_false(any(p$data$row == 9))
+})
+
+test_that("ggPSE actinides = FALSE removes actinide row", {
+  p <- ggPSE(actinides = FALSE)
+  expect_false(any(p$data$row == 10))
+})
+
+test_that("ggPSE lanthanides = TRUE keeps lanthanides when periods set", {
+  p <- ggPSE(periods = c(4, 6), lanthanides = TRUE)
+  expect_true(any(p$data$row == 9))
+})
+
+test_that("ggPSE actinides = TRUE keeps actinides when periods set", {
+  p <- ggPSE(periods = c(4, 7), actinides = TRUE)
+  expect_true(any(p$data$row == 10))
+})
+
+test_that("ggPSE groups errors on wrong input", {
+  expect_error(ggPSE(groups = c(1, 2, 3)), "groups")
+  expect_error(ggPSE(groups = c("a", "b")), "groups")
+})
+
+test_that("ggPSE periods errors on wrong input", {
+  expect_error(ggPSE(periods = c(1, 2, 3)), "periods")
+})
+
+test_that("ggPSE transition metals subset returns ggplot", {
+  expect_s3_class(
+    ggPSE(groups = c(3, 12), periods = c(4, 6),
+          lanthanides = FALSE, actinides = FALSE),
+    "ggplot"
+  )
+})
+
 # --- ggPSE_bubble ---
 
 test_that("ggPSE_bubble returns a ggplot", {
@@ -48,6 +119,20 @@ test_that("ggPSE_bubble returns a ggplot", {
 
 test_that("ggPSE_bubble blank call works", {
   expect_no_error(ggPSE_bubble())
+})
+
+# --- ggPSE_bar ---
+
+test_that("ggPSE_bar returns a ggplot", {
+  df <- data.frame(symbol = c("Li", "Co", "Ni"), risk = c(0.6, 0.9, 0.7))
+  expect_s3_class(ggPSE_bar(df, value_col = "risk"), "ggplot")
+})
+
+test_that("ggPSE_bar works with all four sides", {
+  df <- data.frame(symbol = c("Fe", "Cu"), v = c(0.3, 0.8))
+  for (side in c("bottom", "top", "left", "right")) {
+    expect_no_error(ggPSE_bar(df, value_col = "v", bar_side = side))
+  }
 })
 
 # --- ggPSE_badge ---
