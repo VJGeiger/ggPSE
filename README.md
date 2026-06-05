@@ -199,6 +199,17 @@ ggPSE(supply_multi, value_col = "value",
 ![](man/figures/ggPSE_plot_flags_multi.png)
 
 ---
+## Interactive plots 
+The displayed values can be made into interactive plots with `ggPSE_interactive()`
+👉 [Interactive periodic table example](https://vjgeiger.github.io/ggPSE/man/figures/ggPSE_interactive.html)
+
+```r
+ggPSE_interactive(battery, value_col = "importance")
+```
+
+![](man/figures/ggPSE_interactive.gif)
+
+---
 
 ## Built-in element data
 
