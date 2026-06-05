@@ -1,7 +1,8 @@
 ^data-raw$        # data generation scripts
 ^README\.md$      # GitHub readme, not needed in package
-^TODO\.md$        # your roadmap file
-^\.github$        # GitHub Actions etc
+^\.github$
+^TODO\.md$
+^docs$
 ^vignettes/.*\.html$  # pre-built vignette HTML if any
 ^docs$            # pkgdown site
 ^.*\.Rproj$       # RStudio project file

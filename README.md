@@ -205,6 +205,15 @@ The displayed values can be made into interactive plots with `ggPSE_interactive(
 
 ```r
 ggPSE_interactive(battery, value_col = "importance")
+
+# or 
+
+ggPSE_interactive(
+  ggpse_elements,
+  value_col    = "electronegativity",
+  tooltip_cols = c("name", "atomic_weight", "block", "electronegativity"),
+  legend_title = "Electronegativity (Pauling)"
+)
 ```
 
 ![](man/figures/ggPSE_interactive.gif)
@@ -236,8 +245,7 @@ ggsave("pse.png", p, width = 18, height = 8, units = "cm", dpi = 300)
 
 ## Roadmap
 
-See [TODO.md](TODO.md) for the full roadmap including planned interactivity
-via `ggiraph`, sparkline tiles for time-series data, and supply chain
+See [TODO.md](TODO.md) for the full roadmap including sparkline tiles for time-series data, and supply chain
 visualization features.
 
 ---

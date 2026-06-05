@@ -1,0 +1,180 @@
+---
+title: "Interactive periodic table in Quarto"
+format:
+  html:
+    self-contained: true
+    toc: true
+    toc-depth: 2
+vignette: >
+  %\VignetteIndexEntry{Interactive periodic table in Quarto}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Overview
+
+`ggPSE_interactive()` wraps the standard `ggPSE()` output with
+[ggiraph](https://davidgohel.github.io/ggiraph/) interactivity. Every tile
+becomes hoverable, showing a configurable tooltip with element details.
+This vignette shows how to use it in a Quarto HTML document.
+
+## Installation
+
+```{r}
+#| eval: false
+# Install ggPSE
+remotes::install_github("VJGeiger/ggPSE")
+
+# Install ggiraph (required for interactivity)
+install.packages("ggiraph")
+```
+
+## Basic usage
+
+The simplest call mirrors `ggPSE()` — pass a data frame and a value column.
+Hovering over any tile shows the element symbol, atomic number, and value.
+
+```{r}
+#| label: basic
+library(ggPSE)
+
+battery <- data.frame(
+  symbol     = c("Li", "Co", "Ni", "Mn", "Fe", "P", "C"),
+  importance = c(0.95, 0.88, 0.75, 0.60, 0.45, 0.40, 0.35)
+)
+
+ggPSE_interactive(battery,
+                  value_col    = "importance",
+                  legend_title = "Battery relevance")
+```
+
+## Custom tooltip columns
+
+Use `tooltip_cols` to control what appears in the hover tooltip.
+Any column present in your data frame can be included.
+
+```{r}
+#| label: tooltip-cols
+data(ggpse_elements)
+
+ggPSE_interactive(
+  ggpse_elements,
+  value_col    = "electronegativity",
+  tooltip_cols = c("name", "atomic_weight", "block",
+                   "electronegativity", "ionization_energy_eV"),
+  legend_title = "Electronegativity (Pauling)"
+)
+```
+
+## Highlight mode
+
+`ggPSE_interactive()` supports the same `highlight` parameter as `ggPSE()`.
+Hover still works on all tiles including highlighted ones.
+
+```{r}
+#| label: highlight
+ggPSE_interactive(
+  highlight = list(
+    list(symbols = c("Li", "Co", "Ni", "Mn", "Fe", "P"),
+         color   = "#2166ac",
+         label   = "Battery metals"),
+    list(symbols = c("Nd", "Dy", "Tb", "Pr", "La", "Ce"),
+         color   = "#e63946",
+         label   = "Rare earth magnets")
+  )
+)
+```
+
+## Subsetting the table
+
+The `groups`, `periods`, `lanthanides`, and `actinides` parameters work
+exactly as in `ggPSE()`. Here, only the transition metals are shown.
+
+```{r}
+#| label: subset
+ggPSE_interactive(
+  ggpse_elements,
+  value_col   = "melting_point_K",
+  groups      = c(3, 12),
+  periods     = c(4, 6),
+  lanthanides = FALSE,
+  actinides   = FALSE,
+  legend_title = "Melting point (K)"
+)
+```
+
+## Customising hover appearance
+
+Control the hover fill color and tooltip styling via `hover_fill` and
+`hover_stroke`.
+
+```{r}
+#| label: hover-style
+ggPSE_interactive(
+  battery,
+  value_col    = "importance",
+  hover_fill   = "#2166ac",
+  hover_stroke = "#ffffff",
+  legend_title = "Battery relevance"
+)
+```
+
+## Output size
+
+Adjust `width_svg` and `height_svg` (in inches) to fit your document layout.
+
+```{r}
+#| label: size
+ggPSE_interactive(
+  battery,
+  value_col  = "importance",
+  width_svg  = 10,
+  height_svg = 4
+)
+```
+
+## Limitations
+
+- Works with `format: html` only. For PDF or Word output, use `ggPSE()`
+  instead and wrap the chunk with `#| eval: !knitr::is_latex_output()`.
+- In **Shiny**, use `ggiraph::girafeOutput()` and `ggiraph::renderGirafe()`
+  instead of calling `ggPSE_interactive()` directly in a render function.
+- The interactive output cannot be embedded in a GitHub README directly.
+  Use a GIF for the README and link to a hosted HTML version via GitHub Pages.
+
+## Shiny example
+
+```{r}
+#| eval: false
+library(shiny)
+library(ggPSE)
+library(ggiraph)
+
+ui <- fluidPage(
+  titlePanel("Interactive Periodic Table"),
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("prop", "Property",
+                  choices = c("electronegativity", "melting_point_K",
+                              "density_g_cm3", "ionization_energy_eV"))
+    ),
+    mainPanel(
+      girafeOutput("pse", width = "100%", height = "500px")
+    )
+  )
+)
+
+server <- function(input, output) {
+  output$pse <- renderGirafe({
+    data(ggpse_elements)
+    ggPSE_interactive(
+      ggpse_elements,
+      value_col    = input$prop,
+      tooltip_cols = c("name", "atomic_weight", input$prop),
+      legend_title = input$prop
+    )
+  })
+}
+
+shinyApp(ui, server)
+```

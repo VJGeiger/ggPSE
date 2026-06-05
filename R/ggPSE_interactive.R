@@ -76,7 +76,7 @@ ggPSE_interactive <- function(
          "Install it with: install.packages(\"ggiraph\")",
          call. = FALSE)
 
-  # ── Build the grid (same logic as ggPSE) ─────────────────────────────────────
+  # ── Build the grid ────────────────────────────────────────────────────────────
   grid <- .ggpse_elements()
 
   if (!is.null(groups)) {
@@ -95,21 +95,25 @@ ggPSE_interactive <- function(
   if (!actinides)   grid <- grid[grid$row != 10L, ]
 
   # ── Merge user data ───────────────────────────────────────────────────────────
-  user_cols <- NULL
   if (!is.null(data)) {
     if (!symbol_col %in% names(data))
       stop(sprintf("Column '%s' not found in data.", symbol_col))
     if (!is.null(value_col) && !value_col %in% names(data))
       stop(sprintf("Column '%s' not found in data.", value_col))
-
-    # Keep all user columns for tooltip use
     names(data)[names(data) == symbol_col] <- "symbol"
-    user_cols <- setdiff(names(data), "symbol")
+    
+    # Drop columns from data that already exist in grid to avoid .x/.y conflicts
+    grid_cols <- names(grid)
+    overlap   <- setdiff(intersect(names(data), grid_cols), "symbol")
+    data      <- data[, !names(data) %in% overlap, drop = FALSE]
+    
     grid <- merge(grid, data, by = "symbol", all.x = TRUE)
   }
 
+  # reset row names after merge so indexing is clean
+  rownames(grid) <- NULL
+
   # ── Resolve tooltip columns ───────────────────────────────────────────────────
-  # Always show name if available, atomic number always available from grid
   has_name <- "name" %in% names(grid)
 
   if (is.null(tooltip_cols)) {
@@ -125,24 +129,32 @@ ggPSE_interactive <- function(
     tooltip_cols <- intersect(tooltip_cols, names(grid))
   }
 
-  # ── Build tooltip string per element ─────────────────────────────────────────
-  grid$tooltip <- apply(grid, 1, function(row) {
-    lines <- paste0("<b>", row[["symbol"]], "</b> (Z = ", row[["atomic_number"]], ")")
-    for (col in tooltip_cols) {
-      val <- row[[col]]
-      if (!is.na(val)) {
-        # Format numeric values
-        num_val <- suppressWarnings(as.numeric(val))
-        formatted <- if (!is.na(num_val)) {
-          formatC(num_val, digits = tooltip_digits, format = "f")
-        } else {
-          val
-        }
-        lines <- paste0(lines, "<br/>", col, ": ", formatted)
-      }
-    }
-    lines
-  })
+  # ── Build tooltip string vectorised ──────────────────────────────────────────
+  # Start with symbol + atomic number for every row
+  tt <- paste0("<b>", grid$symbol, "</b> (Z = ", grid$atomic_number, ")")
+
+  # Append each requested column
+  for (col in tooltip_cols) {
+    vals <- grid[[col]]
+    num_vals <- suppressWarnings(as.numeric(vals))
+    formatted <- ifelse(
+      is.na(vals),
+      "",
+      ifelse(
+        !is.na(num_vals),
+        formatC(num_vals, digits = tooltip_digits, format = "f"),
+        as.character(vals)
+      )
+    )
+    # Only append line where value is not empty
+    tt <- ifelse(
+      formatted == "",
+      tt,
+      paste0(tt, "<br/>", col, ": ", formatted)
+    )
+  }
+
+  grid$tooltip <- tt
 
   # ── Build highlight / fill logic ──────────────────────────────────────────────
   legend_title <- legend_title %||% value_col %||% ""

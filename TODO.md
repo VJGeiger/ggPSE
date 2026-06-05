@@ -11,11 +11,10 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
   
 ### interactivity
 
-- [ ] Add `ggPSE_interactive()` wrapper using `ggiraph`
-  - Hover tooltip showing element name, atomic number, and user value
+- [x] Add `ggPSE_interactive()` wrapper using `ggiraph`
   - Tooltip content configurable via a `tooltip_cols` argument
-- [ ] Test `ggiraph` output in Quarto HTML documents
-- [ ] Test `ggiraph` output in Shiny
+- [x] Test `ggiraph` output in Quarto HTML documents
+- [x] Test `ggiraph` output in Shiny
 
 
 
