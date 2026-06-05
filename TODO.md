@@ -4,33 +4,10 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 
 ---
 
-## v0.2.0 — updates for usecases
-
-### new features
-- [x] zooming for subsets of data
-  
-### interactivity
-
-- [x] Add `ggPSE_interactive()` wrapper using `ggiraph`
-  - Tooltip content configurable via a `tooltip_cols` argument
-- [x] Test `ggiraph` output in Quarto HTML documents
-- [x] Test `ggiraph` output in Shiny
-
-
-
-
----
-
-## v0.3.0 — supply chain / critical materials features
+## v0.3.0 — donut charts
 *need to think about pie charts...* 
-- [ ] `pse_supply()` - doughtnut/pie chart per tile showing supply mix by country
-  - Needs `ggforce::geom_arc_bar()` or custom grob
-  - Input: data frame with symbol, country, share (%) columns
-- [ ] Bundle a `critical_materials` dataset
-  - EU Critical Raw Materials Act list
-  - Primary production country (ISO codes)
-  - Basic price history (source: USGS Mineral Commodity Summaries)
-- [ ] Vignette: critical raw materials supply chain analysis
+- [x] `ggPSE_donut()` - doughtnut/pie chart per tile showing supply mix by country
+
 
 ---
 
@@ -74,7 +51,6 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 - [ ] update ggPSE_badge(): add sizing of the flags as another parameter to create a sort of hierarchy.
 - [ ] ggPSE_sparkbar(): A per-tile bar chart displaying continous values.
 - [ ] ggPSE_connect(): connect elements in either a "graph-style" or alluvial-style
-- [ ] Vignette: interactive PSE in a Quarto document
 - [ ] Shiny app companion: upload CSV, see PSE update live
 - [ ] Include oxidation states as information
 - [ ] `ggPSE_left_step()` - Janet left-step periodic table layout
@@ -119,3 +95,18 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 - [x] Run `rcmdcheck::rcmdcheck()` - reach zero errors, zero warnings, zero notes
 - [x] Write introduction vignette (`vignettes/getting-started.Rmd`)
 - [x] Write a `README.md` with install instructions and a minimal example with output image
+
+---
+
+## v0.2.0 — updates for usecases
+
+### new features
+- [x] zooming for subsets of data
+  
+### interactivity
+
+- [x] Add `ggPSE_interactive()` wrapper using `ggiraph`
+  - Tooltip content configurable via a `tooltip_cols` argument
+- [x] Test `ggiraph` output in Quarto HTML documents
+- [x] Test `ggiraph` output in Shiny
+

@@ -220,6 +220,24 @@ ggPSE_interactive(
 
 ---
 
+## Donut Charts
+
+One can add donuts per field to display distributions with element resolution.
+
+```r
+supply <- data.frame(
+   symbol   = c("Li","Li","Li", "Co","Co", "Nd","Nd", "Pt"),
+   category = c("CL","AU","AR", "CD","AU", "CN","RU", "ZA"),
+   share    = c(0.60, 0.30, 0.10, 0.70, 0.30, 0.80, 0.20, 1.00)
+ )
+
+ggPSE(groups = c(3,12)) |>
+gPSE_donut(supply, category_col = "category", share_col = "share", plot_all = FALSE)
+```
+
+![](man/figures/ggPSE_plot_donut.png)
+---
+
 ## Built-in element data
 
 ggPSE ships with `ggpse_elements`, a data frame of 17 physical and chemical
