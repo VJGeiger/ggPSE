@@ -140,11 +140,10 @@ ggPSE_profile <- function(
                  by = "symbol", all.x = TRUE)
 
   # ── For group mode, drop rows with no data ───────────────────────────────────
-  if (mode == "group") {
-    slice <- slice[!is.na(slice[[value_col]]), ]
-    if (nrow(slice) == 0)
-      stop("No data found for any element in this group.")
-  }
+  # ── Drop rows with no data ────────────────────────────────────────────────────
+  slice <- slice[!is.na(slice[[value_col]]), ]
+  if (nrow(slice) == 0)
+    stop("No data found for any element in this slice.")
 
   # ── Compute plot coordinates ──────────────────────────────────────────────────
   if (mode == "group") {
@@ -191,6 +190,10 @@ ggPSE_profile <- function(
     slice,
     ggplot2::aes(x = .data[["col_plot"]], y = -.data[["row_plot"]])
   ) +
+    ggplot2::scale_x_continuous(
+      limits = c(min(slice$col_plot) - 0.5, max(slice$col_plot) + 0.5),
+      expand = c(0, 0)
+    )+
     ggplot2::geom_tile(
       ggplot2::aes(fill = .data[["fill_color"]]),
       color = "transparent", width = 0.92, height = 0.92
@@ -250,8 +253,10 @@ ggPSE_profile <- function(
       ggplot2::geom_point(color = point_color, size = 2.5) +
       ggplot2::scale_x_continuous(
         breaks = x_breaks,
-        labels = x_labels
-      ) +
+        labels = x_labels,
+        limits = c(min(x_breaks) - 0.5, max(x_breaks) + 0.5),
+        expand = c(0, 0)
+      )+
       ggplot2::labs(x = NULL, y = legend_title) +
       ggplot2::theme_minimal(base_size = base_size) +
       ggplot2::theme(
