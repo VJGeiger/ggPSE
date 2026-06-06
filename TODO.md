@@ -3,15 +3,11 @@
 The roadmap summarizes what features are upcoming and some ideas. Roughly ordered by priority within each section.
 
 ---
-
-## v0.3.0 — donut charts
-*need to think about pie charts...* 
-- [x] `ggPSE_donut()` - doughtnut/pie chart per tile showing supply mix by country
+## v0.2.0 
+- [ ] ggPSE_group() and ggPSE_period: Density or trendlines 
 
 
----
-
-## v0.4.0 — advanced visualization modes
+## v0.3.0 — advanced visualization modes
 
 - [ ] `pse_sparkline()` - mini chart per tile for time-series data
   - Decide implementation strategy: `annotation_custom()` grobs vs separate function
@@ -102,6 +98,7 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 
 ### new features
 - [x] zooming for subsets of data
+- [x] `ggPSE_donut()` - doughtnut/pie chart per tile showing supply mix by country
   
 ### interactivity
 

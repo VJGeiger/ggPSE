@@ -8,7 +8,7 @@ Description: A ggplot2-based toolkit for visualizing data on the periodic
     encoding, selective element highlighting, and country-of-origin badges.
     Returns ggplot2 objects that can be further modified with standard
     ggplot2 syntax, including faceting and custom themes.
-    Initial code scaffolding assisted by Claude (Anthropic, 2025).
+    Developed with substantial AI assistance from Claude (Anthropic, 2025).
 License: GPL-3
 Encoding: UTF-8
 Depends:
@@ -22,7 +22,8 @@ Suggests:
     ggiraph (>= 0.8.0),
     knitr,
     quarto,
-    shiny
+    shiny,
+    patchwork
 VignetteBuilder: knitr, quarto
 Config/testthat/edition: 3
 URL: https://github.com/VJGeiger/ggPSE

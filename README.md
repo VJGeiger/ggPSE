@@ -20,6 +20,29 @@ Furthermore, this is my first published R project, so, keep that in mind...
 
 ---
 
+## Contents
+
+- [Installation](#installation)
+- [Quick start](#quick-start)
+- [Visualization modes](#visualization-modes)
+  - [Numerated Tiles](#numerated-tiles)
+  - [Display Selection](#show-selection)
+  - [Highlight selected elements](#highlight-elements)
+- [Data visualization](#data-visualization)
+  - [Color gradient](#color-gradient)
+  - [Bubble plot](#bubble-plot)
+  - [In-tile bars](#in-tile-bar-encoding)
+  - [Donut charts](#donut-charts)
+  - [Period and group profiles](#period-and-group-profiles)
+  - [Interactive tooltips](#interactive-tooltips)
+  - [Country badges](#country-of-origin-badges)
+- [Built-in element data](#built-in-element-data)
+- [Saving figures](#saving-figures)
+- [Roadmap](#roadmap)
+- [Citation](#citation)
+
+---
+
 ## Installation
 
 ```r
@@ -37,7 +60,6 @@ remotes::install_github("rensa/ggflags")
 
 ## Quick start
 
-
 ```r
 library(ggPSE)
 
@@ -49,7 +71,7 @@ ggPSE()
 ---
 
 ## Visualization modes
-### Numeration
+### Numerated Tiles
 The numeration can be switched on with `show_atomic_number = TRUE`, default is `FALSE`to avoid crowded tiles.
 ```r
 ggPSE(show_atomic_number = TRUE)
@@ -78,8 +100,27 @@ ggPSE(periods = c(4, 6), groups = c(3,4), lanthanides= FALSE, actinides = FALSE)
 
 ![](man/figures/ggPSE_plot_selection.png)
 
+### Highlight elements
 
-### Color Gradient — `ggPSE()`
+Color named subsets of elements with a legend entry per group.
+
+```r
+ggPSE(highlight = list(
+  list(symbols = c("Li", "Co", "Ni", "Mn", "Fe", "P"),
+       color   = "#2166ac",
+       label   = "Battery metals"),
+  list(symbols = c("Nd", "Dy", "Tb", "Pr", "La", "Ce"),
+       color   = "#e63946",
+       label   = "Rare earth magnets")
+))
+```
+![](man/figures/ggPSE_plot_custom_tiles.png)
+
+---
+
+## Data visualization
+
+### Color Gradient
 
 Map any numeric variable to a fill color gradient across all elements.
 
@@ -126,24 +167,9 @@ ggPSE(ggpse_elements,
 ```
 ![](man/figures/ggPSE_plot_density_multigrad.png)
 
-### Highlight element groups — `ggPSE(highlight = ...)`
+### Bubble plot
 
-Color named subsets of elements with a legend entry per group.
-
-```r
-ggPSE(highlight = list(
-  list(symbols = c("Li", "Co", "Ni", "Mn", "Fe", "P"),
-       color   = "#2166ac",
-       label   = "Battery metals"),
-  list(symbols = c("Nd", "Dy", "Tb", "Pr", "La", "Ce"),
-       color   = "#e63946",
-       label   = "Rare earth magnets")
-))
-```
-![](man/figures/ggPSE_plot_custom_tiles.png)
-### Bubble size encoding — `ggPSE_bubble()`
-
-Map a numeric variable to bubble size on a clean white background.
+Map a numeric variable to bubble size.
 
 ```r
 supply_risk <- data.frame(
@@ -154,7 +180,7 @@ ggPSE_bubble(supply_risk, size_col = "risk", legend_title = "Supply risk")
 ```
 ![](man/figures/ggPSE_plot_bubbles.png)
 
-### In-tile bar encoding — `ggPSE_bar()`
+### In-tile bar encoding
 
 Draw a proportional bar inside each tile growing from a chosen edge
 (`"bottom"`, `"top"`, `"left"`, or `"right"`).
@@ -168,7 +194,50 @@ ggPSE_bar(supply_risk, value_col = "risk",
 
 ![](man/figures/ggPSE_plot_bars_bottom.png)
 
-### Country-of-origin badges — `ggPSE_badge()`
+---
+
+## Donut Charts
+
+One can add donuts per field to display distributions with element resolution.
+
+```r
+supply <- data.frame(
+   symbol   = c("Li","Li","Li", "Co","Co", "Nd","Nd", "Pt"),
+   category = c("CL","AU","AR", "CD","AU", "CN","RU", "ZA"),
+   share    = c(0.60, 0.30, 0.10, 0.70, 0.30, 0.80, 0.20, 1.00)
+ )
+
+ggPSE(groups = c(3,12)) |>
+gPSE_donut(supply, category_col = "category", share_col = "share", plot_all = FALSE)
+```
+
+![](man/figures/ggPSE_plot_donut.png)
+
+---
+
+### Period and group profiles
+The display of selected periods and rows with corresonding data can be achieved 
+via the `ggPSE_profile()` function. Elements with no values are omitted.
+
+```r
+ggPSE_profile(ggpse_elements, value_col = "electronegativity", period = 6)
+
+# or
+
+ggPSE_profile(ggpse_elements, value_col = "electronegativity", group = 12)
+
+# or
+
+ggPSE_profile(ggpse_elements, value_col = "electronegativity", lanthanides = TRUE)
+
+```
+![](man/figures/ggPSE_plot_profile_period_6.png)
+
+![](man/figures/ggPSE_plot_profile_group_12.png)
+
+---
+
+### Country-of-origin badges
 
 Overlay country flags (via ggflags) or ISO 3166-1 alpha-2 text codes.
 Up to three flags per tile are supported.
@@ -199,6 +268,7 @@ ggPSE(supply_multi, value_col = "value",
 ![](man/figures/ggPSE_plot_flags_multi.png)
 
 ---
+
 ## Interactive plots 
 The displayed values can be made into interactive plots with `ggPSE_interactive()`
 👉 [Interactive periodic table example](https://vjgeiger.github.io/ggPSE/interactive.html)
@@ -218,24 +288,6 @@ ggPSE_interactive(
 
 ![](man/figures/ggPSE_interactive.gif)
 
----
-
-## Donut Charts
-
-One can add donuts per field to display distributions with element resolution.
-
-```r
-supply <- data.frame(
-   symbol   = c("Li","Li","Li", "Co","Co", "Nd","Nd", "Pt"),
-   category = c("CL","AU","AR", "CD","AU", "CN","RU", "ZA"),
-   share    = c(0.60, 0.30, 0.10, 0.70, 0.30, 0.80, 0.20, 1.00)
- )
-
-ggPSE(groups = c(3,12)) |>
-gPSE_donut(supply, category_col = "category", share_col = "share", plot_all = FALSE)
-```
-
-![](man/figures/ggPSE_plot_donut.png)
 ---
 
 ## Built-in element data
@@ -295,3 +347,10 @@ If you use ggPSE in a publication, please cite it as:
 Valentin Geiger (2025). ggPSE: Periodic Table Visualization with ggplot2.
 R package version 0.1.0. https://github.com/VJGeiger/ggPSE
 ```
+
+---
+## Acknowledgements
+
+This package was developed with assistance from 
+[Claude](https://claude.ai) (Anthropic), including function design, debugging, documentation, and iterative development 
+throughout the entire codebase.
