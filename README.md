@@ -28,15 +28,16 @@ Furthermore, this is my first published R project, so, keep that in mind...
   - [Numerated Tiles](#numerated-tiles)
   - [Display Selection](#show-selection)
   - [Highlight selected elements](#highlight-elements)
+- [Built-in element data](#built-in-element-data)
 - [Data visualization](#data-visualization)
   - [Color gradient](#color-gradient)
   - [Bubble plot](#bubble-plot)
   - [In-tile bars](#in-tile-bar-encoding)
   - [Donut charts](#donut-charts)
+  - [Sparkline/Sparkbar](#sparkline-or-sparkbar-plots)
   - [Period and group profiles](#period-and-group-profiles)
   - [Interactive tooltips](#interactive-tooltips)
   - [Country badges](#country-of-origin-badges)
-- [Built-in element data](#built-in-element-data)
 - [Saving figures](#saving-figures)
 - [Roadmap](#roadmap)
 - [Citation](#citation)
@@ -117,6 +118,21 @@ ggPSE(highlight = list(
 ![](man/figures/ggPSE_plot_custom_tiles.png)
 
 ---
+
+## Built-in element data
+
+ggPSE ships with `ggpse_elements`, a data frame of 17 physical and chemical
+properties for all 118 elements (IUPAC 2021, NIST WebBook, Pauling 1960):
+
+```r
+data(ggpse_elements)
+ggPSE(ggpse_elements, value_col = "electronegativity",
+      legend_title = "Electronegativity (Pauling)")
+```
+![](man/figures/ggPSE_plot_EN.png)
+
+---
+
 
 ## Data visualization
 
@@ -215,6 +231,45 @@ gPSE_donut(supply, category_col = "category", share_col = "share", plot_all = FA
 
 ---
 
+### Sparkline or sparkbar plots
+
+For per-element data that is either continuous or discrete, these can be visualized 
+with sparklines or sparkbars. Mind that probably a selection is then required to
+display the graphs properly. 
+
+```r
+# data
+
+prices <- data.frame(
+  symbol = c("Li","Li","Li","Li","Li",
+             "Co","Co","Co","Co","Co",
+             "Ni","Ni","Ni","Ni","Ni"),
+  year   = rep(2020:2024, 3),
+  price  = c(6, 8, 70, 20, 15,
+             30, 50, 80, 35, 25,
+             14, 18, 25, 21, 17)
+)
+
+# sparkline 
+ggPSE() |>
+  ggPSE_sparkline(prices, time_col = "year", value_col = "price")
+
+# sparkline with selection
+ggPSE(groups = c(3, 12), periods = c(4, 6),
+      lanthanides = FALSE, actinides = FALSE) |>
+  ggPSE_sparkline(prices, time_col = "year", value_col = "price")
+  
+# sparkbar
+ggPSE() |>
+  ggPSE_sparkline(prices, time_col = "year", value_col = "price",
+                  type = "bar")
+```
+
+![](man/figures/ggPSE_plot_sparkline_w_selection.png)
+
+![](man/figures/ggPSE_plot_sparkbar_wo_selection.png)
+---
+
 ### Period and group profiles
 The display of selected periods and rows with corresonding data can be achieved 
 via the `ggPSE_profile()` function. Elements with no values are omitted.
@@ -288,19 +343,6 @@ ggPSE_interactive(
 
 ![](man/figures/ggPSE_interactive.gif)
 
----
-
-## Built-in element data
-
-ggPSE ships with `ggpse_elements`, a data frame of 17 physical and chemical
-properties for all 118 elements (IUPAC 2021, NIST WebBook, Pauling 1960):
-
-```r
-data(ggpse_elements)
-ggPSE(ggpse_elements, value_col = "electronegativity",
-      legend_title = "Electronegativity (Pauling)")
-```
-![](man/figures/ggPSE_plot_EN.png)
 ---
 
 ## Saving figures
