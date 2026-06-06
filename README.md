@@ -233,7 +233,7 @@ ggPSE_profile(ggpse_elements, value_col = "electronegativity", lanthanides = TRU
 ```
 ![](man/figures/ggPSE_plot_profile_period_6.png)
 
-![](man/figures/ggPSE_plot_profile_group_12.png)
+![](man/figures/ggPSE_plot_profile_group_2.png)
 
 ---
 

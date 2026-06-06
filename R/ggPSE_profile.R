@@ -190,10 +190,6 @@ ggPSE_profile <- function(
     slice,
     ggplot2::aes(x = .data[["col_plot"]], y = -.data[["row_plot"]])
   ) +
-    ggplot2::scale_x_continuous(
-      limits = c(min(slice$col_plot) - 0.5, max(slice$col_plot) + 0.5),
-      expand = c(0, 0)
-    )+
     ggplot2::geom_tile(
       ggplot2::aes(fill = .data[["fill_color"]]),
       color = "transparent", width = 0.92, height = 0.92
@@ -204,7 +200,11 @@ ggPSE_profile <- function(
       fontface = "bold", size = base_size * 0.35
     ) +
     ggplot2::scale_color_identity() +
-    ggplot2::coord_fixed() +
+    ggplot2::coord_fixed(
+      xlim = c(min(slice$col_plot) - 0.5, max(slice$col_plot) + 0.5),
+      ylim = c(-max(slice$row_plot) - 0.5, -min(slice$row_plot) + 0.5),
+      expand = FALSE
+    )+
     ggplot2::theme_void(base_size = base_size) +
     ggplot2::theme(legend.position = "none")
 
@@ -226,15 +226,20 @@ ggPSE_profile <- function(
   # ── Line plot ─────────────────────────────────────────────────────────────────
   if (mode == "group") {
     # Vertical line plot — period 1 at top, period 7 at bottom
+    line_data$y_idx <- seq_len(nrow(line_data))  # 1,2,3... in row order
+    
     line_plot <- ggplot2::ggplot(
       line_data,
-      ggplot2::aes(x = .data[[value_col]], y = -.data[[x_var]])
+      ggplot2::aes(x = .data[[value_col]], y = .data[["y_idx"]])
     ) +
-      ggplot2::geom_line(color = line_color, linewidth = 0.8) +
+      ggplot2::geom_path(color = line_color, linewidth = 0.8)+
       ggplot2::geom_point(color = point_color, size = 2.5) +
       ggplot2::scale_y_continuous(
-        breaks = -x_breaks,
-        labels = x_labels
+        breaks = line_data$y_idx,
+        labels = line_data$symbol,
+        limits = c(min(line_data$y_idx) - 0.5, max(line_data$y_idx) + 0.5),
+        expand = c(0, 0),
+        trans  = "reverse"
       ) +
       ggplot2::labs(x = legend_title, y = NULL) +
       ggplot2::theme_minimal(base_size = base_size) +
