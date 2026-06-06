@@ -268,6 +268,21 @@ ggPSE() |>
 ![](man/figures/ggPSE_plot_sparkline_w_selection.png)
 
 ![](man/figures/ggPSE_plot_sparkbar_wo_selection.png)
+
+One major issue due to the sizing is the readability. One can add an exampel plot 
+next to PSE, but be aware that the axis can be defined globally or individually. 
+
+```r
+
+ggPSE(lanthanides = FALSE, actinides = FALSE) |>
+ ggPSE_sparkline(prices, time_col = "year", value_col = "price",
+                 show_axis = TRUE, 
+                 axis_symbol = "Li",    # select which element for magnification
+                 axis_label_size = 12,    # tick numbers
+                 axis_title_size = 12,
+                 axis_position = "right")   # "price" label
+```
+![](man/figures/ggPSE_plot_sparkline_w_mgnfctn.png)
 ---
 
 ### Period and group profiles

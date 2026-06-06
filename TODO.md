@@ -4,12 +4,12 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 
 ---
 ## v0.2.0 
-- [ ] ggPSE_group() and ggPSE_period: Density or trendlines 
+- [x] ggPSE_group() and ggPSE_period: Density or trendlines 
 
 
 ## v0.3.0 — advanced visualization modes
 
-- [ ] `pse_sparkline()` - mini chart per tile for time-series data
+- [x] `pse_sparkline()` - mini chart per tile for time-series data
   - Decide implementation strategy: `annotation_custom()` grobs vs separate function
   - Target use case: commodity price development over 5 years
 - [ ] Dual-value tile: diagonal split encoding two variables simultaneously
