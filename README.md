@@ -360,6 +360,32 @@ ggPSE_interactive(
 
 ---
 
+## Themes
+
+There are four prebuilt themes available via `ggPSE_theme()`. 
+| Theme | Description |
+|---|---|
+| `"minimal"` | White background, simple|
+| `"dark"` | Dark plot background |
+| `"publication"` | Minimal ink, transparent background, journal-ready |
+| `"crazy"` | Random color per tile, reproducible with `seed` |
+
+```r
+# Minimal
+ggPSE() |> ggPSE_theme("minimal")
+
+# Publication
+ggPSE(ggpse_elements, value_col = "electronegativity") |>
+  ggPSE_theme("publication")
+
+# Crazy — reproducible
+ggPSE() |> ggPSE_theme("crazy", seed = 42)
+
+```
+![](man/figures/ggPSE_plot_theme_crazy.png)
+
+---
+
 ## Saving figures
 
 Figures can be saved via the wrapper `ggPSE_save()` for ease. For more custom plots, 
