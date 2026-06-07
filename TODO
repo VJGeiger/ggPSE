@@ -1,33 +1,23 @@
-# ggPSE — roadmap and todo
+# ggPSE - Roadmap and TODO
 
 The roadmap summarizes what features are upcoming and some ideas. Roughly ordered by priority within each section.
 
 ---
-## v0.2.0 
-- [x] ggPSE_group() and ggPSE_period: Density or trendlines 
-- [x] ggPSE_save(): wrapper for ggsave
-- [ ] update ggPSE_badge(): add sizing of the flags as another parameter to create a sort of hierarchy.
-- [x] `pse_sparkline()` - mini chart per tile for time-series data
-  - [ ] ggPSE_sparkbar(): A per-tile bar chart displaying continous values.
-  - [ ] Make sparkline and sparkbar experimental features
-  - [ ] Documentation of the experimental features
-- [x] Fix group line ordering bug in ggPSE_profile()
-- [ ] Add `pse_theme()` - a few pre-built theme variants (minimal, dark, publication)
+
+## v0.3.0
+
 - [ ] adding of brackets to describe certain groups
-- [ ] pkgdown site setup
 
 ---
 
 ## known issues / technical debt
 - [ ] `ggnewscale` in Suggests: when both `value_col` and `highlight` are supplied
-  simultaneously, scale conflict occurs — proper fix needs `ggnewscale::new_scale_fill()`
+  simultaneously, scale conflict occurs - proper fix needs `ggnewscale::new_scale_fill()`
 - [ ] `ggPSE_bubble()` combined with `ggPSE()`: using both together requires
-  manual legend cleanup — document the recommended pattern or add a combined helper
+  manual legend cleanup - document the recommended pattern or add a combined helper
 - [ ] `coord_fixed()` in `ggPSE()` interacts badly with `patchwork` multi-panel
-  layouts — investigate and document workaround
-- [ ] Lanthanide/actinide row gap: currently hardcoded as row 9/10 offset —
-  consider making the gap size a parameter
-- [ ] `ggflags` not on CRAN — installation requires `remotes::install_github("rensa/ggflags")`
+  layouts - investigate and document workaround
+- [ ] `ggflags` not on CRAN - installation requires `remotes::install_github("rensa/ggflags")`
   and system libraries (`libjpeg-turbo-devel`, `libpng-devel` on Fedora/RHEL)
 
 ---
@@ -63,7 +53,7 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
   - [x] add `highlight` parameter for discrete element groups with legend
   - [x] add `tile_border` parameter with auto-detection
 - [x] Write `data-raw/prepare_element_data.R` - have option for built-in small data set or periodicsystem bigger data set.
-- [x] Change the ggPSE_highlight() to a simple highlight option in ggPSE()
+- [x] Change the `ggPSE_highlight()` to a simple highlight option in `ggPSE()`
 - [x] Finalize `ggPSE_badge()` - country flags via ggflags, text fallback, up to 3 flags per tile
 - [x] Finalize `ggPSE_bubble()` - white tile background, bubble-only signal, NA rows filtered silently
 - [x] Finalize `ggPSE_bar()` - in-tile bar encoding, 4 sides, fixed thickness, proportional length
@@ -74,12 +64,23 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 
 ---
 
-## v0.2.0 — updates for usecases
+## v0.2.0 - updates for usecases
 
 ### new features
 - [x] zooming for subsets of data
 - [x] `ggPSE_donut()` - doughtnut/pie chart per tile showing supply mix by country
-  
+- [x] `ggPSE_profile()`: Showing trendlines over periods or groups incl f-block
+- [x] `ggPSE_save()`: wrapper for ggsave
+- [x] update `ggPSE_badge()`: add sizing of the flags as another parameter to create a sort of hierarchy.
+- [x] `pse_sparkline()` - mini chart per tile for time-series data (experimental)
+  - [x] sparkbar: A per-tile bar chart displaying continous values.
+  - [x] Make sparkline and sparkbar experimental features
+  - [x] Documentation of the experimental features
+- [x] Fix group line ordering bug in `ggPSE_profile()`
+- [x] Add `pse_theme()` - a few pre-built theme variants (minimal, dark, publication)
+- [x] Change to MIT license
+- [x] pkgdown site setup  
+
 ### interactivity
 
 - [x] Add `ggPSE_interactive()` wrapper using `ggiraph`
