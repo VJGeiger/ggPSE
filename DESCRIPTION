@@ -9,7 +9,7 @@ Description: A ggplot2-based toolkit for visualizing data on the periodic
     Returns ggplot2 objects that can be further modified with standard
     ggplot2 syntax, including faceting and custom themes.
     Developed with substantial AI assistance from Claude (Anthropic, 2025).
-License: GPL-3
+License: MIT + file LICENSE
 Encoding: UTF-8
 Depends:
     R (>= 4.1.0)
