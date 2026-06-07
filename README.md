@@ -38,6 +38,7 @@ Furthermore, this is my first published R project, so, keep that in mind...
   - [Period and group profiles](#period-and-group-profiles)
   - [Interactive tooltips](#interactive-tooltips)
   - [Country badges](#country-of-origin-badges)
+- [Themes](#themes)
 - [Saving figures](#saving-figures)
 - [Roadmap](#roadmap)
 - [Citation](#citation)
@@ -310,7 +311,8 @@ ggPSE_profile(ggpse_elements, value_col = "electronegativity", lanthanides = TRU
 ### Country-of-origin badges
 
 Overlay country flags (via ggflags) or ISO 3166-1 alpha-2 text codes.
-Up to three flags per tile are supported.
+Up to three flags per tile are supported. These tiles can be displayed with a hierarchy
+(1st-2nd-3rd "place"). A legend is optional and cen be positioned around the plot. 
 
 ```r
 supply <- data.frame(
@@ -333,10 +335,14 @@ supply_multi <- data.frame(
 ggPSE(supply_multi, value_col = "value",
       color_high = "#b2182b", legend_title = "Criticality") |>
   ggPSE_badge(supply_multi, country_col = "country")
+  
+ ggPSE(supply_multi, value_col = "value") |>
+     ggPSE_badge(supply_multi, country_col = "country",
+                 hierarchy = TRUE, hierarchy_scale = c(1.0, 0.6, 0.5), show_legend = TRUE, legend_position = "bottom")
 ```
 
 ![](man/figures/ggPSE_plot_flags_multi.png)
-
+![](man/figures/ggPSE_plot_flags_multi_ranked.png)
 ---
 
 ## Interactive plots 
@@ -435,8 +441,8 @@ significant work so we can discuss the approach first.
 If you use ggPSE in a publication, please cite it as:
 
 ```
-Valentin Geiger (2025). ggPSE: Periodic Table Visualization with ggplot2.
-R package version 0.1.0. https://github.com/VJGeiger/ggPSE
+Valentin Geiger (2026). ggPSE: Periodic Table Visualization with ggplot2.
+R package version 0.2.0. https://github.com/VJGeiger/ggPSE
 ```
 
 ---

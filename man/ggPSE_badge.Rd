@@ -10,6 +10,13 @@ ggPSE_badge(
   symbol_col = "symbol",
   country_col = "country",
   badge_size = NULL,
+  hierarchy = FALSE,
+  hierarchy_scale = c(1, 0.7, 0.5),
+  show_legend = FALSE,
+  legend_position = c("right", "left", "bottom", "top"),
+  legend_size = 0.15,
+  legend_flag_size = 5,
+  legend_text_size = 9,
   base_size = NULL,
   x_anchor = 0.38,
   y_anchor = 0.35,
@@ -18,52 +25,56 @@ ggPSE_badge(
 )
 }
 \arguments{
-\item{plot}{A ggplot object to add badges to. If NULL, a blank table
-is created first.}
+\item{plot}{A ggplot object. If NULL a blank table is created.}
 
-\item{data}{A data frame with element symbols and country codes.
-Multiple rows per element are allowed for multiple flags per tile.}
+\item{data}{A data frame with element symbols and country codes.}
 
 \item{symbol_col}{Character. Column containing element symbols. Default "symbol".}
 
-\item{country_col}{Character. Column containing ISO 3166-1 alpha-2 country
-codes. Case insensitive. Default "country".}
+\item{country_col}{Character. Column containing ISO 3166-1 alpha-2 codes.
+Default "country".}
 
-\item{badge_size}{Numeric. Size of flags or text badges. Default 3.5 for
-flags, base_size * 0.22 for text fallback.}
+\item{badge_size}{Numeric. Flag or text badge size. Default 3.5 for flags.}
 
-\item{base_size}{Numeric. Base font size matching the ggPSE() call.
-Default NULL uses ggPSE()'s default of 10.}
+\item{hierarchy}{Logical. Scale flags by order — first country largest.
+Default \code{FALSE}.}
+
+\item{hierarchy_scale}{Numeric vector of length 3. Scale factors for 1st,
+2nd, 3rd flag. Default \code{c(1.0, 0.70, 0.50)}.}
+
+\item{show_legend}{Logical. Append a country legend. Requires
+\pkg{patchwork}. Default \code{FALSE}.}
+
+\item{legend_position}{Character. \code{"right"} (default), \code{"left"},
+\code{"bottom"}, or \code{"top"}.}
+
+\item{legend_size}{Numeric. Relative size of legend vs main plot.
+Default \code{0.15}.}
+
+\item{legend_flag_size}{Numeric. Flag size in the legend. Default \code{5}.}
+
+\item{legend_text_size}{Numeric. Text size in the legend. Default \code{9}.}
+
+\item{base_size}{Numeric. Base font size. Default NULL.}
 
 \item{x_anchor}{Numeric. Horizontal position of rightmost flag. Default 0.38.}
 
 \item{y_anchor}{Numeric. Vertical position of flags. Default 0.35.}
 
-\item{flag_spacing}{Numeric. Horizontal spacing between flags. Default 0.38.}
+\item{flag_spacing}{Numeric. Spacing between flags. Default 0.38.}
 
-\item{badge_color}{Character. Text color for text fallback badges.
-Default "#333333".}
+\item{badge_color}{Character. Text color for fallback badges. Default "#333333".}
 }
 \value{
-A ggplot object.
+A ggplot or patchwork object.
 }
 \description{
 Adds country flags (via \pkg{ggflags}) or ISO 3166-1 alpha-2 country code
-text labels to element tiles, indicating primary production country.
-Useful for critical raw materials supply chain analysis.
-}
-\details{
-If \pkg{ggflags} is installed, flags are rendered automatically.
-Otherwise falls back to text badges. Country codes must be ISO 3166-1
-alpha-2 (e.g. "CN", "CL", "CD"). The function converts to lowercase
-automatically for \pkg{ggflags}.
-
-Multiple countries per element are supported by passing multiple rows
-per element in \code{data}. A maximum of 3 flags per tile are shown;
-additional entries are silently dropped.
+text labels to element tiles. When \code{show_legend = TRUE}, a separate
+legend strip showing each country's flag and full name is appended using
+\pkg{patchwork}.
 }
 \examples{
-# Single country per element
 supply <- data.frame(
   symbol  = c("Li", "Co", "Nd", "Pt"),
   country = c("CL", "CD", "CN", "ZA"),
@@ -72,12 +83,8 @@ supply <- data.frame(
 ggPSE(supply, value_col = "value") |>
   ggPSE_badge(supply, country_col = "country")
 
-# Multiple countries per element
-supply_multi <- data.frame(
-  symbol  = c("Li", "Li", "Co", "Nd", "Nd"),
-  country = c("CL", "AU", "CD", "CN", "RU"),
-  value   = c(0.70, 0.70, 0.91, 0.85, 0.85)
-)
-ggPSE(supply_multi, value_col = "value", symbol_col = "symbol") |>
-  ggPSE_badge(supply_multi, country_col = "country")
+\dontrun{
+ggPSE(supply, value_col = "value") |>
+  ggPSE_badge(supply, country_col = "country", show_legend = TRUE)
+}
 }
