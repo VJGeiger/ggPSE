@@ -35,12 +35,12 @@ Furthermore, this is my first published R project, so, keep that in mind...
   - [Bubble plot](#bubble-plot)
   - [In-tile bars](#in-tile-bar-encoding)
   - [Donut charts](#donut-charts)
-  - [Sparkline/Sparkbar](#sparkline-or-sparkbar-plots)
   - [Period and group profiles](#period-and-group-profiles)
   - [Interactive tooltips](#interactive-tooltips)
   - [Country badges](#country-of-origin-badges)
 - [Themes](#themes)
 - [Saving figures](#saving-figures)
+- [Experminetal features](#experimental-features)
 - [Roadmap](#roadmap)
 - [Citation](#citation)
 
@@ -407,6 +407,20 @@ ggPSE_save(p, "electronegativity.pdf")   # vector PDF
 ggPSE_save(p, "electronegativity.svg")   # web SVG
 ggPSE_save(p, "electronegativity.png", width = 24, height = 9, dpi = 600)
 
+```
+
+---
+
+
+## Experimental features
+
+`ggPSE_sparkline()` and `ggPSE_spark_bar()` per-tile time series sparklines was 
+deemed too unstable and in need of further development. 
+
+Available on the `feature/sparkline` branch:
+
+```r
+remotes::install_github("VJGeiger/ggPSE@feature/sparkline")
 ```
 
 ---

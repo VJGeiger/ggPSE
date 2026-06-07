@@ -13,6 +13,7 @@ A ggplot2-based toolkit for visualizing data on the periodic table of elements. 
 Useful links:
 \itemize{
   \item \url{https://github.com/VJGeiger/ggPSE}
+  \item \url{https://vjgeiger.github.io/ggPSE}
   \item Report bugs at \url{https://github.com/VJGeiger/ggPSE/issues}
 }
 
