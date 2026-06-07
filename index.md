@@ -2,9 +2,8 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/VJGeiger/ggPSE/actions/workflows/r.yml/badge.svg)](https://github.com/VJGeiger/ggPSE/actions/workflows/r.yml)
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![Repo Status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-[![License: GPL-3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Repo Status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)[![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html#maturing)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub release](https://img.shields.io/github/v/release/VJGeiger/ggPSE)](https://github.com/VJGeiger/ggPSE/releases)
 [![Code size](https://img.shields.io/github/languages/code-size/VJGeiger/ggPSE)](https://github.com/VJGeiger/ggPSE)
 [![Repo size](https://img.shields.io/github/repo-size/VJGeiger/ggPSE)](https://github.com/VJGeiger/ggPSE)

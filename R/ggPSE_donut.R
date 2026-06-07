@@ -91,7 +91,7 @@ ggPSE_donut <- function(
     stop("Package 'ggforce' is required for ggPSE_donut(). ",
          "Install it with: install.packages(\"ggforce\")",
          call. = FALSE)
-
+  geom_arc_bar <- getExportedValue("ggforce", "geom_arc_bar")
   if (is.null(plot)) plot <- ggPSE()
 
   # ── Validate inputs ───────────────────────────────────────────────────────────
@@ -132,7 +132,7 @@ ggPSE_donut <- function(
     d        <- d[order(d$share, decreasing = TRUE), ]
     cum_sh   <- cumsum(d$share)
     d$end    <- cum_sh * 2 * pi - pi / 2
-    d$start  <- c(-pi / 2, head(d$end, -1))
+    d$start  <- c(-pi / 2, utils::head(d$end, -1))
     d
   }))
   rownames(arc_data) <- NULL
@@ -173,7 +173,7 @@ ggPSE_donut <- function(
 
   # ── Build plot ────────────────────────────────────────────────────────────────
   plot +
-    ggforce::geom_arc_bar(
+    geom_arc_bar(
       data        = arc_data,
       ggplot2::aes(
         x0    = .data[["col"]],

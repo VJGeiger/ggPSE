@@ -11,7 +11,7 @@
 #' @param country_col Character. Column containing ISO 3166-1 alpha-2 codes.
 #'   Default "country".
 #' @param badge_size Numeric. Flag or text badge size. Default 3.5 for flags.
-#' @param hierarchy Logical. Scale flags by order — first country largest.
+#' @param hierarchy Logical. Scale flags by order - first country largest.
 #'   Default \code{FALSE}.
 #' @param hierarchy_scale Numeric vector of length 3. Scale factors for 1st,
 #'   2nd, 3rd flag. Default \code{c(1.0, 0.70, 0.50)}.
@@ -145,7 +145,7 @@ ggPSE_badge <- function(
     bi="Burundi",       bj="Benin",          bo="Bolivia",
     br="Brazil",        bw="Botswana",       by="Belarus",
     ca="Canada",        cd="DR Congo",       cf="C. African Rep.",
-    cg="Congo",         ch="Switzerland",    ci="Côte d'Ivoire",
+    cg="Congo",         ch="Switzerland",    ci="Cote d'Ivoire",
     cl="Chile",         cm="Cameroon",       cn="China",
     co="Colombia",      cu="Cuba",           cz="Czech Rep.",
     de="Germany",       dj="Djibouti",       dk="Denmark",

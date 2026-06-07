@@ -6,4 +6,5 @@
 #' @importFrom rlang .data
 #' @importFrom stats setNames ave
 #' @importFrom grDevices col2rgb
+#' @importFrom utils head
 "_PACKAGE"

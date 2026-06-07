@@ -2,8 +2,7 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/VJGeiger/ggPSE/actions/workflows/r.yml/badge.svg)](https://github.com/VJGeiger/ggPSE/actions/workflows/r.yml)
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![Repo Status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Repo Status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)[![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html#maturing)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![pkgdown](https://img.shields.io/badge/docs-pkgdown-blue)](https://vjgeiger.github.io/ggPSE)
 [![GitHub release](https://img.shields.io/github/v/release/VJGeiger/ggPSE)](https://github.com/VJGeiger/ggPSE/releases)
