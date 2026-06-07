@@ -5,19 +5,16 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 ---
 ## v0.2.0 
 - [x] ggPSE_group() and ggPSE_period: Density or trendlines 
-
-
-## v0.3.0 — advanced visualization modes
-
+- [x] ggPSE_save(): wrapper for ggsave
+- [ ] update ggPSE_badge(): add sizing of the flags as another parameter to create a sort of hierarchy.
 - [x] `pse_sparkline()` - mini chart per tile for time-series data
-  - Decide implementation strategy: `annotation_custom()` grobs vs separate function
-  - Target use case: commodity price development over 5 years
-- [ ] Dual-value tile: diagonal split encoding two variables simultaneously
-  - Top-left triangle = variable A, bottom-right = variable B
-  - Requires custom geom - plan for this carefully
-- [ ] `pse_facet()` helper - convenience wrapper for `facet_wrap()` over the PSE
-  - Main challenge: legend and axis consistency across facets
-  - Document the `facet_wrap(~condition)` pattern explicitly
+  - [ ] ggPSE_sparkbar(): A per-tile bar chart displaying continous values.
+  - [ ] Make sparkline and sparkbar experimental features
+  - [ ] Documentation of the experimental features
+- [x] Fix group line ordering bug in ggPSE_profile()
+- [ ] Add `pse_theme()` - a few pre-built theme variants (minimal, dark, publication)
+- [ ] adding of brackets to describe certain groups
+- [ ] pkgdown site setup
 
 ---
 
@@ -37,27 +34,10 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 
 ## ideas / maybe someday
 **here realism stops and dreams begin** 
-- [ ] `ggPSE_profile()`: Function that allows the selection of a group or a period 
-  and plots a line plots of a parameter next to it.
-- [ ] trendlines over the PSE
-- [ ] adding of brackets to describe certain groups
-- [ ] ggPSE_trends: adding the option for visualizing continous trends along the PSE.
-- [ ] ggPSE_shape(): leveraging pattern instead of tiles to magnify parts of the PSE.
 - [ ] using `ggdensity` package to visualize certain clusters
-- [ ] update ggPSE_badge(): add sizing of the flags as another parameter to create a sort of hierarchy.
-- [ ] ggPSE_sparkbar(): A per-tile bar chart displaying continous values.
 - [ ] ggPSE_connect(): connect elements in either a "graph-style" or alluvial-style
-- [ ] Shiny app companion: upload CSV, see PSE update live
-- [ ] Include oxidation states as information
-- [ ] `ggPSE_left_step()` - Janet left-step periodic table layout
-- [ ] Export helper: `save_pse()` wrapping `ggsave()` with sensible PSE defaults
-  (aspect ratio, resolution)
-- [ ] ggplot2 extension: proper `StatPSE` so users can use `ggplot(data) + stat_pse()`
-  idiom natively
-- [ ] Add `pse_theme()` - a few pre-built theme variants (minimal, dark, publication)
-- [ ] pkgdown site setup (`_pkgdown.yml`)
+- [ ] Include oxidation states in the built-in data
 - [ ] Publishing on CRAN
-- [ ] Implementing flowmapper or ggarrow
 
 ---
 

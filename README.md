@@ -362,10 +362,18 @@ ggPSE_interactive(
 
 ## Saving figures
 
+Figures can be saved via the wrapper `ggPSE_save()` for ease. For more custom plots, 
+`ggsave()` can be used as well.
+
 ```r
-p <- ggPSE(battery, value_col = "importance")
-ggsave("pse.pdf", p, width = 18, height = 8, units = "cm")
-ggsave("pse.png", p, width = 18, height = 8, units = "cm", dpi = 300)
+data(ggpse_elemts)
+p <- ggPSE(ggpse_elements, value_col = "electronegativity")
+
+ggPSE_save(p, "electronegativity.png")   # PNG 18x14cm at 400dpi
+ggPSE_save(p, "electronegativity.pdf")   # vector PDF
+ggPSE_save(p, "electronegativity.svg")   # web SVG
+ggPSE_save(p, "electronegativity.png", width = 24, height = 9, dpi = 600)
+
 ```
 
 ---
