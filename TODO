@@ -4,12 +4,6 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 
 ---
 
-## v0.3.0
-
-- [ ] adding of brackets to describe certain groups
-
----
-
 ## known issues / technical debt
 - [ ] `ggnewscale` in Suggests: when both `value_col` and `highlight` are supplied
   simultaneously, scale conflict occurs - proper fix needs `ggnewscale::new_scale_fill()`
@@ -24,6 +18,7 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 
 ## ideas / maybe someday
 **here realism stops and dreams begin** 
+- [ ] adding of brackets to describe certain groups
 - [ ] using `ggdensity` package to visualize certain clusters
 - [ ] ggPSE_connect(): connect elements in either a "graph-style" or alluvial-style
 - [ ] Include oxidation states in the built-in data

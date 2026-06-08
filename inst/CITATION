@@ -3,5 +3,5 @@ bibentry(
   title    = "ggPSE: Periodic Table Visualizations for R",
   author   = person("Valentin", "Geiger"),
   year     = format(Sys.Date(), "%Y"),
-  note     = "R package version 0.1.0"
+  note     = "R package version 0.2.0"
 )

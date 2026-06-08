@@ -10,12 +10,12 @@
 [![Repo size](https://img.shields.io/github/repo-size/VJGeiger/ggPSE)](https://github.com/VJGeiger/ggPSE)
 <!-- badges: end -->
 
-**ggPSE** is a ggplot2-based toolkit for visualizing element-resolved data  on the periodic table of elements. Every function returns a standard `ggplot2` object - so plots can be extended with themes, annotations, faceting, and `patchwork` as usual.
+**ggPSE** is a [ggplot2 ](https://ggplot2.tidyverse.org/)-based toolkit for visualizing element-, group- or period-resolved data on the periodic table of elements. Every function returns a standard `ggplot2` object - so plots can be extended with themes, annotations, faceting, and `patchwork`.
 
 ---
 ## Disclaimer
 
-This is an old script I wrote back in the day of my PhD thesis and never uploaded. Right now, this is a small pet project with low maintenance and I do not put SERIOUS effort in.
+This is an old script I wrote back in the day of my PhD thesis and never uploaded.
 Furthermore, this is my first published R project, so, keep that in mind... 
 
 ---
@@ -39,7 +39,7 @@ Furthermore, this is my first published R project, so, keep that in mind...
   - [Country badges](#country-of-origin-badges)
 - [Themes](#themes)
 - [Saving figures](#saving-figures)
-- [Experminetal features](#experimental-features)
+- [Experimnetal features](#experimental-features)
 - [Roadmap](#roadmap)
 - [Citation](#citation)
 
@@ -93,7 +93,7 @@ ggPSE(color_na = "white", tile_border = "gray40")
 
 If you are interested ind displaying only a part of the PSE you can specify this via
 the `periods` and `groups` as a default lanthanides and actinides are always set to 
-be displayed and have to be set to `lanthanides = FALSE`
+be displayed and have to be actively omitted by using `lanthanides = FALSE`.
 
 ```r
 # Periods 4-6 with lanthanides
@@ -215,7 +215,9 @@ ggPSE_bar(supply_risk, value_col = "risk",
 
 ## Donut Charts
 
-One can add donuts per field to display distributions with element resolution.
+One can add donuts per field to display distributions with element resolution. 
+With the `plot_all =TRUE` it is optional to display all elements even those without
+data.
 
 ```r
 supply <- data.frame(
@@ -232,62 +234,8 @@ gPSE_donut(supply, category_col = "category", share_col = "share", plot_all = FA
 
 ---
 
-### Sparkline or sparkbar plots
-
-For per-element data that is either continuous or discrete, these can be visualized 
-with sparklines or sparkbars. Mind that probably a selection is then required to
-display the graphs properly. 
-
-```r
-# data
-
-prices <- data.frame(
-  symbol = c("Li","Li","Li","Li","Li",
-             "Co","Co","Co","Co","Co",
-             "Ni","Ni","Ni","Ni","Ni"),
-  year   = rep(2020:2024, 3),
-  price  = c(6, 8, 70, 20, 15,
-             30, 50, 80, 35, 25,
-             14, 18, 25, 21, 17)
-)
-
-# sparkline 
-ggPSE() |>
-  ggPSE_sparkline(prices, time_col = "year", value_col = "price")
-
-# sparkline with selection
-ggPSE(groups = c(3, 12), periods = c(4, 6),
-      lanthanides = FALSE, actinides = FALSE) |>
-  ggPSE_sparkline(prices, time_col = "year", value_col = "price")
-  
-# sparkbar
-ggPSE() |>
-  ggPSE_sparkline(prices, time_col = "year", value_col = "price",
-                  type = "bar")
-```
-
-![](man/figures/ggPSE_plot_sparkline_w_selection.png)
-
-![](man/figures/ggPSE_plot_sparkbar_wo_selection.png)
-
-One major issue due to the sizing is the readability. One can add an exampel plot 
-next to PSE, but be aware that the axis can be defined globally or individually. 
-
-```r
-
-ggPSE(lanthanides = FALSE, actinides = FALSE) |>
- ggPSE_sparkline(prices, time_col = "year", value_col = "price",
-                 show_axis = TRUE, 
-                 axis_symbol = "Li",    # select which element for magnification
-                 axis_label_size = 12,    # tick numbers
-                 axis_title_size = 12,
-                 axis_position = "right")   # "price" label
-```
-![](man/figures/ggPSE_plot_sparkline_w_mgnfctn.png)
----
-
 ### Period and group profiles
-The display of selected periods and rows with corresonding data can be achieved 
+The display of selected periods and rows with corresponding data can be achieved 
 via the `ggPSE_profile()` function. Elements with no values are omitted.
 
 ```r
@@ -312,7 +260,7 @@ ggPSE_profile(ggpse_elements, value_col = "electronegativity", lanthanides = TRU
 
 Overlay country flags (via ggflags) or ISO 3166-1 alpha-2 text codes.
 Up to three flags per tile are supported. These tiles can be displayed with a hierarchy
-(1st-2nd-3rd "place"). A legend is optional and cen be positioned around the plot. 
+(1st-2nd-3rd "place"). A legend is optional and can be positioned around the plot. 
 
 ```r
 supply <- data.frame(
@@ -426,12 +374,11 @@ remotes::install_github("VJGeiger/ggPSE@feature/sparkline")
 
 ## Roadmap
 
-See [TODO.md](TODO.md) for the full roadmap including sparkline tiles for time-series data, and supply chain
-visualization features.
+See [TODO](TODO) for roadmap and what's ahead. 
 
 ---
 
-## Contributing
+## Contributing 
 
 Issues and pull requests welcome. Please open an issue before starting
 significant work so we can discuss the approach first.
@@ -460,7 +407,8 @@ R package version 0.2.0. https://github.com/VJGeiger/ggPSE
 ```
 
 ---
-## Acknowledgements
+
+## Acknowledgement
 
 This package was developed with assistance from 
 [Claude](https://claude.ai) (Anthropic), including function design, debugging, documentation, and iterative development 
