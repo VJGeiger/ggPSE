@@ -80,7 +80,7 @@ A ggplot object.
 }
 \description{
 The core plotting function of ggPSE. Returns a ggplot2 object that can be
-further modified with + as usual: add themes, annotations, facets, etc.
+further modified.
 }
 \examples{
 battery <- data.frame(

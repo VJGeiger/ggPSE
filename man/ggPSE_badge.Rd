@@ -36,7 +36,7 @@ Default "country".}
 
 \item{badge_size}{Numeric. Flag or text badge size. Default 3.5 for flags.}
 
-\item{hierarchy}{Logical. Scale flags by order — first country largest.
+\item{hierarchy}{Logical. Scale flags by order - first country largest.
 Default \code{FALSE}.}
 
 \item{hierarchy_scale}{Numeric vector of length 3. Scale factors for 1st,

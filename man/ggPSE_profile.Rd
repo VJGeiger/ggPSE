@@ -78,7 +78,7 @@ Exactly one of \code{period}, \code{group}, \code{lanthanides}, or
 
 For periods 1-3, the d-block gap is compressed and indicated with a dashed
 vertical line in the line plot. Lanthanides and actinides are never included
-in period strips — use \code{lanthanides = TRUE} or \code{actinides = TRUE}
+in period strips - use \code{lanthanides = TRUE} or \code{actinides = TRUE}
 to plot those rows separately.
 }
 \examples{

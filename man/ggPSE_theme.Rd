@@ -33,13 +33,11 @@ reproducibility. Default \code{NULL} gives a different result each call.}
 A ggplot object.
 }
 \description{
-Applies one of several pre-built visual themes to a ggPSE plot. Themes
-control background color, tile styling, text color, and grid appearance.
+Applies one of several pre-built visual themes to a ggPSE plot.
 }
 \details{
-Note that \code{"dark"} works best on blank or gradient plots. For
-highlight plots, you may want to adjust the highlight colors manually
-to suit the dark background.
+Note for highlight plots, you may want to adjust the highlight colors manually
+to suit the background.
 }
 \examples{
 \dontrun{

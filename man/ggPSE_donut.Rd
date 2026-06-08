@@ -60,7 +60,7 @@ A ggplot object.
 }
 \description{
 Draws a small donut (or pie) chart inside each element tile showing a
-categorical breakdown — for example supply mix by country, composition by
+categorical breakdown - for example supply mix by country, composition by
 phase, or any other proportional split. Requires the \pkg{ggforce} package
 for \code{geom_arc_bar()}.
 }

@@ -7,7 +7,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-A ggplot2-based toolkit for visualizing data on the periodic table of elements. Supports continuous color gradients, bubble size encoding, selective element highlighting, and country-of-origin badges. Returns ggplot2 objects that can be further modified with standard ggplot2 syntax, including faceting and custom themes. Developed with substantial AI assistance from Claude (Anthropic, 2025).
+A ggplot2-based toolkit for visualizing data on the periodic table of elements. Supports continuous color gradients, bubble size encoding, selective element highlighting, per-group or per-period plots, per-element charts and country-of-origin badges. Returns ggplot2 objects that can be further modified with standard ggplot2 syntax, including faceting and custom themes. Developed with AI assistance from Claude (Anthropic, 2026).
 }
 \seealso{
 Useful links:
