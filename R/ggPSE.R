@@ -104,22 +104,11 @@ ggPSE <- function(
   
   # ── Text contrast color ───────────────────────────────────────────────────────
   if (!is.null(fill_col) && fill_col %in% names(grid)) {
-    val      <- grid[[fill_col]]
-    val_min <- min(val, na.rm = TRUE)
-    val_max <- max(val, na.rm = TRUE)
-    
-    # Guard against single value or all-equal values
-    if (val_max == val_min) {
-      norm_val <- ifelse(is.na(val), 0.5, 0.5)
-    } else {
-      norm_val <- ifelse(is.na(val), 0.5, (val - val_min) / (val_max - val_min))
-    }
-    grid$text_color <- vapply(norm_val, function(ti)
-      .contrast_color(.interp_hex(color_low, color_high, ti)),
-      character(1)
-    )
+    val <- grid[[fill_col]]
+    nv  <- .normalize_values(val, color_low, color_high, color_na)
+    norm_val        <- nv$norm_val
+    grid$text_color <- nv$text_color
   } else if (!is.null(highlight)) {
-    # Build a lookup of symbol -> color for contrast calculation
     hi_colors <- rep(color_na, nrow(grid))
     for (grp in highlight) {
       hi_colors[grid$symbol %in% grp$symbols] <- grp$color
@@ -128,7 +117,6 @@ ggPSE <- function(
   } else {
     grid$text_color <- "grey20"
   }
-  
   # ── Tile border ───────────────────────────────────────────────────────────────
   tile_border <- tile_border %||% "transparent"
   

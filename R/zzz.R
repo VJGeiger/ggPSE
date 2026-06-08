@@ -23,7 +23,7 @@
   sprintf("#%02X%02X%02X", r, g, b)
 }
 
-# Returns a grid that is usead repeatedly in different functions
+# Returns the PSE grid that is used repeatedly in different functions
 .filter_grid <- function(grid, groups = NULL, periods = NULL,
                          lanthanides = TRUE, actinides = TRUE) {
   if (!is.null(groups)) {
@@ -43,4 +43,18 @@
   if (!actinides)   grid <- grid[grid$row != 10L, ]
   
   grid
+}
+
+# Normalizes the values for color selection
+.normalize_values <- function(val, color_low, color_high, color_na) {
+  val_min  <- min(val, na.rm = TRUE)
+  val_max  <- max(val, na.rm = TRUE)
+  norm_val <- if (val_max == val_min) {
+    ifelse(is.na(val), 0.5, 0.5)
+  } else {
+    ifelse(is.na(val), 0.5, (val - val_min) / (val_max - val_min))
+  }
+  text_color <- vapply(norm_val, function(ti)
+    .contrast_color(.interp_hex(color_low, color_high, ti)), character(1))
+  list(norm_val = norm_val, text_color = text_color)
 }
