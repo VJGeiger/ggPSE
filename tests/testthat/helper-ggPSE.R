@@ -6,7 +6,7 @@
 pkg_root <- system.file(package = "ggPSE")
 
 if (nzchar(pkg_root)) {
-  # Package is properly installed — nothing to do, functions already available
+  # Package is properly installed - nothing to do, functions already available
 } else {
   # Running tests via source() or during development without install
   # Walk up from tests/testthat/ to find the package root
@@ -22,7 +22,7 @@ if (nzchar(pkg_root)) {
 
   if (dir.exists(r_dir)) {
     # Source zzz.R first (defines %||%), then elements, then the rest
-    priority <- c("zzz.R", "ggpse_elements.R")
+    priority <- c("zzz.R", "ggpse_elements.R") # first helpers, then the built for internal data
     all_files <- list.files(r_dir, pattern = "\\.R$", full.names = TRUE)
     ordered   <- c(
       file.path(r_dir, priority[file.exists(file.path(r_dir, priority))]),

@@ -1,8 +1,7 @@
-# Null-coalescing operator (base R < 4.4 does not export %||%)
+# Null-coalescing operator — returns x if not NULL, otherwise 
 `%||%` <- function(x, y) if (!is.null(x)) x else y
 
-# Returns "black" or "white" depending on which contrasts better
-# against a given hex background color.
+# Returns "black" or "white" depending on which contrasts better against a given hex background color.
 .contrast_color <- function(hex) {
   if (is.na(hex)) return("grey20")
   hex <- gsub("#", "", hex)
@@ -13,7 +12,7 @@
   if (luminance > 0.4) "grey20" else "white"
 }
 
-#' @keywords internal
+# Interpolates between two hex colors at position t (0-1)
 .interp_hex <- function(low, high, t) {
   low  <- col2rgb(low)
   high <- col2rgb(high)
@@ -23,7 +22,7 @@
   sprintf("#%02X%02X%02X", r, g, b)
 }
 
-# Returns the PSE grid that is used repeatedly in different functions
+# Filters the element grid by groups, periods, lanthanides, actinides
 .filter_grid <- function(grid, groups = NULL, periods = NULL,
                          lanthanides = TRUE, actinides = TRUE) {
   if (!is.null(groups)) {
@@ -45,7 +44,7 @@
   grid
 }
 
-# Normalizes the values for color selection
+# Normalizes values to 0-1 and computes text contrast colors
 .normalize_values <- function(val, color_low, color_high, color_na) {
   val_min  <- min(val, na.rm = TRUE)
   val_max  <- max(val, na.rm = TRUE)

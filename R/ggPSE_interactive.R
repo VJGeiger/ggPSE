@@ -78,7 +78,7 @@ ggPSE_interactive <- function(
 
   # ── Build the grid ────────────────────────────────────────────────────────────
   grid <- .ggpse_elements()
-  grid <- .filter_grid(grid, groups, periods, lanthanides, actinides)
+  grid <- .filter_grid(grid, groups, periods, lanthanides, actinides) # helper in zzz.R
 
   # ── Merge user data ───────────────────────────────────────────────────────────
   if (!is.null(data)) {
@@ -155,6 +155,7 @@ ggPSE_interactive <- function(
   }
 
   # ── Text contrast color ───────────────────────────────────────────────────────
+  # helper in zzz.R
   if (!is.null(fill_col) && fill_col %in% names(grid)) {
     val <- grid[[fill_col]]
     nv  <- .normalize_values(val, color_low, color_high, color_na)

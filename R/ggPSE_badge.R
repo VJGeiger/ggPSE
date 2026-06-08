@@ -65,7 +65,8 @@ ggPSE_badge <- function(
     badge_color      = "#333333"
 ) {
   legend_position <- match.arg(legend_position)
-
+  
+  # error handling, patchwork can lead to problems
   if (show_legend && !requireNamespace("patchwork", quietly = TRUE))
     stop("Package 'patchwork' is required when show_legend = TRUE. ",
          "Install it with: install.packages(\"patchwork\")", call. = FALSE)
@@ -98,7 +99,8 @@ ggPSE_badge <- function(
   badge_data$flag_x <- badge_data$col + x_anchor -
     (badge_data$flag_idx - 1) * flag_spacing
   badge_data$flag_y <- -badge_data$row + y_anchor
-
+  
+  # ggflags is not on CRAN, but simplest solution to the flags
   base_flag_size <- if (requireNamespace("ggflags", quietly = TRUE))
     badge_size %||% 3.5
   else
@@ -136,6 +138,7 @@ ggPSE_badge <- function(
   if (!show_legend) return(p)
 
   # ── ISO 3166-1 alpha-2 lookup table ──────────────────────────────────────────
+  # for enabling a legend hard coded ISO table - special characters were substituted.
   iso_names <- c(
     ae="UAE",           af="Afghanistan",    ag="Antigua & Barbuda",
     al="Albania",       am="Armenia",        ao="Angola",

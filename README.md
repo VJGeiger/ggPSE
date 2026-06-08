@@ -39,7 +39,7 @@ Furthermore, this is my first published R project, so, keep that in mind...
   - [Country badges](#country-of-origin-badges)
 - [Themes](#themes)
 - [Saving figures](#saving-figures)
-- [Experimnetal features](#experimental-features)
+- [Experimental features](#experimental-features)
 - [Roadmap](#roadmap)
 - [Citation](#citation)
 

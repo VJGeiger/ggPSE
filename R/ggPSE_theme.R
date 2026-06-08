@@ -1,11 +1,9 @@
 #' Apply a pre-built theme to a periodic table plot
 #'
-#' Applies one of several pre-built visual themes to a ggPSE plot. Themes
-#' control background color, tile styling, text color, and grid appearance.
+#' Applies one of several pre-built visual themes to a ggPSE plot.
 #'
-#' Note that \code{"dark"} works best on blank or gradient plots. For
-#' highlight plots, you may want to adjust the highlight colors manually
-#' to suit the dark background.
+#' Note for highlight plots, you may want to adjust the highlight colors manually
+#' to suit the background.
 #'
 #' @param plot A ggplot object from [ggPSE()] or similar. If \code{NULL},
 #'   a blank table is created first.
@@ -63,15 +61,17 @@ ggPSE_theme <- function(
     plot +
       ggplot2::theme_void() +
       ggplot2::theme(
-        plot.background  = ggplot2::element_rect(fill = "#ffffff", color = NA),
-        panel.background = ggplot2::element_rect(fill = "#ffffff", color = NA),
+        plot.background  = ggplot2::element_rect(fill = "#ffffff", color = NA), # white background
+        panel.background = ggplot2::element_rect(fill = "#ffffff", color = NA), # white background
         legend.position  = "bottom",
         legend.key.width = ggplot2::unit(2, "cm"),
         plot.margin      = ggplot2::margin(8, 8, 8, 8)
       )
 
   } else if (theme == "dark") {
-
+    # originally the tile borders were targeted to be white to have a proper dark look. 
+    # this was too comple for now and might be adopted in alter versions.
+    
     # Dark background colors
     bg       <- "#1a1a2e"
     tile_bg  <- "#16213e"

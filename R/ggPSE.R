@@ -1,7 +1,7 @@
 #' Plot a periodic table with a continuous value overlay
 #'
 #' The core plotting function of ggPSE. Returns a ggplot2 object that can be
-#' further modified with + as usual: add themes, annotations, facets, etc.
+#' further modified.
 #'
 #' @param data A data frame containing element symbols and a value column.
 #'   If NULL, a blank table using the NA color is drawn.
@@ -76,8 +76,9 @@ ggPSE <- function(
   grid <- .ggpse_elements()
 
   # ── Subset grid by groups / periods / lanthanides / actinides ────────────────
-  grid <- .filter_grid(grid, groups, periods, lanthanides, actinides)
+  grid <- .filter_grid(grid, groups, periods, lanthanides, actinides) #helper in zzz.R
   
+  #error catching
   if (!is.null(data)) {
     if (!symbol_col %in% names(data))
       stop(sprintf("Column '%s' not found in data. Set symbol_col to the correct column name.", symbol_col))
@@ -103,6 +104,7 @@ ggPSE <- function(
   }
   
   # ── Text contrast color ───────────────────────────────────────────────────────
+  # helper from zzz.R
   if (!is.null(fill_col) && fill_col %in% names(grid)) {
     val <- grid[[fill_col]]
     nv  <- .normalize_values(val, color_low, color_high, color_na)
@@ -115,7 +117,7 @@ ggPSE <- function(
     }
     grid$text_color <- vapply(hi_colors, .contrast_color, character(1))
   } else {
-    grid$text_color <- "grey20"
+    grid$text_color <- "grey20" #standard text color
   }
   # ── Tile border ───────────────────────────────────────────────────────────────
   tile_border <- tile_border %||% "transparent"

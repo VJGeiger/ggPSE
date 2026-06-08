@@ -1,7 +1,7 @@
 #' Overlay donut or pie charts on a periodic table
 #'
 #' Draws a small donut (or pie) chart inside each element tile showing a
-#' categorical breakdown — for example supply mix by country, composition by
+#' categorical breakdown - for example supply mix by country, composition by
 #' phase, or any other proportional split. Requires the \pkg{ggforce} package
 #' for \code{geom_arc_bar()}.
 #'
@@ -87,6 +87,7 @@ ggPSE_donut <- function(
     base_size     = 10,
     plot_all      = TRUE
 ) {
+  # for now this is done with ggforce, stability to be seen
   if (!requireNamespace("ggforce", quietly = TRUE))
     stop("Package 'ggforce' is required for ggPSE_donut(). ",
          "Install it with: install.packages(\"ggforce\")",
@@ -140,7 +141,8 @@ ggPSE_donut <- function(
   # ── Color palette ─────────────────────────────────────────────────────────────
   categories <- unique(arc_data$category)
   n          <- length(categories)
-
+  
+  # set color palette
   if (is.null(colors)) {
     default_pal <- c(
       "#2166ac", "#d73027", "#1a9850", "#f46d43", "#762a83",
@@ -160,6 +162,7 @@ ggPSE_donut <- function(
   }
 
   # ── Remove existing text layers and redraw cleanly ────────────────────────────
+  # otherwise problems with double layers
   plot$layers <- Filter(function(l) {
     !inherits(l$geom, "GeomText")
   }, plot$layers)

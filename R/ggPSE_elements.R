@@ -54,9 +54,9 @@
 #'   \item{atomic_weight}{Standard atomic weight (IUPAC 2021); NA where not defined}
 #'   \item{electronegativity}{Pauling electronegativity; NA for noble gases and
 #'     elements without reliable values}
-#'   \item{atomic_radius_pm}{Empirical atomic radius in picometres (Slater 1964);
+#'   \item{atomic_radius_pm}{Empirical atomic radius in picometers (Slater 1964);
 #'     NA where not available}
-#'   \item{density_g_cm3}{Density at STP in g/cm3; NA where not determined}
+#'   \item{density_g_cm3}{Density at standard temp in g/cm3; NA where not determined}
 #'   \item{melting_point_K}{Melting point in Kelvin; NA where not determined}
 #'   \item{boiling_point_K}{Boiling point in Kelvin; NA where not determined}
 #'   \item{ionization_energy_eV}{First ionization energy in eV (NIST)}
@@ -111,8 +111,8 @@ utils::globalVariables("ggpse_grid")
   .ggpse_elements_fallback()
 }
 
-# Hardcoded fallback — only the four columns needed for plotting.
-# Used when source()-ing R files directly without running prepare_element_data.R.
+# Hardcoded fallback - only the four columns needed for plotting.
+# Used when source(): R files directly without running prepare_element_data.R.
 #' @keywords internal
 .ggpse_elements_fallback <- function() {
   data.frame(
