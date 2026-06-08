@@ -2,23 +2,29 @@
 
 The roadmap summarizes what features are upcoming and some ideas. Roughly ordered by priority within each section.
 
+## v0.3.0
+- [ ] split up the profile file in multiple functions
+- [ ] `ggPSE_donut()` : widen the color palette 
 ---
 
 ## known issues / technical debt
+- [ ] `ggPSE_interactive()` is not well integrated, this needs some refinement
+- [ ] `ggPSE_badge()`: the new features like hiearachy do not integrate well. Also the hardcoded ISO country names might need a better solution.		
 - [ ] `ggnewscale` in Suggests: when both `value_col` and `highlight` are supplied
   simultaneously, scale conflict occurs - proper fix needs `ggnewscale::new_scale_fill()`
+- [ ] `ggPSE_donut()` still ahs a scale confilct.
 - [ ] `ggPSE_bubble()` combined with `ggPSE()`: using both together requires
   manual legend cleanup - document the recommended pattern or add a combined helper
-- [ ] `coord_fixed()` in `ggPSE()` interacts badly with `patchwork` multi-panel
-  layouts - investigate and document workaround
 - [ ] `ggflags` not on CRAN - installation requires `remotes::install_github("rensa/ggflags")`
   and system libraries (`libjpeg-turbo-devel`, `libpng-devel` on Fedora/RHEL)
+- [ ] `ggPSE_profile()` has outgrown the function and should be split.
 
 ---
 
 ## ideas / maybe someday
 **here realism stops and dreams begin** 
 - [ ] adding of brackets to describe certain groups
+- [ ] creating a proper dark theme
 - [ ] using `ggdensity` package to visualize certain clusters
 - [ ] ggPSE_connect(): connect elements in either a "graph-style" or alluvial-style
 - [ ] Include oxidation states in the built-in data
