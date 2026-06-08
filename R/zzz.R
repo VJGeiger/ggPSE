@@ -22,3 +22,25 @@
   b    <- as.integer(round(low[3] + (high[3] - low[3]) * t))
   sprintf("#%02X%02X%02X", r, g, b)
 }
+
+# Returns a grid that is usead repeatedly in different functions
+.filter_grid <- function(grid, groups = NULL, periods = NULL,
+                         lanthanides = TRUE, actinides = TRUE) {
+  if (!is.null(groups)) {
+    if (length(groups) != 2 || !is.numeric(groups))
+      stop("'groups' must be a numeric vector of length 2, e.g. c(3, 12).")
+    grid <- grid[grid$col >= min(groups) & grid$col <= max(groups), ]
+  }
+  
+  if (!is.null(periods)) {
+    if (length(periods) != 2 || !is.numeric(periods))
+      stop("'periods' must be a numeric vector of length 2, e.g. c(4, 6).")
+    grid <- grid[grid$row > 7 | (grid$row >= min(periods) &
+                                   grid$row <= max(periods)), ]
+  }
+  
+  if (!lanthanides) grid <- grid[grid$row != 9L, ]
+  if (!actinides)   grid <- grid[grid$row != 10L, ]
+  
+  grid
+}
