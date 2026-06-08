@@ -77,6 +77,7 @@ ggPSE_interactive <- function(
          call. = FALSE)
 
   # ── Build the grid ────────────────────────────────────────────────────────────
+  grid <- .ggpse_elements()
   grid <- .filter_grid(grid, groups, periods, lanthanides, actinides)
 
   # ── Merge user data ───────────────────────────────────────────────────────────
