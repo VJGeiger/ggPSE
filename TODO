@@ -29,6 +29,7 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 - [ ] ggPSE_connect(): connect elements in either a "graph-style" or alluvial-style
 - [ ] Include oxidation states in the built-in data
 - [ ] Publishing on CRAN
+- [ ] curated examples with PSE such as NMR-active nuclei, EPR nuclei, (to be continued)
 
 ---
 
