@@ -1,5 +1,4 @@
 url: https://vjgeiger.github.io/ggPSE/
-
 template:
   bootstrap: 5
   bootswatch: flatly
@@ -8,22 +7,20 @@ template:
       <style>
         .ggiraph-toolbar { display: none; }
       </style>
-
 home:
   title: ggPSE — Periodic Table Visualization
   description: >
     A ggplot2-based toolkit for visualizing element-resolved data on the
     periodic table. Every function returns a standard ggplot2 object.
-
 navbar:
   structure:
-    left: [intro, reference, articles]
+    left: [intro, reference, articles, news]
     right: [github]
   components:
     github:
       icon: fab fa-github
       href: https://github.com/VJGeiger/ggPSE
-
+      
 reference:
   - title: "Core plotting"
     desc: "Main periodic table functions"
@@ -31,39 +28,33 @@ reference:
       - ggPSE
       - ggPSE_theme
       - ggPSE_save
-
   - title: "Encodings"
     desc: "Additional visual encoding layers"
     contents:
       - ggPSE_bubble
       - ggPSE_bar
       - ggPSE_donut
-
   - title: "Annotations"
     desc: "Overlay annotations on tiles"
     contents:
       - ggPSE_badge
-
   - title: "Analytical views"
     desc: "Period, group and trend profiles"
     contents:
       - ggPSE_profile
-
   - title: "Interactivity"
     desc: "Interactive plots via ggiraph"
     contents:
       - ggPSE_interactive
-
   - title: "Data"
     desc: "Built-in element datasets"
     contents:
       - ggpse_elements
       - ggpse_grid
-      
+
   - title: "Package"
     contents:
       - ggPSE-package
-
 articles:
   - title: "Getting started"
     navbar: ~
@@ -73,11 +64,14 @@ articles:
     navbar: ~
     contents:
       - interactive-pse
+  - title: "Gallery"
+    navbar: ~
+    contents:
+      - gallery
 
 authors:
   Valentin Geiger:
     href: https://github.com/VJGeiger
-
 footer:
   structure:
     left: developed_by
