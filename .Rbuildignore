@@ -8,3 +8,5 @@
 ^.*\.Rproj$       # RStudio project file
 ^\.Rproj\.user$   # RStudio user settings
 ^vignettes/\.quarto$ # ignoring the quatro cache
+^doc$
+^Meta$

@@ -25,23 +25,23 @@ ggPSE_theme(
 
   `"minimal"`
 
-  :   Clean white background, subtle tile borders, muted styling. Good
-      for presentations.
+  : Clean white background, subtle tile borders, muted styling. Good for
+    presentations.
 
   `"dark"`
 
-  :   Dark background, light tile borders, white text. Good for
-      dashboards and dark mode documents.
+  : Dark background, light tile borders, white text. Good for dashboards
+    and dark mode documents.
 
   `"publication"`
 
-  :   Maximum ink reduction. No background, no borders, minimal chrome.
-      Suitable for journal figures.
+  : Maximum ink reduction. No background, no borders, minimal chrome.
+    Suitable for journal figures.
 
   `"crazy"`
 
-  :   Randomly assigns a unique color to each tile. Each call produces a
-      different result.
+  : Randomly assigns a unique color to each tile. Each call produces a
+    different result.
 
 - seed:
 

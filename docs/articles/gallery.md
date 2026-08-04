@@ -10,3 +10,7 @@ Click any image to view it at full resolution.
 
 Plot 1: Mapping of the EU critical materials listed in the 2023 document
 on CRM’s.
+
+[![](../reference/figures/gallery/nmr_nuclides_withqm.png)](https://vjgeiger.github.io/ggPSE/reference/figures/gallery/nmr_nuclides_withqm.png)
+
+Plot 2: Mapping of NMR-active nucleides with quadropol moment.

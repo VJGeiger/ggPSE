@@ -53,3 +53,5 @@ rsconnect/
 
 # quatro cache
 vignettes/.quarto/
+/doc/
+/Meta/

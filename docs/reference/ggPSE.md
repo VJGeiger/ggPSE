@@ -74,15 +74,15 @@ ggPSE(
 
   symbols
 
-  :   Character vector of element symbols to highlight.
+  : Character vector of element symbols to highlight.
 
   color
 
-  :   Fill color for highlighted tiles.
+  : Fill color for highlighted tiles.
 
   label
 
-  :   Optional legend label for this group.
+  : Optional legend label for this group.
 
   Example:
   `list(list(symbols = c("Li","Co"), color = "#2166ac", label = "Battery metals"))`
