@@ -23,6 +23,20 @@ Click any image to view it at full resolution.
   <p style="font-size:0.9em; color:#666;">Plot 2: Mapping of NMR-active nucleides with quadropol moment.</p>
 </div>
 
+<div style="width:45%; text-align:center;">
+  <a href="../reference/figures/gallery/can_i_lick_it.png">
+    <img src="../reference/figures/gallery/can_i_lick_it.png" style="width:100%;">
+  </a>
+  <p style="font-size:0.9em; color:#666;">Plot 3: Is it lickable? - PLEASE DO NOT LICK CHEMICALS!</p>
+</div>
+
+<div style="width:45%; text-align:center;">
+  <a href="../reference/figures/gallery/element_discovery_year.png">
+    <img src="../reference/figures/gallery/element_discovery_year.png" style="width:100%;">
+  </a>
+  <p style="font-size:0.9em; color:#666;">Plot 4: Mapping of discovery year and country.</p>
+</div>
+
 
 
 </div>
