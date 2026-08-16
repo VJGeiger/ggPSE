@@ -5,6 +5,7 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 ## v0.3.0
 - [ ] split up the profile file in multiple functions
 - [ ] `ggPSE_donut()` : widen the color palette 
+- [ ] fix the font color to be independant on other tiles 
 ---
 
 ## known issues / technical debt
@@ -18,6 +19,7 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 - [ ] `ggflags` not on CRAN - installation requires `remotes::install_github("rensa/ggflags")`
   and system libraries (`libjpeg-turbo-devel`, `libpng-devel` on Fedora/RHEL)
 - [ ] `ggPSE_profile()` has outgrown the function and should be split.
+- [ ] Using `ggPSE` for produicing frames in loops to create videos can lead to change in font color
 
 ---
 
@@ -30,7 +32,7 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 - [ ] Include oxidation states in the built-in data
 - [ ] Publishing on CRAN
 - [ ] curated examples with PSE such as NMR-active nuclei, EPR nuclei, (to be continued)
-
+- [ ] `ggPSE_animated` - an experimental feature to animate as gif or mp4
 ---
 
 ## Done
