@@ -37,6 +37,21 @@ Click any image to view it at full resolution.
   <p style="font-size:0.9em; color:#666;">Plot 4: Mapping of discovery year and country.</p>
 </div>
 
+<div style="width:45%; text-align:center;">
+  <a href="../reference/figures/gallery/reduction_potentials.png">
+    <img src="../reference/figures/gallery/reduction_potentials.png" style="width:100%;">
+  </a>
+  <p style="font-size:0.9em; color:#666;">Plot 5: Mapping of standard reduction potentials and half-cell reactions.</p>
+</div>
+
+<div style="width:45%; text-align:center;">
+  <a href="../reference/figures/gallery/crust_abundance.png">
+    <img src="../reference/figures/gallery/crust_abundance.png" style="width:100%;">
+  </a>
+  <p style="font-size:0.9em; color:#666;">Plot 6: What's Earth's crust made out of? Elemental abundance of elements in the Earth's crust.</p>
+</div>
+
+
 
 
 </div>

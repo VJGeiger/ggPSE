@@ -14,3 +14,21 @@ on CRM’s.
 [![](../reference/figures/gallery/nmr_nuclides_withqm.png)](https://vjgeiger.github.io/ggPSE/reference/figures/gallery/nmr_nuclides_withqm.png)
 
 Plot 2: Mapping of NMR-active nucleides with quadropol moment.
+
+[![](../reference/figures/gallery/can_i_lick_it.png)](https://vjgeiger.github.io/ggPSE/reference/figures/gallery/can_i_lick_it.png)
+
+Plot 3: Is it lickable? - PLEASE DO NOT LICK CHEMICALS!
+
+[![](../reference/figures/gallery/element_discovery_year.png)](https://vjgeiger.github.io/ggPSE/reference/figures/gallery/element_discovery_year.png)
+
+Plot 4: Mapping of discovery year and country.
+
+[![](../reference/figures/gallery/reduction_potentials.png)](https://vjgeiger.github.io/ggPSE/reference/figures/gallery/reduction_potentials.png)
+
+Plot 5: Mapping of standard reduction potentials and half-cell
+reactions.
+
+[![](../reference/figures/gallery/crust_abundance.png)](https://vjgeiger.github.io/ggPSE/reference/figures/gallery/crust_abundance.png)
+
+Plot 6: What’s Earth’s crust made out of? Elemental abundance of
+elements in the Earth’s crust.
