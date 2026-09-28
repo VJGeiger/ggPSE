@@ -32,3 +32,21 @@ reactions.
 
 Plot 6: What’s Earth’s crust made out of? Elemental abundance of
 elements in the Earth’s crust.
+
+[![](../reference/figures/gallery/mineral_sources.png)](https://vjgeiger.github.io/ggPSE/reference/figures/gallery/mineral_sources.png)
+
+Plot 7: Visualization of how typically an element is found in nature.
+
+[![](../reference/figures/gallery/named_after.png)](https://vjgeiger.github.io/ggPSE/reference/figures/gallery/named_after.png)
+
+Plot 8: Categorization of naming of each element of the periodic table
+of elements.
+
+[![](../reference/figures/gallery/phone_weight.png)](https://vjgeiger.github.io/ggPSE/reference/figures/gallery/phone_weight.png)
+
+Plot 9: What is my phone made out of? Semi-quantative visualization of
+elements utilized in a phone.
+
+[![](../reference/figures/gallery/pigments.png)](https://vjgeiger.github.io/ggPSE/reference/figures/gallery/pigments.png)
+
+Plot 10: Famous pigments attributed to an element.

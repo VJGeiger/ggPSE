@@ -51,7 +51,32 @@ Click any image to view it at full resolution.
   <p style="font-size:0.9em; color:#666;">Plot 6: What's Earth's crust made out of? Elemental abundance of elements in the Earth's crust.</p>
 </div>
 
+<div style="width:45%; text-align:center;">
+  <a href="../reference/figures/gallery/mineral_sources.png">
+    <img src="../reference/figures/gallery/mineral_sources.png" style="width:100%;">
+  </a>
+  <p style="font-size:0.9em; color:#666;">Plot 7: Visualization of how typically an element is found in nature.</p>
+</div>
 
+<div style="width:45%; text-align:center;">
+  <a href="../reference/figures/gallery/named_after.png">
+    <img src="../reference/figures/gallery/named_after.png" style="width:100%;">
+  </a>
+  <p style="font-size:0.9em; color:#666;">Plot 8: Categorization of naming of each element of the periodic table of elements.</p>
+</div>
 
+<div style="width:45%; text-align:center;">
+  <a href="../reference/figures/gallery/phone_weight.png">
+    <img src="../reference/figures/gallery/phone_weight.png" style="width:100%;">
+  </a>
+  <p style="font-size:0.9em; color:#666;">Plot 9: What is my phone made out of? Semi-quantative visualization of elements utilized in a phone.</p>
+</div>
+
+<div style="width:45%; text-align:center;">
+  <a href="../reference/figures/gallery/pigments.png">
+    <img src="../reference/figures/gallery/pigments.png" style="width:100%;">
+  </a>
+  <p style="font-size:0.9em; color:#666;">Plot 10: Famous pigments attributed to an element.</p>
+</div>
 
 </div>
