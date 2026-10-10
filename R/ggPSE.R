@@ -15,15 +15,30 @@
 #' @param color_na Hex color for elements with no data. Default "#f0f0f0".
 #' @param tile_border Hex color for tile borders. If NULL (default), grey border
 #'   on light backgrounds, transparent on dark. Set "transparent" to suppress.
-#' @param highlight A list of highlight groups. Each group is a list with:
-#'   \describe{
-#'     \item{symbols}{Character vector of element symbols to highlight.}
-#'     \item{color}{Fill color for highlighted tiles.}
-#'     \item{label}{Optional legend label for this group.}
+#' @param highlight Elements to colour by category. Either
+#'   \itemize{
+#'     \item a \emph{named list of symbol vectors}, e.g.
+#'       \code{list("Alkali metals" = c("Li", "Na", "K"), Halogens = c("F", "Cl"))}.
+#'       The names become the legend labels and the list order the legend
+#'       order. \code{split(df$symbol, df$category)} gives such a list; use a
+#'       factor for \code{category} to control the order. Colours come from
+#'       \code{highlight_colors}.
+#'     \item or a list of groups, each a list with
+#'       \code{symbols} (character vector of element symbols), \code{color}
+#'       (fill color) and an optional \code{label} (legend label), e.g.
+#'       \code{list(list(symbols = c("Li","Co"), color = "#2166ac",
+#'       label = "Battery metals"))}.
 #'   }
-#'   Example: \code{list(list(symbols = c("Li","Co"), color = "#2166ac",
-#'   label = "Battery metals"))}
-#' @param legend_title Character. Legend title. Defaults to value_col.
+#'   Unknown symbols and elements listed in more than one group give a warning
+#'   (in that case the last group wins).
+#' @param highlight_colors Colours for a named-list \code{highlight}: either a
+#'   vector named by group (order does not matter, extra names are ignored) or
+#'   an unnamed vector matched by position. Any R colour is accepted. Default
+#'   \code{NULL} uses a colour-blind-safe palette (Okabe-Ito, extended beyond 8
+#'   groups). Ignored, with a warning, if the groups carry their own
+#'   \code{color}.
+#' @param legend_title Character. Legend title. Defaults to value_col; for
+#'   \code{highlight} groups there is no title unless you set one.
 #' @param show_atomic_number Logical. Show atomic numbers inside the tile.
 #'   Default FALSE. See \code{number_position} for where it is drawn.
 #' @param base_size Numeric. Base font size in pt. Default 10.
@@ -82,6 +97,11 @@
 #'   list(symbols = c("Nd", "Dy", "Tb"), color = "#e63946", label = "Magnets")
 #' ))
 #'
+#' # Categories from a named list, with your own colours
+#' ggPSE(highlight = list(Alkali = c("Li", "Na", "K"), Halogens = c("F", "Cl", "Br")),
+#'       highlight_colors = c(Alkali = "firebrick", Halogens = "steelblue"),
+#'       legend_title = "Group")
+#'
 #' # Show only transition metals (groups 3-12, periods 4-6)
 #' ggPSE(groups = c(3, 12), periods = c(4, 6), lanthanides = FALSE, actinides = FALSE)
 #'
@@ -123,13 +143,15 @@ ggPSE <- function(
     label_na           = TRUE,
     text_color         = NULL,
     symbol_nudge       = 0,
-    number_nudge       = 0
+    number_nudge       = 0,
+    highlight_colors = NULL
 ) {
   symbol_position <- match.arg(symbol_position, .symbol_positions)
   number_position <- match.arg(number_position, .number_positions)
   .check_text_color(text_color)
   .check_nudge(symbol_nudge, "symbol_nudge")
   .check_nudge(number_nudge, "number_nudge")
+  highlight <- .normalize_highlight(highlight, highlight_colors)
 
   grid <- .ggpse_elements()
 
@@ -148,6 +170,7 @@ ggPSE <- function(
     grid <- merge(grid, data, by = "symbol", all.x = TRUE)
   }
   
+  highlight_title <- legend_title            # NULL = no title for highlight groups
   legend_title <- legend_title %||% value_col %||% ""
   fill_col     <- if (!is.null(value_col) && value_col %in% names(grid)) value_col else NULL
   
@@ -208,7 +231,7 @@ ggPSE <- function(
       ggplot2::scale_fill_manual(
         values   = hi_values,
         na.value = color_na,
-        name     = NULL,
+        name     = highlight_title,
         breaks   = names(hi_values),
       )
   } else if (!is.null(fill_col)) {

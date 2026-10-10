@@ -76,13 +76,15 @@ ggPSE_interactive <- function(
     label_na        = TRUE,
     text_color      = NULL,
     symbol_nudge    = 0,
-    number_nudge    = 0
+    number_nudge    = 0,
+    highlight_colors = NULL
 ) {
   symbol_position <- match.arg(symbol_position, .symbol_positions)
   number_position <- match.arg(number_position, .number_positions)
   .check_text_color(text_color)
   .check_nudge(symbol_nudge, "symbol_nudge")
   .check_nudge(number_nudge, "number_nudge")
+  highlight <- .normalize_highlight(highlight, highlight_colors)
 
   if (!requireNamespace("ggiraph", quietly = TRUE))
     stop("Package 'ggiraph' is required for ggPSE_interactive(). ",
@@ -156,6 +158,7 @@ ggPSE_interactive <- function(
   grid$tooltip <- tt
 
   # ── Build highlight / fill logic ──────────────────────────────────────────────
+  highlight_title <- legend_title            # NULL = no title for highlight groups
   legend_title <- legend_title %||% value_col %||% ""
   fill_col     <- if (!is.null(value_col) && value_col %in% names(grid)) value_col else NULL
 
@@ -210,7 +213,7 @@ ggPSE_interactive <- function(
       ) +
       ggplot2::scale_fill_manual(
         values = hi_values, na.value = color_na,
-        name = NULL, breaks = names(hi_values)
+        name = highlight_title, breaks = names(hi_values)
       )
   } else if (!is.null(fill_col)) {
     p <- p +

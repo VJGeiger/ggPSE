@@ -512,3 +512,75 @@ test_that("nudge arguments are validated", {
   expect_error(ggPSE_text(ggPSE(), data.frame(symbol = "Fe", l = "a"), "l",
                           position_nudge = "x"), "position_nudge")
 })
+
+
+# ── categorical highlight (named list + highlight_colors) ─────────────────────
+
+hl_fills <- function(p) {
+  setNames(ggplot2::ggplot_build(p)$data[[1]]$fill, p$data$symbol)
+}
+grp <- list(Alkali = c("Li", "Na", "K"), Halogens = c("F", "Cl", "Br"), Noble = c("He", "Ne"))
+
+test_that("named list highlight colours tiles by group, in list order", {
+  p <- ggPSE(highlight = grp, highlight_colors = c(Noble = "gold", Alkali = "red", Halogens = "navy"))
+  f <- hl_fills(p)
+  expect_equal(unname(f[c("Li", "F", "He")]), c("red", "navy", "gold"))
+  expect_equal(p$scales$get_scales("fill")$breaks, names(grp))
+})
+
+test_that("unnamed highlight_colors are matched by position, default palette works", {
+  f <- hl_fills(ggPSE(highlight = grp, highlight_colors = c("#111111", "#222222", "#333333")))
+  expect_equal(unname(f[c("Li", "F", "He")]), c("#111111", "#222222", "#333333"))
+  f2 <- hl_fills(ggPSE(highlight = grp))
+  expect_equal(length(unique(f2[c("Li", "F", "He")])), 3L)
+  many <- setNames(as.list(c("H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne")), paste0("g", 1:10))
+  expect_equal(length(unique(hl_fills(ggPSE(highlight = many))[unlist(many)])), 10L)
+})
+
+test_that("split() on a factor sets the legend order", {
+  d <- data.frame(symbol = c("Li", "F", "He", "Na"),
+                  cat = factor(c("A", "B", "C", "A"), levels = c("C", "A", "B")))
+  p <- ggPSE(highlight = split(d$symbol, d$cat))
+  expect_equal(p$scales$get_scales("fill")$breaks, c("C", "A", "B"))
+})
+
+test_that("highlight accepts any R colour name and the legacy list form unchanged", {
+  expect_equal(unname(hl_fills(ggPSE(highlight = list(list(symbols = "Fe", color = "red", label = "x"))))["Fe"]), "red")
+  p <- ggPSE(highlight = grp, highlight_colors = c(Alkali = "navy", Halogens = "gold", Noble = "red"))
+  tc <- p$data$text_color[match(c("Li", "F"), p$data$symbol)]
+  expect_equal(tc, c("white", "grey20"))
+})
+
+test_that("legend_title is used for highlight groups", {
+  expect_equal(ggPSE(highlight = grp, legend_title = "Group")$scales$get_scales("fill")$name, "Group")
+})
+
+test_that("highlight input is validated", {
+  expect_error(ggPSE(highlight = list(c("Li", "Na"), "F")), "named")
+  expect_error(ggPSE(highlight = setNames(list("Li", "Na"), c("a", "a"))), "unique")
+  expect_error(ggPSE(highlight = grp, highlight_colors = c(Alkali = "red")), "Halogens")
+  expect_error(ggPSE(highlight = grp, highlight_colors = c("red", "blue")), "3 groups")
+  expect_error(ggPSE(highlight = grp, highlight_colors = c(Alkali = "red", Halogens = "nope", Noble = "blue")), "nope")
+  expect_error(ggPSE(highlight = list()), "non-empty")
+  expect_error(ggPSE(highlight = list(list(symbols = "Li", color = "red"), "Na")), "named list")
+})
+
+test_that("typos, overlapping groups and ignored colours warn", {
+  expect_warning(ggPSE(highlight = list(A = c("Li", "Xx"))), "Xx")
+  expect_warning(ggPSE(highlight = list(A = c("He", "Li"), B = c("He", "Na"))), "more than one")
+  expect_warning(ggPSE(highlight = list(list(symbols = "Li", color = "red")), highlight_colors = "blue"),
+                 "ignored")
+  expect_no_warning(ggPSE(highlight = grp))
+})
+
+test_that(".contrast_color is unchanged for hex colours", {
+  old <- function(hex) {
+    hex <- gsub("#", "", hex)
+    r <- strtoi(substr(hex, 1, 2), 16L) / 255; g <- strtoi(substr(hex, 3, 4), 16L) / 255
+    b <- strtoi(substr(hex, 5, 6), 16L) / 255
+    if (0.2126 * r + 0.7152 * g + 0.0722 * b > 0.4) "grey20" else "white"
+  }
+  set.seed(1)
+  hx <- sprintf("#%02X%02X%02X", sample(0:255, 300, TRUE), sample(0:255, 300, TRUE), sample(0:255, 300, TRUE))
+  expect_equal(vapply(hx, .contrast_color, ""), vapply(hx, old, ""))
+})

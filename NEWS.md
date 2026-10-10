@@ -13,6 +13,9 @@
 - New `label_na` argument (hide symbols on tiles without data) and `text_color`
   (one fixed text colour instead of the automatic contrast colour) in `ggPSE()` and
   `ggPSE_interactive()`.
+- `highlight` now also accepts a named list of symbol vectors, e.g.
+  `highlight = split(df$symbol, df$category)`, with the new `highlight_colors` argument
+  (named or by position).  `legend_title` now labels the highlight legend. 
 - Text layout is now defined in one internal helper shared by `ggPSE()` and
   `ggPSE_interactive()`.
 - Documentation fix: `base_size` default is 10, not 8.

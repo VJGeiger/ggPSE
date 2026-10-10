@@ -1,14 +1,12 @@
 # Null-coalescing operator — returns x if not NULL, otherwise 
 `%||%` <- function(x, y) if (!is.null(x)) x else y
 
-# Returns "black" or "white" depending on which contrasts better against a given hex background color.
+# Returns a dark or white text colour depending on which contrasts better with
+# a given background colour (hex or any R colour name).
 .contrast_color <- function(hex) {
   if (is.na(hex)) return("grey20")
-  hex <- gsub("#", "", hex)
-  r <- strtoi(substr(hex, 1, 2), 16L) / 255
-  g <- strtoi(substr(hex, 3, 4), 16L) / 255
-  b <- strtoi(substr(hex, 5, 6), 16L) / 255
-  luminance <- 0.2126 * r + 0.7152 * g + 0.0722 * b
+  rgb <- grDevices::col2rgb(hex)[, 1] / 255
+  luminance <- 0.2126 * rgb[[1]] + 0.7152 * rgb[[2]] + 0.0722 * rgb[[3]]
   if (luminance > 0.4) "grey20" else "white"
 }
 
@@ -238,4 +236,96 @@
       )
   }
   p
+}
+
+
+# ── Categorical highlight groups ───────────────────────────────────────────────
+
+# Colour-blind safe default palette (Okabe-Ito without black), extended with
+# hcl colours if more than 8 groups are needed.
+.categorical_palette <- function(n) {
+  base <- unname(grDevices::palette.colors(palette = "Okabe-Ito"))[-1]
+  if (n <= length(base)) return(base[seq_len(n)])
+  c(base, grDevices::hcl.colors(n - length(base), palette = "Dark 3"))
+}
+
+# One colour per group label: named vector (matched by name), unnamed vector
+# (matched by position) or NULL (default palette).
+.resolve_highlight_colors <- function(labels, cols) {
+  n <- length(labels)
+  if (is.null(cols)) return(as.list(.categorical_palette(n)))
+  if (!is.character(cols) || anyNA(cols))
+    stop("'highlight_colors' must be a character vector of colours.", call. = FALSE)
+  if (!is.null(names(cols))) {
+    miss <- setdiff(labels, names(cols))
+    if (length(miss))
+      stop(sprintf("'highlight_colors' has no colour for: %s",
+                   paste(miss, collapse = ", ")), call. = FALSE)
+    cols <- cols[labels]
+  } else {
+    if (length(cols) < n)
+      stop(sprintf("'highlight_colors' has %d colours but there are %d groups.",
+                   length(cols), n), call. = FALSE)
+    cols <- cols[seq_len(n)]
+  }
+  bad <- vapply(cols, function(x)
+    inherits(try(grDevices::col2rgb(x), silent = TRUE), "try-error"), logical(1))
+  if (any(bad))
+    stop(sprintf("Invalid colour(s) in 'highlight_colors': %s",
+                 paste(cols[bad], collapse = ", ")), call. = FALSE)
+  as.list(unname(cols))
+}
+
+# Warn about typos and about elements that sit in more than one group.
+.check_highlight_symbols <- function(groups) {
+  valid <- .ggpse_elements()$symbol
+  seen  <- character(0)
+  for (g in groups) {
+    unk <- setdiff(g$symbols, valid)
+    if (length(unk))
+      warning(sprintf("Unknown element symbol(s) in highlight group '%s': %s",
+                      g$label %||% g$color, paste(unk, collapse = ", ")),
+              call. = FALSE)
+    seen <- c(seen, unique(intersect(g$symbols, valid)))
+  }
+  dup <- unique(seen[duplicated(seen)])
+  if (length(dup))
+    warning(sprintf("Element(s) in more than one highlight group (the last group wins): %s",
+                    paste(dup, collapse = ", ")), call. = FALSE)
+  invisible(NULL)
+}
+
+# Brings both accepted forms of `highlight` into the internal form
+# list(list(symbols=, color=, label=), ...):
+#  1. a named list of symbol vectors (+ optional `highlight_colors`)
+#  2. the explicit list of groups (unchanged behaviour)
+.normalize_highlight <- function(highlight, highlight_colors = NULL) {
+  if (is.null(highlight)) return(NULL)
+  if (!is.list(highlight) || length(highlight) == 0L)
+    stop("'highlight' must be a non-empty list.", call. = FALSE)
+
+  is_group  <- vapply(highlight, function(g) is.list(g) && !is.null(g$symbols), logical(1))
+  is_vector <- vapply(highlight, function(g) is.character(g) || is.factor(g), logical(1))
+
+  if (all(is_group)) {
+    groups <- highlight
+    if (!is.null(highlight_colors))
+      warning("'highlight_colors' is ignored because the highlight groups define their own 'color'.",
+              call. = FALSE)
+  } else if (all(is_vector)) {
+    labels <- names(highlight)
+    if (is.null(labels) || anyNA(labels) || any(!nzchar(labels)))
+      stop("A highlight list of symbol vectors must be fully named; the names are the legend labels.",
+           call. = FALSE)
+    if (anyDuplicated(labels))
+      stop("The names of 'highlight' must be unique.", call. = FALSE)
+    cols   <- .resolve_highlight_colors(labels, highlight_colors)
+    groups <- lapply(seq_along(highlight), function(i)
+      list(symbols = as.character(highlight[[i]]), color = cols[[i]], label = labels[[i]]))
+  } else {
+    stop("'highlight' must be a named list of symbol vectors, or a list of groups ",
+         "list(symbols = , color = , label = ).", call. = FALSE)
+  }
+  .check_highlight_symbols(groups)
+  unname(groups)
 }
