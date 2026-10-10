@@ -221,7 +221,7 @@ supply <- data.frame(
  )
 
 ggPSE(groups = c(3,12)) |>
-gPSE_donut(supply, category_col = "category", share_col = "share", plot_all = FALSE)
+ggPSE_donut(supply, category_col = "category", share_col = "share", plot_all = FALSE)
 ```
 
 ![](man/figures/ggPSE_plot_donut.png)
@@ -340,7 +340,7 @@ Figures can be saved via the wrapper `ggPSE_save()` for ease. For more custom pl
 `ggsave()` can be used as well.
 
 ```r
-data(ggpse_elemts)
+data(ggpse_elements)
 p <- ggPSE(ggpse_elements, value_col = "electronegativity")
 
 ggPSE_save(p, "electronegativity.png")   # PNG 18x14cm at 400dpi

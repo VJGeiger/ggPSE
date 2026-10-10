@@ -100,6 +100,7 @@ ggPSE_donut <- function(
     if (!col %in% names(data))
       stop(sprintf("Column '%s' not found in data.", col))
   }
+  .check_symbols(data[[symbol_col]], symbol_col)   # several rows per element are the point here
 
   # Rename for internal use
   names(data)[names(data) == symbol_col]   <- "symbol"

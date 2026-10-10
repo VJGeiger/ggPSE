@@ -276,16 +276,15 @@
   as.list(unname(cols))
 }
 
-# Warn about typos and about elements that sit in more than one group.
+# Error on typos, warn about elements that sit in more than one group.
 .check_highlight_symbols <- function(groups) {
   valid <- .ggpse_elements()$symbol
   seen  <- character(0)
   for (g in groups) {
     unk <- setdiff(g$symbols, valid)
     if (length(unk))
-      warning(sprintf("Unknown element symbol(s) in highlight group '%s': %s",
-                      g$label %||% g$color, paste(unk, collapse = ", ")),
-              call. = FALSE)
+      stop(sprintf("Highlight group '%s' contains unknown element symbols: %s.",
+                   g$label %||% g$color, .list_values(unk)), call. = FALSE)
     seen <- c(seen, unique(intersect(g$symbols, valid)))
   }
   dup <- unique(seen[duplicated(seen)])
@@ -328,4 +327,109 @@
   }
   .check_highlight_symbols(groups)
   unname(groups)
+}
+
+# ── Validating and joining user data ───────────────────────────────────────────
+
+# Formats offending values for an error message (at most 10 shown).
+.list_values <- function(x, max_n = 10) {
+  x <- unique(x)
+  shown <- ifelse(is.na(x), "NA", paste0("\"", x, "\""))
+  out <- paste(utils::head(shown, max_n), collapse = ", ")
+  if (length(x) > max_n) out <- paste0(out, sprintf(" (and %d more)", length(x) - max_n))
+  out
+}
+
+# Every value must be an element symbol such as "Cl" (case-sensitive).
+.check_symbols <- function(x, col = "symbol") {
+  x   <- as.character(x)
+  bad <- is.na(x) | !x %in% .ggpse_elements()$symbol
+  if (any(bad))
+    stop(sprintf(paste0(
+      "Column '%s' must contain element symbols such as \"Cl\" ",
+      "(case-sensitive, no spaces, not element names). Not recognised: %s."),
+      col, .list_values(x[bad])), call. = FALSE)
+  invisible(NULL)
+}
+
+# Functions that draw one value per element accept repeated rows as long as
+# they agree (e.g. one data frame with a row per element and country, passed to
+# both ggPSE() and ggPSE_badge()). Different values for the same element would
+# be ambiguous and are an error.
+.check_conflicting_values <- function(syms, values, symbol_col, value_col, fn) {
+  syms <- as.character(syms)
+  dup  <- unique(syms[duplicated(syms)])
+  if (!length(dup) || is.null(values)) return(invisible(NULL))
+  conflict <- dup[vapply(dup, function(s) length(unique(values[syms == s])) > 1L, logical(1))]
+  if (length(conflict))
+    stop(sprintf(paste0(
+      "%s needs one value per element, but column '%s' has different values for the ",
+      "same element in column '%s': %s. Aggregate first, e.g. aggregate(%s ~ %s, data, mean)."),
+      fn, value_col, symbol_col, .list_values(conflict), value_col, symbol_col),
+      call. = FALSE)
+  invisible(NULL)
+}
+
+.check_numeric_values <- function(x, col, fn, category_hint = FALSE) {
+  if (all(is.na(x)))
+    stop(sprintf("Column '%s' has no non-missing values (%s).", col, fn), call. = FALSE)
+  if (!is.numeric(x))
+    stop(sprintf("Column '%s' must be numeric but is %s (%s).%s", col, class(x)[1], fn,
+                 if (category_hint)
+                   " To colour by category use highlight = split(data$symbol, data$category)."
+                 else ""), call. = FALSE)
+  invisible(NULL)
+}
+
+# Existence of the columns plus the content checks above. Returns the data with
+# one row per element.
+.validate_element_data <- function(data, symbol_col, value_col = NULL,
+                                   fn = "ggPSE()", value_arg = "value_col",
+                                   category_hint = FALSE) {
+  if (!is.data.frame(data))
+    stop(sprintf("'data' must be a data frame (%s).", fn), call. = FALSE)
+  if (!symbol_col %in% names(data))
+    stop(sprintf("Column '%s' not found in data. Set symbol_col to the correct column name.",
+                 symbol_col), call. = FALSE)
+  if (!is.null(value_col) && !value_col %in% names(data))
+    stop(sprintf("Column '%s' not found in data. Set %s to the correct column name.",
+                 value_col, value_arg), call. = FALSE)
+  if (nrow(data) == 0L)
+    stop(sprintf("'data' has no rows (%s).", fn), call. = FALSE)
+  syms <- as.character(data[[symbol_col]])
+  .check_symbols(syms, symbol_col)
+  if (!is.null(value_col))
+    .check_numeric_values(data[[value_col]], value_col, fn, category_hint)
+  .check_conflicting_values(syms, if (!is.null(value_col)) data[[value_col]], symbol_col, value_col, fn)
+  # repeated rows that agree: keep the first one per element
+  data[!duplicated(syms), , drop = FALSE]
+}
+
+# Validates user data and joins it onto the tile grid. Returns the new grid and
+# the name of the value column inside it: a value column that clashes with one
+# of the grid's own columns (atomic_number, col, row) is renamed internally, so
+# the data can never overwrite the tile positions.
+# all_columns = TRUE keeps every column of `data` (used for tooltips).
+.join_element_data <- function(grid, data, symbol_col, value_col = NULL,
+                               fn = "ggPSE()", value_arg = "value_col",
+                               all_columns = FALSE, category_hint = FALSE) {
+  data <- .validate_element_data(data, symbol_col, value_col, fn, value_arg, category_hint)
+
+  keep <- if (all_columns) names(data) else unique(c(symbol_col, value_col))
+  data <- data[, keep, drop = FALSE]
+  if (symbol_col != "symbol" && "symbol" %in% names(data)) data[["symbol"]] <- NULL
+
+  out_value <- value_col
+  grid_cols <- setdiff(names(grid), "symbol")
+  if (!is.null(value_col) && value_col %in% grid_cols) {
+    out_value <- ".pse_value"
+    names(data)[names(data) == value_col] <- out_value
+  }
+  names(data)[names(data) == symbol_col] <- "symbol"
+
+  # other columns that exist in the grid are dropped: the tile positions win
+  overlap <- setdiff(intersect(names(data), grid_cols), out_value)
+  data    <- data[, !names(data) %in% overlap, drop = FALSE]
+
+  list(grid = merge(grid, data, by = "symbol", all.x = TRUE), value_col = out_value)
 }

@@ -96,19 +96,15 @@ ggPSE_interactive <- function(
   grid <- .filter_grid(grid, groups, periods, lanthanides, actinides) # helper in zzz.R
 
   # ── Merge user data ───────────────────────────────────────────────────────────
+  # validate the data and join it onto the tiles; all columns are kept for the
+  # tooltips (helper in zzz.R)
+  data_value_col <- value_col
   if (!is.null(data)) {
-    if (!symbol_col %in% names(data))
-      stop(sprintf("Column '%s' not found in data.", symbol_col))
-    if (!is.null(value_col) && !value_col %in% names(data))
-      stop(sprintf("Column '%s' not found in data.", value_col))
-    names(data)[names(data) == symbol_col] <- "symbol"
-    
-    # Drop columns from data that already exist in grid to avoid .x/.y conflicts
-    grid_cols <- names(grid)
-    overlap   <- setdiff(intersect(names(data), grid_cols), "symbol")
-    data      <- data[, !names(data) %in% overlap, drop = FALSE]
-    
-    grid <- merge(grid, data, by = "symbol", all.x = TRUE)
+    joined         <- .join_element_data(grid, data, symbol_col, value_col,
+                                         fn = "ggPSE_interactive()",
+                                         all_columns = TRUE, category_hint = TRUE)
+    grid           <- joined$grid
+    data_value_col <- joined$value_col
   }
 
   # reset row names after merge so indexing is clean
@@ -120,9 +116,12 @@ ggPSE_interactive <- function(
   if (is.null(tooltip_cols)) {
     tooltip_cols <- c(
       if (has_name) "name",
-      if (!is.null(value_col) && value_col %in% names(grid)) value_col
+      if (!is.null(data_value_col) && data_value_col %in% names(grid)) data_value_col
     )
   } else {
+    # the value column is renamed internally if it clashes with a tile column
+    if (!is.null(value_col) && !identical(value_col, data_value_col))
+      tooltip_cols[tooltip_cols == value_col] <- data_value_col
     missing_cols <- setdiff(tooltip_cols, names(grid))
     if (length(missing_cols) > 0)
       warning("Tooltip columns not found and will be skipped: ",
@@ -136,6 +135,8 @@ ggPSE_interactive <- function(
 
   # Append each requested column
   for (col in tooltip_cols) {
+    # show a renamed value column under the name the user knows
+    col_label <- if (identical(col, data_value_col) && !identical(col, value_col)) value_col else col
     vals <- grid[[col]]
     num_vals <- suppressWarnings(as.numeric(vals))
     formatted <- ifelse(
@@ -151,7 +152,7 @@ ggPSE_interactive <- function(
     tt <- ifelse(
       formatted == "",
       tt,
-      paste0(tt, "<br/>", col, ": ", formatted)
+      paste0(tt, "<br/>", col_label, ": ", formatted)
     )
   }
 
@@ -160,7 +161,7 @@ ggPSE_interactive <- function(
   # ── Build highlight / fill logic ──────────────────────────────────────────────
   highlight_title <- legend_title            # NULL = no title for highlight groups
   legend_title <- legend_title %||% value_col %||% ""
-  fill_col     <- if (!is.null(value_col) && value_col %in% names(grid)) value_col else NULL
+  fill_col     <- if (!is.null(data_value_col) && data_value_col %in% names(grid)) data_value_col else NULL
 
   grid$highlight_label <- NA_character_
   if (!is.null(highlight)) {

@@ -57,24 +57,15 @@ ggPSE_bar <- function(
   
   grid <- .ggpse_elements()
   
-  if (!is.null(data)) {
-    if (!symbol_col %in% names(data))
-      stop(sprintf(
-        "Column '%s' not found in data. Set symbol_col to the correct column name.",
-        symbol_col
-      ))
-    if (!is.null(value_col) && !value_col %in% names(data))
-      stop(sprintf(
-        "Column '%s' not found in data. Set value_col to the correct column name.",
-        value_col
-      ))
-    cols_keep <- unique(c(symbol_col, value_col))
-    data      <- data[, cols_keep, drop = FALSE]
-    names(data)[names(data) == symbol_col] <- "symbol"
-    grid <- merge(grid, data, by = "symbol", all.x = TRUE)
-  }
-  
   legend_title    <- legend_title %||% value_col %||% ""
+
+  # validate the data and join it onto the tiles; helper in zzz.R
+  if (!is.null(data)) {
+    joined    <- .join_element_data(grid, data, symbol_col, value_col,
+                                    fn = "ggPSE_bar()")
+    grid      <- joined$grid
+    value_col <- joined$value_col
+  }
   grid$text_color <- "grey20"
   
   # ── Base tiles ────────────────────────────────────────────────────────────────

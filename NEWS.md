@@ -23,6 +23,18 @@
 - Redesigned `"publication"` theme for print: white background, thin dark-grey tile borders,
   white tiles for elements without data, compact legend that fits, and plain title, subtitle
   and caption styles.
+- Data given to `ggPSE()`, `ggPSE_interactive()`, `ggPSE_bubble()`, `ggPSE_bar()` and
+  `ggPSE_profile()` is checked: symbols that are not element symbols (typos, lower case,
+  stray spaces, element names, `NA`) are now an error that names them instead of leaving the
+  tile silently blank, and so are non-numeric or all-`NA` value columns. Repeated rows for an
+  element are allowed if they agree (e.g. one row per country), different values for the
+  same element are an error. `ggPSE_badge()`, `ggPSE_donut()` and `ggPSE_text()` check the
+  symbols too. Unknown symbols in `highlight` are an error.
+- A value column named `atomic_number`, `col` or `row` no longer clashes with the internal
+  tile table (it used to give a blank plot or an error; `ggPSE_interactive()` silently used
+  the tile positions instead of your values).
+- `ggPSE_bubble()` without `size_col` draws a blank table instead of failing.
+- README: fixed typos `gPSE_donut` and `ggpse_elemts`.
 - Text layout is now defined in one internal helper shared by `ggPSE()` and
   `ggPSE_interactive()`.
 - Documentation fix: `base_size` default is 10, not 8.

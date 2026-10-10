@@ -85,6 +85,7 @@ ggPSE_text <- function(
     if (!cl %in% names(data))
       stop(sprintf("Column '%s' not found in data.", cl), call. = FALSE)
   }
+  .check_symbols(data[[symbol_col]], symbol_col)   # several labels per element are fine
   .check_nudge(position_nudge, "position_nudge")
   if (!is.numeric(size) || length(size) != 1L || !is.finite(size) || size <= 0)
     stop("'size' must be a single positive number.", call. = FALSE)

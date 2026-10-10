@@ -3,8 +3,11 @@
 #' The core plotting function of ggPSE. Returns a ggplot2 object that can be
 #' further modified.
 #'
-#' @param data A data frame containing element symbols and a value column.
-#'   If NULL, a blank table using the NA color is drawn.
+#' @param data A data frame with the element symbols (case-sensitive, e.g.
+#'   \code{"Cl"}) and the value column. Rows may repeat for an element (e.g. one
+#'   row per country) as long as they agree on the value; different values for
+#'   the same element, unknown or \code{NA} symbols and non-numeric values give an
+#'   error. If \code{NULL}, a blank table using the NA color is drawn.
 #' @param value_col Character. Column name in data to map to fill color.
 #' @param symbol_col Character. Column in data containing element symbols.
 #'   Default "symbol".
@@ -158,21 +161,19 @@ ggPSE <- function(
   # ── Subset grid by groups / periods / lanthanides / actinides ────────────────
   grid <- .filter_grid(grid, groups, periods, lanthanides, actinides) #helper in zzz.R
   
-  #error catching
+  # validate the data (element symbols, one row per element, numeric values)
+  # and join it onto the tiles; helper in zzz.R
+  data_value_col <- value_col
   if (!is.null(data)) {
-    if (!symbol_col %in% names(data))
-      stop(sprintf("Column '%s' not found in data. Set symbol_col to the correct column name.", symbol_col))
-    if (!is.null(value_col) && !value_col %in% names(data))
-      stop(sprintf("Column '%s' not found in data. Set value_col to the correct column name.", value_col))
-    cols_keep <- unique(c(symbol_col, value_col))
-    data      <- data[, cols_keep, drop = FALSE]
-    names(data)[names(data) == symbol_col] <- "symbol"
-    grid <- merge(grid, data, by = "symbol", all.x = TRUE)
+    joined         <- .join_element_data(grid, data, symbol_col, value_col,
+                                         fn = "ggPSE()", category_hint = TRUE)
+    grid           <- joined$grid
+    data_value_col <- joined$value_col
   }
   
   highlight_title <- legend_title            # NULL = no title for highlight groups
   legend_title <- legend_title %||% value_col %||% ""
-  fill_col     <- if (!is.null(value_col) && value_col %in% names(grid)) value_col else NULL
+  fill_col     <- if (!is.null(data_value_col) && data_value_col %in% names(grid)) data_value_col else NULL
   
   # ── Bake highlight colors into grid ──────────────────────────────────────────
   grid$highlight_label <- NA_character_

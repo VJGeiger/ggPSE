@@ -454,8 +454,8 @@ test_that("ggPSE_text anchors text at top / center / bottom of the tile", {
   expect_equal(c(vj("top"), vj("center"), vj("bottom")), c(1, 0.5, 0))
 })
 
-test_that("ggPSE_text skips NA / empty text and unmatched elements", {
-  d <- data.frame(symbol = c("Fe", "Au", "Cu", "Xx"), lab = c("a", NA, "", "z"))
+test_that("ggPSE_text skips NA / empty text", {
+  d <- data.frame(symbol = c("Fe", "Au", "Cu"), lab = c("a", NA, ""))
   p <- ggPSE_text(ggPSE(label_value = FALSE), d, "lab")
   expect_equal(nrow(last_text(p)), 1L)
 })
@@ -481,8 +481,10 @@ test_that("ggPSE_text validates input and survives ggPSE_donut ordering", {
   expect_error(ggPSE_text(base, d, "lab", position = "left"))
   expect_error(ggPSE_text(ggplot2::ggplot(), d, "lab"), "ggPSE")
   expect_error(ggPSE_text(base, d, "lab", size = -1), "size")
-  expect_warning(ggPSE_text(base, data.frame(symbol = "Xx", lab = "a"), "lab"),
+  zoom <- ggPSE(periods = c(1, 1), lanthanides = FALSE, actinides = FALSE)
+  expect_warning(ggPSE_text(zoom, data.frame(symbol = "Fe", lab = "a"), "lab"),
                  "nothing added")
+  expect_error(ggPSE_text(base, data.frame(symbol = "Xx", lab = "a"), "lab"), "Xx")
   skip_if_not_installed("ggforce")
   dd <- data.frame(symbol = rep("Fe", 2), category = c("a", "b"), share = c(0.5, 0.5))
   p <- suppressWarnings(ggPSE_donut(ggPSE(), dd))
@@ -565,8 +567,8 @@ test_that("highlight input is validated", {
   expect_error(ggPSE(highlight = list(list(symbols = "Li", color = "red"), "Na")), "named list")
 })
 
-test_that("typos, overlapping groups and ignored colours warn", {
-  expect_warning(ggPSE(highlight = list(A = c("Li", "Xx"))), "Xx")
+test_that("unknown symbols error; overlapping groups and ignored colours warn", {
+  expect_error(ggPSE(highlight = list(A = c("Li", "Xx"))), "Xx")
   expect_warning(ggPSE(highlight = list(A = c("He", "Li"), B = c("He", "Na"))), "more than one")
   expect_warning(ggPSE(highlight = list(list(symbols = "Li", color = "red")), highlight_colors = "blue"),
                  "ignored")
@@ -642,4 +644,117 @@ test_that("publication: hairline borders, white no-data tiles, user choices are 
 test_that("ggPSE_theme validates its input", {
   expect_error(ggPSE_theme("minimal"), "ggplot object")
   expect_no_error(ggplot2::ggplot_build(ggPSE_theme(NULL, "publication")))
+})
+
+
+# ── data validation: symbols, one row per element, numeric values ─────────────
+
+test_that("unknown, mis-cased or missing symbols are an error that names them", {
+  bad <- function(x) data.frame(symbol = x, v = seq_along(x))
+  expect_error(ggPSE(bad(c("Fe", "cl", "Au")), "v"), "\"cl\"")
+  expect_error(ggPSE(bad(c("Fe ", "Cl")), "v"), "\"Fe \"")        # trailing space
+  expect_error(ggPSE(bad(c("Iron", "Gold")), "v"), "Iron")        # element names
+  expect_error(ggPSE(bad(c("Fe", NA)), "v"), "NA")
+  expect_error(ggPSE(bad(c("Fe", "cl")), "v"), "case-sensitive")
+  # many offenders are truncated
+  many <- bad(c(sprintf("x%02d", 1:15), "Fe"))
+  expect_error(ggPSE(many, "v"), "and 5 more")
+})
+
+test_that("repeated rows must agree on the value; different values are an error", {
+  long <- data.frame(symbol = rep(c("Fe", "Cl"), each = 2), v = 1:4)    # e.g. one row per year
+  expect_error(ggPSE(long, "v"), "different values")
+  expect_error(ggPSE(long, "v"), "Fe")
+  expect_error(ggPSE_bubble(long, "v"), "different values")
+  expect_error(ggPSE_bar(long, "v"), "different values")
+  expect_error(ggPSE_profile(long, "v", period = 4), "different values")
+})
+
+test_that("repeated rows that agree work, as in the README (element x country)", {
+  multi <- data.frame(symbol  = c("Li", "Li", "Co", "Co", "Co", "Nd"),
+                      country = c("CL", "AU", "CD", "AU", "ZM", "CN"),
+                      value   = c(0.70, 0.70, 0.91, 0.91, 0.91, 0.85))
+  one   <- unique(multi[, c("symbol", "value")])
+  p <- ggPSE(multi, "value")
+  expect_equal(nrow(p$data), 118L)                                       # no duplicate tiles
+  expect_equal(th_fills(p)[order(p$data$symbol)], th_fills(ggPSE(one, "value"))[order(ggPSE(one, "value")$data$symbol)])
+  expect_no_error(ggplot2::ggplot_build(ggPSE_badge(p, multi, country_col = "country")))
+  # several rows per element are also fine for badge, donut and text
+  expect_no_error(ggPSE_badge(data = data.frame(symbol = c("Li", "Li"), country = c("CL", "AU"))))
+  expect_no_error(ggPSE_text(ggPSE(), data.frame(symbol = c("C", "C"), lab = c("a", "b")), "lab"))
+  # a missing value repeated is still the same value
+  expect_no_error(ggPSE(data.frame(symbol = c("Fe", "Fe", "Au"), v = c(NA, NA, 1)), "v"))
+})
+
+test_that("non-numeric and empty value columns are an error", {
+  chr <- data.frame(symbol = c("Fe", "Au"), v = c("a", "b"))
+  expect_error(ggPSE(chr, "v"), "must be numeric")
+  expect_error(ggPSE(chr, "v"), "highlight")                     # points to categories
+  expect_error(ggPSE(data.frame(symbol = "Fe", v = factor("a")), "v"), "numeric")
+  expect_error(ggPSE(data.frame(symbol = c("Fe", "Au"), v = NA_real_), "v"), "no non-missing")
+  expect_error(ggPSE_bubble(chr, "v"), "must be numeric")
+  expect_error(ggPSE_bar(chr, "v"), "must be numeric")
+  expect_error(ggPSE(data.frame(symbol = character(0), v = numeric(0)), "v"), "no rows")
+  expect_error(ggPSE("not a data frame", "v"), "data frame")
+})
+
+test_that("the other element-data functions check the symbols too", {
+  expect_error(ggPSE_badge(data = data.frame(symbol = "cl", country = "DE")), "cl")
+  expect_error(ggPSE_donut(data = data.frame(symbol = "cl", category = "a", share = 1)), "cl")
+  expect_error(ggPSE_profile(data.frame(symbol = "cl", v = 1), "v", period = 3), "cl")
+})
+
+test_that("a value column that clashes with a tile column is renamed, not misused", {
+  data(ggpse_elements, package = "ggPSE", envir = environment())
+  z <- ggPSE(ggpse_elements, "atomic_number", show_atomic_number = TRUE)
+  expect_true(".pse_value" %in% names(z$data))
+  expect_equal(length(unique(th_fills(z))), 118L)                  # a real gradient, not blank
+  expect_equal(z$scales$get_scales("fill")$name, "atomic_number")  # legend keeps your name
+  # a user column called "row" / "col" must not move the tiles
+  # (merge() sorts the rows, so compare the position of each element by symbol)
+  d  <- data.frame(symbol = c("Fe", "Au"), row = c(0, 1))
+  pd <- ggPSE(d, "row"); p0 <- ggPSE()
+  pos <- function(p) {
+    b <- ggplot2::ggplot_build(p)$data[[1]]
+    stats::setNames(paste(b$x, b$y), p$data$symbol)
+  }
+  expect_equal(pos(pd)[sort(names(pos(pd)))], pos(p0)[sort(names(pos(p0)))])
+  fills <- stats::setNames(th_fills(pd), pd$data$symbol)
+  expect_false(identical(fills[["Fe"]], fills[["Au"]]))            # the two values differ
+  # bubble / bar work too
+  expect_no_error(ggplot2::ggplot_build(ggPSE_bubble(d, "row")))
+  expect_no_error(ggplot2::ggplot_build(ggPSE_bar(d, "row")))
+})
+
+test_that("ggPSE_bubble without size_col draws a blank table instead of crashing", {
+  expect_no_error(ggplot2::ggplot_build(ggPSE_bubble(data.frame(symbol = "Fe", v = 1))))
+})
+
+test_that("valid data, including symbols outside a zoomed plot, still works", {
+  d <- data.frame(symbol = c("Fe", "Au", "He"), v = c(1, 2, 3))
+  expect_no_error(ggplot2::ggplot_build(ggPSE(d, "v", periods = c(4, 6))))
+  expect_no_error(ggplot2::ggplot_build(ggPSE(d, "v", symbol_col = "symbol")))
+})
+
+
+# ── ggPSE_interactive: data checks and clashing value columns ─────────────────
+# (run only where ggiraph is installed)
+
+int_gg <- function(g) if (!is.null(g$x$ggobj)) g$x$ggobj else g$ggobj
+
+test_that("ggPSE_interactive validates its data like ggPSE()", {
+  skip_if_not_installed("ggiraph")
+  expect_error(ggPSE_interactive(data.frame(symbol = c("Fe", "cl"), v = 1:2), "v"), "cl")
+  expect_error(ggPSE_interactive(data.frame(symbol = c("Fe", "Fe"), v = 1:2), "v"), "different values")
+  expect_error(ggPSE_interactive(data.frame(symbol = "Fe", v = "a"), "v"), "must be numeric")
+  expect_no_error(ggPSE_interactive(data.frame(symbol = c("Fe", "Fe", "Au"), v = c(1, 1, 2)), "v"))
+})
+
+test_that("ggPSE_interactive uses your values for a column named like a tile column", {
+  skip_if_not_installed("ggiraph")
+  g  <- int_gg(ggPSE_interactive(data.frame(symbol = c("Fe", "Au"), row = c(10, 20)), "row"))
+  skip_if(is.null(g), "cannot reach the ggplot inside the girafe object")
+  fe <- g$data[g$data$symbol == "Fe", ]
+  expect_equal(fe$row, .ggpse_elements()$row[.ggpse_elements()$symbol == "Fe"])   # tile did not move
+  expect_match(fe$tooltip, "row: 10", fixed = TRUE)                               # your value, your name
 })

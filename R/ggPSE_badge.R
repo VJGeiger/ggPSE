@@ -77,6 +77,7 @@ ggPSE_badge <- function(
     stop(sprintf("Column '%s' not found in data.", country_col))
   if (!symbol_col %in% names(data))
     stop(sprintf("Column '%s' not found in data.", symbol_col))
+  .check_symbols(data[[symbol_col]], symbol_col)   # several rows per element are fine here
   if (hierarchy && length(hierarchy_scale) != 3)
     stop("'hierarchy_scale' must be a numeric vector of length 3.")
 

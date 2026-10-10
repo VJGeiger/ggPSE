@@ -103,10 +103,7 @@ ggPSE_profile <- function(
                  mode, paste(valid_pos, collapse = ", ")))
 
   # ── Validate data ─────────────────────────────────────────────────────────────
-  if (!symbol_col %in% names(data))
-    stop(sprintf("Column '%s' not found in data.", symbol_col))
-  if (!value_col %in% names(data))
-    stop(sprintf("Column '%s' not found in data.", value_col))
+  data <- .validate_element_data(data, symbol_col, value_col, fn = "ggPSE_profile()")
 
   legend_title <- legend_title %||% value_col
 

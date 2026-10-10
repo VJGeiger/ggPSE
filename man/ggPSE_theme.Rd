@@ -16,12 +16,22 @@ a blank table is created first.}
 
 \item{theme}{Character. One of:
 \describe{
-  \item{\code{"minimal"}}{Clean white background, subtle tile borders,
-    muted styling. Good for presentations.}
-  \item{\code{"dark"}}{Dark background, light tile borders, white text.
-    Good for dashboards and dark mode documents.}
-  \item{\code{"publication"}}{Maximum ink reduction. No background,
-    no borders, minimal chrome. Suitable for journal figures.}
+  \item{\code{"minimal"}}{Clean white background, legend at the bottom.
+    Tile borders are kept as they are. Good for presentations and the web.}
+  \item{\code{"dark"}}{Dark background, dark tile borders, light legend
+    text. Tiles without data and the symbol colours keep their light-theme
+    look, so this is a starting point rather than a finished dark mode.}
+  \item{\code{"publication"}}{For print: solid white background, thin
+    dark-grey tile borders (so light and empty tiles stay visible in print
+    and in greyscale; a \code{tile_border} you set yourself is kept),
+    white tiles for elements without data (so they cannot be mistaken
+    for the lowest values in black and white; a \code{color_na} you set
+    yourself is kept), a compact legend with fixed small type (8 pt title, 7 pt labels), small
+    margins and plain left-aligned title, subtitle and caption styles.
+    Meant for figures of about 18 cm (double column). For a narrower
+    figure use a smaller \code{base_size} in [ggPSE()] and shorten the
+    legend bar, e.g. \code{+ theme(legend.key.width = unit(0.7, "cm"))}
+    for 8.5 cm.}
   \item{\code{"crazy"}}{Randomly assigns a unique color to each tile.
     Each call produces a different result.}
 }}
@@ -33,28 +43,29 @@ reproducibility. Default \code{NULL} gives a different result each call.}
 A ggplot object.
 }
 \description{
-Applies one of several pre-built visual themes to a ggPSE plot.
+Applies one of several pre-built visual themes to a ggPSE plot. Your colour
+scales (gradient, \code{highlight_colors}, ...) are kept; only the
+non-data styling changes, except for \code{"crazy"}, which replaces the fill
+colours.
 }
 \details{
+The themes are complete ggplot2 themes and replace earlier \code{theme()}
+settings of the plot. Apply the theme first, then add your own tweaks:
+\code{ggPSE(...) |> ggPSE_theme("publication") + theme(legend.position = "none")}.
+The plot you pass in is not modified.
+
 Note for highlight plots, you may want to adjust the highlight colors manually
 to suit the background.
 }
 \examples{
-\dontrun{
-# Minimal
-ggPSE() + ggPSE_theme("minimal")
+data(ggpse_elements)
+p <- ggPSE(ggpse_elements, value_col = "electronegativity",
+           label_value = FALSE, legend_title = "Electronegativity")
 
-# Dark
-ggPSE() + ggPSE_theme("dark")
+p |> ggPSE_theme("minimal")
+p |> ggPSE_theme("publication")
+p |> ggPSE_theme("dark")
 
-# Publication
-ggPSE(ggpse_elements, value_col = "electronegativity") +
-  ggPSE_theme("publication")
-
-# Crazy — different every time
-ggPSE() + ggPSE_theme("crazy")
-
-# Crazy — reproducible
-ggPSE() + ggPSE_theme("crazy", seed = 42)
-}
+# Crazy: different every time, or reproducible with a seed
+ggPSE() |> ggPSE_theme("crazy", seed = 42)
 }
