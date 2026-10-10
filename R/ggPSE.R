@@ -24,9 +24,9 @@
 #'   Example: \code{list(list(symbols = c("Li","Co"), color = "#2166ac",
 #'   label = "Battery metals"))}
 #' @param legend_title Character. Legend title. Defaults to value_col.
-#' @param show_atomic_number Logical. Show atomic numbers in top-left of tile.
-#'   Default FALSE.
-#' @param base_size Numeric. Base font size in pt. Default 8.
+#' @param show_atomic_number Logical. Show atomic numbers inside the tile.
+#'   Default FALSE. See \code{number_position} for where it is drawn.
+#' @param base_size Numeric. Base font size in pt. Default 10.
 #' @param groups Integer vector of length 2. Range of IUPAC groups (columns)
 #'   to display, e.g. \code{c(3, 12)} for transition metals only. Default NULL
 #'   shows all groups.
@@ -36,6 +36,21 @@
 #'   \code{lanthanides} and \code{actinides}.
 #' @param lanthanides Logical. Show the lanthanide row. Default TRUE.
 #' @param actinides Logical. Show the actinide row. Default TRUE.
+#' @param symbol_position Where the element symbol is drawn inside the tile:
+#'   \code{"center"} (default), \code{"top"}, \code{"bottom"}, \code{"left"}
+#'   or \code{"right"}. If a value label is shown (\code{label_value = TRUE}),
+#'   it is placed on the opposite side for \code{"top"} / \code{"bottom"}, and
+#'   stacked under the symbol for \code{"left"} / \code{"right"}.
+#' @param symbol_size Size of the element symbol in ggplot2 text units (mm,
+#'   as in the \code{size} argument of \code{geom_text()}). Default \code{NULL}
+#'   scales with \code{base_size} (\code{base_size * 0.4}). Only the symbol is
+#'   affected; the value and atomic number keep scaling with \code{base_size}.
+#'   Large symbols need more room, see \code{symbol_position}.
+#' @param number_position Where the atomic number is drawn when
+#'   \code{show_atomic_number = TRUE}: \code{"top-left"} (default),
+#'   \code{"top"}, \code{"top-right"}, \code{"left"}, \code{"right"},
+#'   \code{"bottom-left"}, \code{"bottom"} or \code{"bottom-right"}. A
+#'   warning is given if it overlaps with the symbol or value text.
 #'
 #' @return A ggplot object.
 #' @export
@@ -54,6 +69,14 @@
 #'
 #' # Show only transition metals (groups 3-12, periods 4-6)
 #' ggPSE(groups = c(3, 12), periods = c(4, 6), lanthanides = FALSE, actinides = FALSE)
+#'
+#' # Symbol at the top, atomic number in the bottom-right corner
+#' ggPSE(battery, value_col = "importance",
+#'       symbol_position = "top", show_atomic_number = TRUE,
+#'       number_position = "bottom-right")
+#'
+#' # Smaller symbols independent of base_size
+#' ggPSE(battery, value_col = "importance", symbol_size = 3)
 ggPSE <- function(
     data               = NULL,
     value_col          = NULL,
@@ -71,8 +94,14 @@ ggPSE <- function(
     groups             = NULL,
     periods            = NULL,
     lanthanides        = TRUE,
-    actinides          = TRUE
+    actinides          = TRUE,
+    symbol_position    = "center",
+    number_position    = "top-left",
+    symbol_size        = NULL
 ) {
+  symbol_position <- match.arg(symbol_position, .symbol_positions)
+  number_position <- match.arg(number_position, .number_positions)
+
   grid <- .ggpse_elements()
 
   # ── Subset grid by groups / periods / lanthanides / actinides ────────────────
@@ -179,47 +208,22 @@ ggPSE <- function(
       )
   }
   
-  # ── Symbol text ───────────────────────────────────────────────────────────────
-  p <- p +
-    ggplot2::geom_text(
-      ggplot2::aes(label = .data[["symbol"]], color = .data[["text_color"]]),
-      fontface = "bold",
-      size     = base_size * 0.40,
-      nudge_y  = -0.08,
-      vjust    = if (label_value && !is.null(fill_col)) 0.15 else 0.5
-    )
-  
-  if (show_atomic_number) {
-    p <- p +
-      ggplot2::geom_text(
-        ggplot2::aes(
-          x     = .data[["col"]] - 0.42,
-          y     = -.data[["row"]] + 0.38,
-          label = .data[["atomic_number"]],
-          color = .data[["text_color"]]
-        ),
-        hjust    = 0,
-        vjust    = 1,
-        size     = base_size * 0.22,
-        fontface = "plain"
-      )
-  }
-  
-  if (label_value && !is.null(fill_col)) {
-    p <- p +
-      ggplot2::geom_text(
-        ggplot2::aes(
-          y     = .data[["row"]] * -1 - 0.25,
-          label = ifelse(
-            is.na(.data[[fill_col]]), "",
-            formatC(.data[[fill_col]], digits = value_digits, format = "f")
-          ),
-          color = .data[["text_color"]]
-        ),
-        size = base_size * 0.20
-      )
-  }
-  
+  # ── Text layers (symbol, atomic number, value) ───────────────────────────────
+  # layout logic lives in zzz.R so ggPSE() and ggPSE_interactive() stay in sync
+  .check_text_collision(symbol_position, number_position, show_atomic_number,
+                        label_value && !is.null(fill_col))
+  p <- .add_tile_text(
+    p,
+    symbol_position    = symbol_position,
+    number_position    = number_position,
+    show_atomic_number = show_atomic_number,
+    fill_col           = fill_col,
+    label_value        = label_value,
+    value_digits       = value_digits,
+    base_size          = base_size,
+    symbol_size        = symbol_size
+  )
+
   # ── Scales and theme ──────────────────────────────────────────────────────────
   p <- p +
     ggplot2::scale_color_identity() +

@@ -309,3 +309,100 @@ test_that("ggpse_elements dataset loads and has expected columns", {
   expect_true("melting_point_K"   %in% names(ggpse_elements))
   expect_equal(nrow(ggpse_elements), 118)
 })
+
+
+# ── symbol_position / number_position ─────────────────────────────────────────
+
+# helper: built data of text layers (symbol = first GeomText layer)
+text_layers <- function(p) {
+  b   <- ggplot2::ggplot_build(p)
+  idx <- which(vapply(p$layers, function(l) inherits(l$geom, "GeomText"), logical(1)))
+  b$data[idx]
+}
+
+test_that("symbol_position = 'center' keeps the default layout", {
+  d  <- data.frame(symbol = "Fe", v = 1)
+  sy <- text_layers(ggPSE(d, "v"))[[1]]
+  fe <- .ggpse_elements()[.ggpse_elements()$symbol == "Fe", ]
+  expect_equal(sy$x[sy$label == "Fe"], fe$col)
+  expect_equal(sy$y[sy$label == "Fe"], -fe$row - 0.08)
+  expect_equal(unique(sy$vjust), 0.15)
+})
+
+test_that("symbol_position accepts all positions and rejects others", {
+  d <- data.frame(symbol = c("Fe", "Au"), v = c(1, 2))
+  for (pos in c("center", "top", "bottom", "left", "right"))
+    expect_no_error(ggplot2::ggplot_build(ggPSE(d, "v", symbol_position = pos)))
+  expect_error(ggPSE(d, "v", symbol_position = "middle"))
+})
+
+test_that("symbol and value are placed on opposite sides for top / bottom", {
+  d <- data.frame(symbol = "Fe", v = 1)
+  for (pos in c("top", "bottom")) {
+    ly  <- text_layers(ggPSE(d, "v", symbol_position = pos))
+    sym <- ly[[1]]$y[ly[[1]]$label == "Fe"]
+    val <- ly[[2]]$y[ly[[2]]$label != ""]
+    expect_true(if (pos == "top") sym > val else sym < val)
+  }
+})
+
+test_that("left / right align the symbol to the tile edge", {
+  d  <- data.frame(symbol = "Fe", v = 1)
+  l  <- text_layers(ggPSE(d, "v", symbol_position = "left"))[[1]]
+  r  <- text_layers(ggPSE(d, "v", symbol_position = "right"))[[1]]
+  fe <- .ggpse_elements()[.ggpse_elements()$symbol == "Fe", ]
+  expect_true(l$x[l$label == "Fe"] < fe$col && unique(l$hjust) == 0)
+  expect_true(r$x[r$label == "Fe"] > fe$col && unique(r$hjust) == 1)
+})
+
+test_that("number_position anchors the atomic number at the tile border", {
+  fe <- .ggpse_elements()[.ggpse_elements()$symbol == "Fe", ]
+  num <- function(pos) {
+    ly <- text_layers(ggPSE(symbol_position = "center", show_atomic_number = TRUE,
+                            number_position = pos))
+    ly[[2]][ly[[2]]$label == fe$atomic_number, ]
+  }
+  tl <- num("top-left");     br <- num("bottom-right"); tm <- num("top")
+  expect_equal(c(tl$x - fe$col, tl$y + fe$row), c(-0.42, 0.38))
+  expect_equal(c(tl$hjust, tl$vjust), c(0, 1))
+  expect_equal(c(br$x - fe$col, br$y + fe$row), c(0.42, -0.38))
+  expect_equal(c(br$hjust, br$vjust), c(1, 0))
+  expect_equal(c(tm$x - fe$col, tm$hjust), c(0, 0.5))
+  expect_error(ggPSE(show_atomic_number = TRUE, number_position = "middle"))
+})
+
+test_that("overlapping number_position warns, defaults do not", {
+  d <- data.frame(symbol = "Fe", v = 1)
+  expect_no_warning(ggPSE(d, "v", show_atomic_number = TRUE))
+  expect_warning(ggPSE(d, "v", symbol_position = "top", show_atomic_number = TRUE,
+                       number_position = "top-left"), "overlaps")
+  expect_no_warning(ggPSE(d, "v", symbol_position = "top", show_atomic_number = TRUE,
+                          number_position = "left"))
+  # without atomic numbers there is nothing to collide with
+  expect_no_warning(ggPSE(d, "v", symbol_position = "top"))
+})
+
+
+# ── symbol_size ───────────────────────────────────────────────────────────────
+
+test_that("symbol_size defaults to base_size * 0.4 and can be overridden", {
+  d <- data.frame(symbol = "Fe", v = 1)
+  expect_equal(unique(text_layers(ggPSE(d, "v", base_size = 14))[[1]]$size), 14 * 0.4)
+  expect_equal(unique(text_layers(ggPSE(d, "v", base_size = 14, symbol_size = 3.8))[[1]]$size), 3.8)
+})
+
+test_that("symbol_size only changes the symbol layer", {
+  d  <- data.frame(symbol = "Fe", v = 1)
+  a  <- text_layers(ggPSE(d, "v", show_atomic_number = TRUE))
+  b  <- text_layers(ggPSE(d, "v", show_atomic_number = TRUE, symbol_size = 2))
+  expect_equal(unique(a[[2]]$size), unique(b[[2]]$size))   # atomic number
+  expect_equal(unique(a[[3]]$size), unique(b[[3]]$size))   # value
+})
+
+test_that("symbol_size is validated", {
+  expect_error(ggPSE(symbol_size = -1), "symbol_size")
+  expect_error(ggPSE(symbol_size = "big"), "symbol_size")
+  expect_error(ggPSE(symbol_size = c(2, 3)), "symbol_size")
+  expect_error(ggPSE(symbol_size = NA_real_), "symbol_size")
+  expect_no_error(ggPSE(symbol_size = NULL))
+})

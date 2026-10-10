@@ -69,8 +69,14 @@ ggPSE_interactive <- function(
     hover_fill    = "#ffd700",
     hover_stroke  = "#333333",
     width_svg     = 12,
-    height_svg    = 5
+    height_svg    = 5,
+    symbol_position = "center",
+    number_position = "top-left",
+    symbol_size     = NULL
 ) {
+  symbol_position <- match.arg(symbol_position, .symbol_positions)
+  number_position <- match.arg(number_position, .number_positions)
+
   if (!requireNamespace("ggiraph", quietly = TRUE))
     stop("Package 'ggiraph' is required for ggPSE_interactive(). ",
          "Install it with: install.packages(\"ggiraph\")",
@@ -223,45 +229,21 @@ ggPSE_interactive <- function(
       )
   }
 
-  # ── Symbol text ───────────────────────────────────────────────────────────────
-  p <- p +
-    ggplot2::geom_text(
-      ggplot2::aes(label = .data[["symbol"]], color = .data[["text_color"]]),
-      fontface = "bold",
-      size     = base_size * 0.40,
-      nudge_y  = -0.08,
-      vjust    = if (label_value && !is.null(fill_col)) 0.15 else 0.5
-    )
-
-  if (show_atomic_number) {
-    p <- p +
-      ggplot2::geom_text(
-        ggplot2::aes(
-          x     = .data[["col"]] - 0.42,
-          y     = -.data[["row"]] + 0.38,
-          label = .data[["atomic_number"]],
-          color = .data[["text_color"]]
-        ),
-        hjust = 0, vjust = 1,
-        size  = base_size * 0.22,
-        fontface = "plain"
-      )
-  }
-
-  if (label_value && !is.null(fill_col)) {
-    p <- p +
-      ggplot2::geom_text(
-        ggplot2::aes(
-          y     = .data[["row"]] * -1 - 0.25,
-          label = ifelse(
-            is.na(.data[[fill_col]]), "",
-            formatC(.data[[fill_col]], digits = value_digits, format = "f")
-          ),
-          color = .data[["text_color"]]
-        ),
-        size = base_size * 0.20
-      )
-  }
+  # ── Text layers (symbol, atomic number, value) ───────────────────────────────
+  # layout logic lives in zzz.R so ggPSE() and ggPSE_interactive() stay in sync
+  .check_text_collision(symbol_position, number_position, show_atomic_number,
+                        label_value && !is.null(fill_col))
+  p <- .add_tile_text(
+    p,
+    symbol_position    = symbol_position,
+    number_position    = number_position,
+    show_atomic_number = show_atomic_number,
+    fill_col           = fill_col,
+    label_value        = label_value,
+    value_digits       = value_digits,
+    base_size          = base_size,
+    symbol_size        = symbol_size
+  )
 
   # ── Scales and theme ──────────────────────────────────────────────────────────
   p <- p +
