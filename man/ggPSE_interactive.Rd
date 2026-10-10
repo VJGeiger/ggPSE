@@ -34,7 +34,8 @@ ggPSE_interactive(
   label_na = TRUE,
   text_color = NULL,
   symbol_nudge = 0,
-  number_nudge = 0
+  number_nudge = 0,
+  highlight_colors = NULL
 )
 }
 \arguments{
@@ -59,16 +60,25 @@ Default "symbol".}
 \item{tile_border}{Hex color for tile borders. If NULL (default), grey border
 on light backgrounds, transparent on dark. Set "transparent" to suppress.}
 
-\item{highlight}{A list of highlight groups. Each group is a list with:
-\describe{
-  \item{symbols}{Character vector of element symbols to highlight.}
-  \item{color}{Fill color for highlighted tiles.}
-  \item{label}{Optional legend label for this group.}
+\item{highlight}{Elements to colour by category. Either
+\itemize{
+  \item a \emph{named list of symbol vectors}, e.g.
+    \code{list("Alkali metals" = c("Li", "Na", "K"), Halogens = c("F", "Cl"))}.
+    The names become the legend labels and the list order the legend
+    order. \code{split(df$symbol, df$category)} gives such a list; use a
+    factor for \code{category} to control the order. Colours come from
+    \code{highlight_colors}.
+  \item or a list of groups, each a list with
+    \code{symbols} (character vector of element symbols), \code{color}
+    (fill color) and an optional \code{label} (legend label), e.g.
+    \code{list(list(symbols = c("Li","Co"), color = "#2166ac",
+    label = "Battery metals"))}.
 }
-Example: \code{list(list(symbols = c("Li","Co"), color = "#2166ac",
-label = "Battery metals"))}}
+Unknown symbols and elements listed in more than one group give a warning
+(in that case the last group wins).}
 
-\item{legend_title}{Character. Legend title. Defaults to value_col.}
+\item{legend_title}{Character. Legend title. Defaults to value_col; for
+\code{highlight} groups there is no title unless you set one.}
 
 \item{show_atomic_number}{Logical. Show atomic numbers inside the tile.
 Default FALSE. See \code{number_position} for where it is drawn.}
@@ -143,6 +153,13 @@ atomic number in tile units (a tile is 0.92 high; positive moves up),
 added to the position set by \code{symbol_position} /
 \code{number_position}. Default \code{0}. The value label is not moved,
 and the overlap warning does not take the nudge into account.}
+
+\item{highlight_colors}{Colours for a named-list \code{highlight}: either a
+vector named by group (order does not matter, extra names are ignored) or
+an unnamed vector matched by position. Any R colour is accepted. Default
+\code{NULL} uses a colour-blind-safe palette (Okabe-Ito, extended beyond 8
+groups). Ignored, with a warning, if the groups carry their own
+\code{color}.}
 }
 \value{
 A \code{girafe} object (interactive SVG).
