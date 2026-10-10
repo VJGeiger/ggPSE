@@ -584,3 +584,62 @@ test_that(".contrast_color is unchanged for hex colours", {
   hx <- sprintf("#%02X%02X%02X", sample(0:255, 300, TRUE), sample(0:255, 300, TRUE), sample(0:255, 300, TRUE))
   expect_equal(vapply(hx, .contrast_color, ""), vapply(hx, old, ""))
 })
+
+
+# ── ggPSE_theme: scales are kept, caller's plot is not modified ───────────────
+
+th_fills <- function(p) ggplot2::ggplot_build(p)$data[[1]]$fill
+th_text  <- function(p) unique(unlist(lapply(ggplot2::ggplot_build(p)$data[-1], function(x) x$colour)))
+th_tile  <- function(p) which(vapply(p$layers, function(l) inherits(l$geom, "GeomTile"), logical(1)))[1]
+th_data  <- data.frame(symbol = c("Li", "Co", "Ni", "Fe"), v = c(0.95, 0.88, 0.75, 0.45))
+th_plot  <- function(...) ggPSE(th_data, "v", color_low = "#ffffff", color_high = "#00aa00",
+                                legend_title = "V", ...)
+
+test_that("minimal / publication / dark keep the colour scales, fills and text colours", {
+  p0 <- th_plot()
+  has <- p0$data$symbol %in% th_data$symbol
+  for (th in c("minimal", "publication", "dark")) {
+    p <- ggPSE_theme(p0, th)
+    expect_equal(length(p$scales$scales), length(p0$scales$scales))
+    expect_equal(th_fills(p)[has], th_fills(p0)[has])        # tiles with data
+    expect_equal(th_text(p), th_text(p0))
+    expect_equal(p$scales$get_scales("fill")$name, "V")
+  }
+})
+
+test_that("highlight plots keep their categorical fills", {
+  h <- ggPSE(highlight = list(A = c("Li", "Na"), B = c("F", "Cl")),
+             highlight_colors = c(A = "#aa0000", B = "#0000aa"))
+  has <- !is.na(h$data$symbol) & h$data$symbol %in% c("Li", "Na", "F", "Cl")
+  for (th in c("minimal", "publication", "dark"))
+    expect_equal(th_fills(ggPSE_theme(h, th))[has], th_fills(h)[has])
+})
+
+test_that("ggPSE_theme does not modify the plot it is given", {
+  p0 <- th_plot(); tl <- th_tile(p0)
+  n0 <- length(p0$scales$scales); b0 <- p0$layers[[tl]]$aes_params$colour
+  na0 <- p0$scales$get_scales("fill")$na.value
+  for (th in c("minimal", "dark", "publication", "crazy")) invisible(ggPSE_theme(p0, th, seed = 1))
+  expect_equal(length(p0$scales$scales), n0)
+  expect_equal(p0$layers[[tl]]$aes_params$colour, b0)
+  expect_equal(p0$scales$get_scales("fill")$na.value, na0)
+})
+
+test_that("publication: hairline borders, white no-data tiles, user choices are kept", {
+  p <- ggPSE_theme(th_plot(), "publication"); tl <- th_tile(p)
+  expect_equal(p$layers[[tl]]$aes_params$colour, "grey30")
+  expect_equal(p$layers[[tl]]$aes_params$linewidth, 0.15)
+  expect_equal(p$scales$get_scales("fill")$na.value, "white")
+  # explicit tile_border and color_na are respected
+  q <- ggPSE_theme(ggPSE(th_data, "v", tile_border = "white", color_na = "#cccccc"), "publication")
+  expect_equal(q$layers[[th_tile(q)]]$aes_params$colour, "white")
+  expect_equal(q$scales$get_scales("fill")$na.value, "#cccccc")
+  # blank table
+  b <- ggPSE_theme(ggPSE(), "publication")
+  expect_equal(b$layers[[th_tile(b)]]$aes_params$fill, "white")
+})
+
+test_that("ggPSE_theme validates its input", {
+  expect_error(ggPSE_theme("minimal"), "ggplot object")
+  expect_no_error(ggplot2::ggplot_build(ggPSE_theme(NULL, "publication")))
+})

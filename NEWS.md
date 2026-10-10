@@ -16,6 +16,13 @@
 - `highlight` now also accepts a named list of symbol vectors, e.g.
   `highlight = split(df$symbol, df$category)`, with the new `highlight_colors` argument
   (named or by position).  `legend_title` now labels the highlight legend. 
+- `ggPSE_theme()` no longer removes your colour scales (`"minimal"`, `"publication"` and
+  `"dark"` used to replace gradients and highlight colours by ggplot2's defaults and turn the
+  symbols salmon). Only `"crazy"` replaces the fills. The plot you pass in is no longer
+  modified, and the docs examples now use `ggPSE(...) |> ggPSE_theme("publication")`.
+- Redesigned `"publication"` theme for print: white background, thin dark-grey tile borders,
+  white tiles for elements without data, compact legend that fits, and plain title, subtitle
+  and caption styles.
 - Text layout is now defined in one internal helper shared by `ggPSE()` and
   `ggPSE_interactive()`.
 - Documentation fix: `base_size` default is 10, not 8.
