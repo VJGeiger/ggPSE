@@ -1,12 +1,17 @@
-^data-raw$        # data generation scripts
-^README\.md$      # GitHub readme, not needed in package
+# data generation scripts
+^data-raw$
+^README\.md$
 ^\.github$
-^TODO\.md$
+^TODO$
+# pkgdown site
 ^docs$
-^vignettes/.*\.html$  # pre-built vignette HTML if any
-^docs$            # pkgdown site
-^.*\.Rproj$       # RStudio project file
-^\.Rproj\.user$   # RStudio user settings
-^vignettes/\.quarto$ # ignoring the quatro cache
+# pre-built vignette HTML if any
+^vignettes/.*\.html$
+# RStudio
+^.*\.Rproj$
+^\.Rproj\.user$
+# quarto cache and non-vignette articles 
+^vignettes/\.quarto$
+^vignettes/articles$
 ^doc$
 ^Meta$
