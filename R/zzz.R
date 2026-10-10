@@ -142,22 +142,55 @@
   symbol_size
 }
 
+# TRUE for tiles that carry no data and whose text should be hidden when
+# label_na = FALSE. Follows what is actually drawn: highlight mode first, then
+# the value gradient. A plot without data/highlight has no "empty" tiles.
+.na_mask <- function(grid, fill_col, highlight) {
+  if (!is.null(highlight))    return(is.na(grid$highlight_label))
+  if (!is.null(fill_col))     return(is.na(grid[[fill_col]]))
+  rep(FALSE, nrow(grid))
+}
+
+# Vertical nudge in tile units (positive = up), a single finite number.
+.check_nudge <- function(x, name) {
+  if (!is.numeric(x) || length(x) != 1L || !is.finite(x))
+    stop(sprintf("'%s' must be a single number (vertical shift in tile units).", name),
+         call. = FALSE)
+  invisible(NULL)
+}
+
+# Fixed text colour override (NULL = automatic contrast colour).
+.check_text_color <- function(text_color) {
+  if (is.null(text_color)) return(invisible(NULL))
+  ok <- is.character(text_color) && length(text_color) == 1L &&
+    !is.na(text_color) &&
+    !inherits(try(grDevices::col2rgb(text_color), silent = TRUE), "try-error")
+  if (!ok)
+    stop("'text_color' must be a single valid colour (e.g. \"grey15\") or NULL.",
+         call. = FALSE)
+  invisible(NULL)
+}
+
 # Adds the symbol, atomic-number and value text layers to a tile plot.
 # `p` must be built on a data frame with columns col, row, symbol,
 # atomic_number and text_color.
 .add_tile_text <- function(p, symbol_position, number_position,
                            show_atomic_number, fill_col, label_value,
-                           value_digits, base_size, symbol_size = NULL) {
+                           value_digits, base_size, symbol_size = NULL,
+                           hide = NULL, symbol_nudge = 0, number_nudge = 0) {
   show_value  <- label_value && !is.null(fill_col)
   symbol_size <- .resolve_symbol_size(symbol_size, base_size)
+  # optional subset of tiles that get text (NULL = inherit all tiles)
+  txt_data <- if (!is.null(hide) && any(hide)) p$data[!hide, , drop = FALSE]
   lay <- .text_layout(symbol_position, show_value)
   s   <- lay$symbol
 
   p <- p +
     ggplot2::geom_text(
+      data = txt_data,
       ggplot2::aes(
         x     = .data[["col"]]  + !!s$dx,
-        y     = -.data[["row"]] + !!s$dy,
+        y     = -.data[["row"]] + !!(s$dy + symbol_nudge),
         label = .data[["symbol"]],
         color = .data[["text_color"]]
       ),
@@ -171,9 +204,10 @@
     n <- .number_layout(number_position)
     p <- p +
       ggplot2::geom_text(
+        data = txt_data,
         ggplot2::aes(
           x     = .data[["col"]]  + !!n$dx,
-          y     = -.data[["row"]] + !!n$dy,
+          y     = -.data[["row"]] + !!(n$dy + number_nudge),
           label = .data[["atomic_number"]],
           color = .data[["text_color"]]
         ),
@@ -188,6 +222,7 @@
     v <- lay$value
     p <- p +
       ggplot2::geom_text(
+        data = txt_data,
         ggplot2::aes(
           x     = .data[["col"]]  + !!v$dx,
           y     = -.data[["row"]] + !!v$dy,

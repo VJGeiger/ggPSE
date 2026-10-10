@@ -72,10 +72,17 @@ ggPSE_interactive <- function(
     height_svg    = 5,
     symbol_position = "center",
     number_position = "top-left",
-    symbol_size     = NULL
+    symbol_size     = NULL,
+    label_na        = TRUE,
+    text_color      = NULL,
+    symbol_nudge    = 0,
+    number_nudge    = 0
 ) {
   symbol_position <- match.arg(symbol_position, .symbol_positions)
   number_position <- match.arg(number_position, .number_positions)
+  .check_text_color(text_color)
+  .check_nudge(symbol_nudge, "symbol_nudge")
+  .check_nudge(number_nudge, "number_nudge")
 
   if (!requireNamespace("ggiraph", quietly = TRUE))
     stop("Package 'ggiraph' is required for ggPSE_interactive(). ",
@@ -176,6 +183,8 @@ ggPSE_interactive <- function(
   } else {
     grid$text_color <- "grey20"
   }
+  # fixed text colour overrides the automatic contrast colour
+  if (!is.null(text_color)) grid$text_color <- text_color
 
   tile_border <- tile_border %||% "transparent"
 
@@ -242,7 +251,10 @@ ggPSE_interactive <- function(
     label_value        = label_value,
     value_digits       = value_digits,
     base_size          = base_size,
-    symbol_size        = symbol_size
+    symbol_size        = symbol_size,
+    hide               = if (!label_na) .na_mask(grid, fill_col, highlight),
+    symbol_nudge       = symbol_nudge,
+    number_nudge       = number_nudge
   )
 
   # ── Scales and theme ──────────────────────────────────────────────────────────

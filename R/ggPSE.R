@@ -46,6 +46,21 @@
 #'   scales with \code{base_size} (\code{base_size * 0.4}). Only the symbol is
 #'   affected; the value and atomic number keep scaling with \code{base_size}.
 #'   Large symbols need more room, see \code{symbol_position}.
+#' @param label_na Logical. Draw symbols (and atomic numbers / values) on tiles
+#'   without data? Default \code{TRUE}. With \code{FALSE}, tiles that have no
+#'   value (or are not part of a \code{highlight} group) stay blank, which is
+#'   useful when only a subset of elements is covered by your data. Ignored
+#'   when neither \code{value_col} nor \code{highlight} is given.
+#' @param text_color A single colour used for all tile text instead of the
+#'   automatic black/white contrast colour. Default \code{NULL}. Useful when the
+#'   fill scale is replaced afterwards (e.g. with
+#'   \code{scale_fill_gradient2()}), because the automatic colour is derived
+#'   from \code{color_low} / \code{color_high}.
+#' @param symbol_nudge,number_nudge Numeric. Vertical shift of the symbol /
+#'   atomic number in tile units (a tile is 0.92 high; positive moves up),
+#'   added to the position set by \code{symbol_position} /
+#'   \code{number_position}. Default \code{0}. The value label is not moved,
+#'   and the overlap warning does not take the nudge into account.
 #' @param number_position Where the atomic number is drawn when
 #'   \code{show_atomic_number = TRUE}: \code{"top-left"} (default),
 #'   \code{"top"}, \code{"top-right"}, \code{"left"}, \code{"right"},
@@ -77,6 +92,13 @@
 #'
 #' # Smaller symbols independent of base_size
 #' ggPSE(battery, value_col = "importance", symbol_size = 3)
+#'
+#' # Only label the elements that have data, with one fixed text colour
+#' ggPSE(battery, value_col = "importance", label_na = FALSE, text_color = "grey15")
+#'
+#' # Fine-tune: symbol slightly above its position
+#' ggPSE(battery, value_col = "importance", symbol_position = "top",
+#'       symbol_nudge = 0.05)
 ggPSE <- function(
     data               = NULL,
     value_col          = NULL,
@@ -97,10 +119,17 @@ ggPSE <- function(
     actinides          = TRUE,
     symbol_position    = "center",
     number_position    = "top-left",
-    symbol_size        = NULL
+    symbol_size        = NULL,
+    label_na           = TRUE,
+    text_color         = NULL,
+    symbol_nudge       = 0,
+    number_nudge       = 0
 ) {
   symbol_position <- match.arg(symbol_position, .symbol_positions)
   number_position <- match.arg(number_position, .number_positions)
+  .check_text_color(text_color)
+  .check_nudge(symbol_nudge, "symbol_nudge")
+  .check_nudge(number_nudge, "number_nudge")
 
   grid <- .ggpse_elements()
 
@@ -148,6 +177,8 @@ ggPSE <- function(
   } else {
     grid$text_color <- "grey20" #standard text color
   }
+  # fixed text colour overrides the automatic contrast colour
+  if (!is.null(text_color)) grid$text_color <- text_color
   # ── Tile border ───────────────────────────────────────────────────────────────
   tile_border <- tile_border %||% "transparent"
   
@@ -221,7 +252,10 @@ ggPSE <- function(
     label_value        = label_value,
     value_digits       = value_digits,
     base_size          = base_size,
-    symbol_size        = symbol_size
+    symbol_size        = symbol_size,
+    hide               = if (!label_na) .na_mask(grid, fill_col, highlight),
+    symbol_nudge       = symbol_nudge,
+    number_nudge       = number_nudge
   )
 
   # ── Scales and theme ──────────────────────────────────────────────────────────

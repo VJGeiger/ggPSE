@@ -406,3 +406,109 @@ test_that("symbol_size is validated", {
   expect_error(ggPSE(symbol_size = NA_real_), "symbol_size")
   expect_no_error(ggPSE(symbol_size = NULL))
 })
+
+
+# ── label_na / text_color ─────────────────────────────────────────────────────
+
+n_text_rows <- function(p) vapply(text_layers(p), nrow, integer(1))
+
+test_that("label_na = FALSE hides text on tiles without data", {
+  d <- data.frame(symbol = c("Fe", "Au", "Cu"), v = c(1, 2, NA))
+  expect_equal(unname(n_text_rows(ggPSE(d, "v"))), c(118L, 118L))             # default
+  expect_equal(unname(n_text_rows(ggPSE(d, "v", label_na = FALSE))), c(2L, 2L))
+  expect_equal(unname(n_text_rows(ggPSE(d, "v", label_na = FALSE,
+                                        show_atomic_number = TRUE))), c(2L, 2L, 2L))
+})
+
+test_that("label_na = FALSE follows highlight groups and ignores blank plots", {
+  h <- list(list(symbols = c("Fe", "Co"), color = "#ff0000", label = "x"))
+  expect_equal(unname(n_text_rows(ggPSE(highlight = h, label_na = FALSE))), 2L)
+  expect_equal(unname(n_text_rows(ggPSE(label_na = FALSE))), 118L)
+})
+
+test_that("text_color overrides the contrast colour and is validated", {
+  d <- data.frame(symbol = c("Fe", "Au"), v = c(1, 2))
+  b <- ggplot2::ggplot_build(ggPSE(d, "v", text_color = "grey15"))
+  cols <- unique(unlist(lapply(b$data[-1], function(x) x$colour)))
+  expect_equal(cols, "grey15")
+  expect_error(ggPSE(text_color = "notacolour"), "text_color")
+  expect_error(ggPSE(text_color = c("red", "blue")), "text_color")
+})
+
+# ── ggPSE_text ────────────────────────────────────────────────────────────────
+
+last_text <- function(p) { b <- text_layers(p); b[[length(b)]] }
+
+test_that("ggPSE_text anchors text at top / center / bottom of the tile", {
+  d    <- data.frame(symbol = "Fe", lab = "a")
+  base <- ggPSE(d, label_value = FALSE)
+  fe   <- .ggpse_elements()[.ggpse_elements()$symbol == "Fe", ]
+  y    <- function(pos, ...) {
+    l <- last_text(ggPSE_text(base, d, "lab", position = pos, ...))
+    l$y[l$label == "a"] + fe$row
+  }
+  expect_equal(c(y("top"), y("center"), y("bottom")), c(0.40, 0, -0.40))
+  expect_equal(y("center", position_nudge = 0.1), 0.1)
+  expect_equal(y("top", position_nudge = -0.05), 0.35)
+  vj <- function(pos) unique(last_text(ggPSE_text(base, d, "lab", position = pos))$vjust)
+  expect_equal(c(vj("top"), vj("center"), vj("bottom")), c(1, 0.5, 0))
+})
+
+test_that("ggPSE_text skips NA / empty text and unmatched elements", {
+  d <- data.frame(symbol = c("Fe", "Au", "Cu", "Xx"), lab = c("a", NA, "", "z"))
+  p <- ggPSE_text(ggPSE(label_value = FALSE), d, "lab")
+  expect_equal(nrow(last_text(p)), 1L)
+})
+
+test_that("ggPSE_text only draws on tiles that are in the plot", {
+  d <- data.frame(symbol = c("Fe", "Au"), lab = c("a", "b"))
+  z <- ggPSE(periods = c(6, 6), lanthanides = FALSE, actinides = FALSE)
+  expect_equal(last_text(ggPSE_text(z, d, "lab"))$label, "b")
+})
+
+test_that("ggPSE_text supports a colour column and multi-line text", {
+  d <- data.frame(symbol = c("Fe", "Au"), lab = c("a\nb", "c"),
+                  clr = c("#ff0000", "#0000ff"), stringsAsFactors = FALSE)
+  l <- last_text(ggPSE_text(ggPSE(), d, "lab", color = "clr"))
+  expect_setequal(l$colour, c("#ff0000", "#0000ff"))
+  expect_true("a\nb" %in% l$label)
+})
+
+test_that("ggPSE_text validates input and survives ggPSE_donut ordering", {
+  d <- data.frame(symbol = "Fe", lab = "a")
+  base <- ggPSE()
+  expect_error(ggPSE_text(base, d, "missing"), "not found")
+  expect_error(ggPSE_text(base, d, "lab", position = "left"))
+  expect_error(ggPSE_text(ggplot2::ggplot(), d, "lab"), "ggPSE")
+  expect_error(ggPSE_text(base, d, "lab", size = -1), "size")
+  expect_warning(ggPSE_text(base, data.frame(symbol = "Xx", lab = "a"), "lab"),
+                 "nothing added")
+  skip_if_not_installed("ggforce")
+  dd <- data.frame(symbol = rep("Fe", 2), category = c("a", "b"), share = c(0.5, 0.5))
+  p <- suppressWarnings(ggPSE_donut(ggPSE(), dd))
+  expect_no_error(suppressWarnings(ggplot2::ggplot_build(ggPSE_text(p, d, "lab"))))
+})
+
+
+# ── symbol_nudge / number_nudge / position_nudge validation ──────────────────
+
+test_that("symbol_nudge and number_nudge shift only their own layer", {
+  d   <- data.frame(symbol = "Fe", v = 1)
+  fe  <- .ggpse_elements()[.ggpse_elements()$symbol == "Fe", ]
+  get <- function(...) text_layers(ggPSE(d, "v", show_atomic_number = TRUE, ...))
+  a <- get(); b <- get(symbol_nudge = 0.1, number_nudge = -0.05)
+  sy <- function(ly) { l <- ly[[1]]; l$y[l$label == "Fe"] }
+  nu <- function(ly) { l <- ly[[2]]; l$y[l$label == fe$atomic_number] }
+  va <- function(ly) { l <- ly[[3]]; l$y[l$label != ""][1] }
+  expect_equal(sy(b) - sy(a), 0.1)
+  expect_equal(nu(b) - nu(a), -0.05)
+  expect_equal(va(b), va(a))                     # value label is not nudged
+})
+
+test_that("nudge arguments are validated", {
+  expect_error(ggPSE(symbol_nudge = "a"), "symbol_nudge")
+  expect_error(ggPSE(number_nudge = c(0, 1)), "number_nudge")
+  expect_error(ggPSE(symbol_nudge = NA_real_), "symbol_nudge")
+  expect_error(ggPSE_text(ggPSE(), data.frame(symbol = "Fe", l = "a"), "l",
+                          position_nudge = "x"), "position_nudge")
+})

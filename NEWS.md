@@ -5,6 +5,14 @@
 - New `number_position` argument to place the atomic number at any of the eight
   border positions of the tile (default `"top-left"`). 
 - New `symbol_size` argument to set the symbol size independently of `base_size`. 
+- New `ggPSE_text()` adds a line of text per tile from a data column (positions
+  `"top"`, `"center"`, `"bottom"`, plus a fine-tuning `position_nudge`), without merging
+  element positions by hand. Call it after `ggPSE_donut()`, which removes all text layers.
+- New `symbol_nudge` and `number_nudge` arguments shift the symbol / atomic number
+  vertically (in tile units) from their `*_position`.
+- New `label_na` argument (hide symbols on tiles without data) and `text_color`
+  (one fixed text colour instead of the automatic contrast colour) in `ggPSE()` and
+  `ggPSE_interactive()`.
 - Text layout is now defined in one internal helper shared by `ggPSE()` and
   `ggPSE_interactive()`.
 - Documentation fix: `base_size` default is 10, not 8.

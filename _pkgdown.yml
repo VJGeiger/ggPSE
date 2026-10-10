@@ -38,6 +38,7 @@ reference:
     desc: "Overlay annotations on tiles"
     contents:
       - ggPSE_badge
+      - ggPSE_text
   - title: "Analytical views"
     desc: "Period, group and trend profiles"
     contents:
