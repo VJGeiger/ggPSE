@@ -21,7 +21,10 @@ ggPSE(
   groups = NULL,
   periods = NULL,
   lanthanides = TRUE,
-  actinides = TRUE
+  actinides = TRUE,
+  symbol_position = "center",
+  number_position = "top-left",
+  symbol_size = NULL
 )
 }
 \arguments{
@@ -57,10 +60,10 @@ label = "Battery metals"))}}
 
 \item{legend_title}{Character. Legend title. Defaults to value_col.}
 
-\item{show_atomic_number}{Logical. Show atomic numbers in top-left of tile.
-Default FALSE.}
+\item{show_atomic_number}{Logical. Show atomic numbers inside the tile.
+Default FALSE. See \code{number_position} for where it is drawn.}
 
-\item{base_size}{Numeric. Base font size in pt. Default 8.}
+\item{base_size}{Numeric. Base font size in pt. Default 10.}
 
 \item{groups}{Integer vector of length 2. Range of IUPAC groups (columns)
 to display, e.g. \code{c(3, 12)} for transition metals only. Default NULL
@@ -74,6 +77,24 @@ periods. Note: lanthanides and actinides are controlled separately via
 \item{lanthanides}{Logical. Show the lanthanide row. Default TRUE.}
 
 \item{actinides}{Logical. Show the actinide row. Default TRUE.}
+
+\item{symbol_position}{Where the element symbol is drawn inside the tile:
+\code{"center"} (default), \code{"top"}, \code{"bottom"}, \code{"left"}
+or \code{"right"}. If a value label is shown (\code{label_value = TRUE}),
+it is placed on the opposite side for \code{"top"} / \code{"bottom"}, and
+stacked under the symbol for \code{"left"} / \code{"right"}.}
+
+\item{number_position}{Where the atomic number is drawn when
+\code{show_atomic_number = TRUE}: \code{"top-left"} (default),
+\code{"top"}, \code{"top-right"}, \code{"left"}, \code{"right"},
+\code{"bottom-left"}, \code{"bottom"} or \code{"bottom-right"}. A
+warning is given if it overlaps with the symbol or value text.}
+
+\item{symbol_size}{Size of the element symbol in ggplot2 text units (mm,
+as in the \code{size} argument of \code{geom_text()}). Default \code{NULL}
+scales with \code{base_size} (\code{base_size * 0.4}). Only the symbol is
+affected; the value and atomic number keep scaling with \code{base_size}.
+Large symbols need more room, see \code{symbol_position}.}
 }
 \value{
 A ggplot object.
@@ -96,4 +117,12 @@ ggPSE(highlight = list(
 
 # Show only transition metals (groups 3-12, periods 4-6)
 ggPSE(groups = c(3, 12), periods = c(4, 6), lanthanides = FALSE, actinides = FALSE)
+
+# Symbol at the top, atomic number in the bottom-right corner
+ggPSE(battery, value_col = "importance",
+      symbol_position = "top", show_atomic_number = TRUE,
+      number_position = "bottom-right")
+
+# Smaller symbols independent of base_size
+ggPSE(battery, value_col = "importance", symbol_size = 3)
 }
