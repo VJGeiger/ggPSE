@@ -43,19 +43,6 @@
 }
 
 # Normalizes values to 0-1 and computes text contrast colors
-.normalize_values <- function(val, color_low, color_high, color_na) {
-  val_min  <- min(val, na.rm = TRUE)
-  val_max  <- max(val, na.rm = TRUE)
-  norm_val <- if (val_max == val_min) {
-    ifelse(is.na(val), 0.5, 0.5)
-  } else {
-    ifelse(is.na(val), 0.5, (val - val_min) / (val_max - val_min))
-  }
-  text_color <- vapply(norm_val, function(ti)
-    .contrast_color(.interp_hex(color_low, color_high, ti)), character(1))
-  list(norm_val = norm_val, text_color = text_color)
-}
-
 # ── Tile text layout ───────────────────────────────────────────────────────────
 # Single source of truth for where the symbol, the value and the atomic number
 # are drawn inside a tile. Used by ggPSE() and ggPSE_interactive().
@@ -410,12 +397,15 @@
 # of the grid's own columns (atomic_number, col, row) is renamed internally, so
 # the data can never overwrite the tile positions.
 # all_columns = TRUE keeps every column of `data` (used for tooltips).
+# text_col: a column with one text colour per element (kept as .pse_text_color).
 .join_element_data <- function(grid, data, symbol_col, value_col = NULL,
                                fn = "ggPSE()", value_arg = "value_col",
-                               all_columns = FALSE, category_hint = FALSE) {
+                               all_columns = FALSE, category_hint = FALSE,
+                               text_col = NULL) {
   data <- .validate_element_data(data, symbol_col, value_col, fn, value_arg, category_hint)
+  if (!is.null(text_col)) .check_colour_values(data[[text_col]], text_col)
 
-  keep <- if (all_columns) names(data) else unique(c(symbol_col, value_col))
+  keep <- if (all_columns) names(data) else unique(c(symbol_col, value_col, text_col))
   data <- data[, keep, drop = FALSE]
   if (symbol_col != "symbol" && "symbol" %in% names(data)) data[["symbol"]] <- NULL
 
@@ -426,10 +416,85 @@
     names(data)[names(data) == value_col] <- out_value
   }
   names(data)[names(data) == symbol_col] <- "symbol"
+  # a per-element text colour is kept under an internal name (it can never clash)
+  if (!is.null(text_col) && !identical(text_col, value_col))
+    names(data)[names(data) == text_col] <- ".pse_text_color"
 
   # other columns that exist in the grid are dropped: the tile positions win
   overlap <- setdiff(intersect(names(data), grid_cols), out_value)
   data    <- data[, !names(data) %in% overlap, drop = FALSE]
 
   list(grid = merge(grid, data, by = "symbol", all.x = TRUE), value_col = out_value)
+}
+
+# ── Fill scale, tile colours and text colours ──────────────────────────────────
+# One source of truth: the fill scale that is added to the plot is also used to
+# find out which colour every tile really gets, and the text colour is chosen
+# against that colour (not against an estimate).
+
+.check_fill_args <- function(colors, color_low, color_high, midpoint, limits) {
+  cols <- colors %||% c(color_low, color_high)
+  if (!is.character(cols) || length(cols) < 2L || anyNA(cols) ||
+      any(vapply(cols, function(x)
+        inherits(try(grDevices::col2rgb(x), silent = TRUE), "try-error"), logical(1))))
+    stop("'colors' must be a character vector of at least two valid colours.", call. = FALSE)
+  if (!is.null(midpoint)) {
+    if (!is.numeric(midpoint) || length(midpoint) != 1L || !is.finite(midpoint))
+      stop("'midpoint' must be a single number.", call. = FALSE)
+    if (length(cols) < 3L)
+      stop("'midpoint' needs at least three 'colors' (low, middle, high).", call. = FALSE)
+  }
+  if (!is.null(limits) && (!is.numeric(limits) || length(limits) != 2L ||
+                           !all(is.finite(limits)) || limits[1] >= limits[2]))
+    stop("'limits' must be two finite numbers c(lower, upper) with lower < upper.",
+         call. = FALSE)
+  invisible(NULL)
+}
+
+# A fresh fill scale. colors (evenly spaced) default to c(color_low, color_high).
+# With `limits` values outside are squished to the end colours, so the colours
+# stay the same from plot to plot (e.g. frames of an animation).
+.fill_scale <- function(colors = NULL, color_low, color_high, midpoint = NULL,
+                        limits = NULL, breaks = ggplot2::waiver(),
+                        labels = ggplot2::waiver(), color_na, name = ggplot2::waiver()) {
+  args <- list(colours = colors %||% c(color_low, color_high), na.value = color_na,
+               name = name, breaks = breaks, labels = labels)
+  if (!is.null(limits)) {
+    args$limits <- limits
+    args$oob    <- scales::squish
+  }
+  if (!is.null(midpoint)) {
+    mid <- midpoint
+    args$rescaler <- function(x, to = c(0, 1), from = range(x, na.rm = TRUE))
+      scales::rescale_mid(x, to, from, mid = mid)
+  }
+  do.call(ggplot2::scale_fill_gradientn, args)
+}
+
+# The colour each tile really gets from a fill scale: build a plain tile plot
+# and read the fills ggplot2 computes (public API only). Row order = grid order.
+.tile_fill_colors <- function(grid, fill_col, fill_scale) {
+  tmp <- ggplot2::ggplot(
+    grid,
+    ggplot2::aes(x = .data[["col"]], y = -.data[["row"]], fill = .data[[fill_col]])
+  ) + ggplot2::geom_tile() + fill_scale
+  as.character(ggplot2::ggplot_build(tmp)$data[[1]]$fill)
+}
+
+# text_color may name a column of `data` (one colour per element) instead of
+# being a single colour. Returns the column name or NULL.
+.text_color_column <- function(text_color, data) {
+  if (is.null(text_color) || is.null(data) || !is.character(text_color) ||
+      length(text_color) != 1L || is.na(text_color)) return(NULL)
+  if (text_color %in% names(data)) text_color else NULL
+}
+
+.check_colour_values <- function(x, what) {
+  x <- as.character(x)
+  bad <- !is.na(x) & vapply(x, function(v)
+    inherits(try(grDevices::col2rgb(v), silent = TRUE), "try-error"), logical(1))
+  if (any(bad))
+    stop(sprintf("Column '%s' contains values that are not colours: %s.", what,
+                 .list_values(x[bad])), call. = FALSE)
+  invisible(NULL)
 }

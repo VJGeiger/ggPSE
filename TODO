@@ -5,10 +5,6 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 ## v0.3.0
 - [ ] split up the profile file in multiple functions
 - [ ] `ggPSE_donut()` : widen the color palette 
-- [ ] fix the font color to be independant on other tiles 
-  (the text colour is derived from `color_low`/`color_high`, not from the real fill scale, and
-  tiles without data use the mid-gradient colour. Planned: `colors`/`limits` in `ggPSE()` and a
-  per-tile `text_color`; `label_na` and a fixed `text_color` are the workarounds for now)
 ---
 
 ## known issues / technical debt
@@ -25,7 +21,6 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 - [ ] `ggPSE_bar()` draws no legend
 - [ ] `symbol_position`/`number_position`: the overlap warning was tuned for `base_size = 10` (tiles of about 1 cm)
 - [ ] `ggPSE_theme("dark")` is a starting point: tiles without data and the symbol colours keep their light-theme look
-  (probably each frame is normalised to its own min/max; a `limits` argument would fix this - untested)
 
 ---
 
@@ -85,6 +80,8 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 - [x] `LazyData`: `ggpse_elements` and `ggpse_grid` available without `data()`
 - [x] `ggPSE_bar()`: bars start at zero, `limits` argument
 - [x] `ggPSE_badge()`: `badge_size`, unknown ISO codes, warnings for extra flags and missing codes
+- [x] colours: `colors`, `midpoint`, `limits`, `breaks`, `labels` in `ggPSE()`/`ggPSE_interactive()`; the text colour is chosen against the colour each tile really gets (also fixes tiles without data and colour changes between animation frames)
+- [x] `text_color` can name a column of `data` (one colour per element)
 
 ---
 

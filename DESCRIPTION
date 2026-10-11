@@ -17,6 +17,7 @@ Depends:
     R (>= 4.1.0)
 Imports:
     ggplot2 (>= 3.4.0),
+    scales (>= 1.2.0),
     rlang (>= 1.1.0)
 Suggests:
     ggflags,

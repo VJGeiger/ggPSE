@@ -737,10 +737,10 @@ test_that("valid data, including symbols outside a zoomed plot, still works", {
 })
 
 
-# ── ggPSE_interactive: data checks and clashing value columns ─────────────────
-# (run only where ggiraph is installed)
-
-int_gg <- function(g) if (!is.null(g$x$ggobj)) g$x$ggobj else g$ggobj
+# ── ggPSE_interactive: data checks, tooltips, clashing value columns ──────────
+# Run only where ggiraph is installed. A real girafe object does not keep the
+# ggplot (it only holds the rendered SVG), so girafe() is replaced by a function
+# that returns the ggplot; the rest of ggPSE_interactive() runs for real.
 
 test_that("ggPSE_interactive validates its data like ggPSE()", {
   skip_if_not_installed("ggiraph")
@@ -750,15 +750,32 @@ test_that("ggPSE_interactive validates its data like ggPSE()", {
   expect_no_error(ggPSE_interactive(data.frame(symbol = c("Fe", "Fe", "Au"), v = c(1, 1, 2)), "v"))
 })
 
-test_that("ggPSE_interactive uses your values for a column named like a tile column", {
+test_that("ggPSE_interactive tooltips show the value, and your tooltip_cols", {
   skip_if_not_installed("ggiraph")
-  g  <- int_gg(ggPSE_interactive(data.frame(symbol = c("Fe", "Au"), row = c(10, 20)), "row"))
-  skip_if(is.null(g), "cannot reach the ggplot inside the girafe object")
-  fe <- g$data[g$data$symbol == "Fe", ]
-  expect_equal(fe$row, .ggpse_elements()$row[.ggpse_elements()$symbol == "Fe"])   # tile did not move
-  expect_match(fe$tooltip, "row: 10", fixed = TRUE)                               # your value, your name
+  skip_if_not_installed("testthat", "3.2.0")      # local_mocked_bindings()
+  testthat::local_mocked_bindings(girafe = function(ggobj, ...) ggobj, .package = "ggiraph")
+  d <- data.frame(symbol = c("Fe", "Au"), v = c(1, 2), note = c("a", "b"))
+  p <- ggPSE_interactive(d, "v")
+  expect_s3_class(p, "ggplot")
+  expect_match(p$data$tooltip[p$data$symbol == "Fe"], "v: 1", fixed = TRUE)
+  p2 <- ggPSE_interactive(d, "v", tooltip_cols = c("note", "v"))
+  expect_match(p2$data$tooltip[p2$data$symbol == "Au"], "note: b", fixed = TRUE)
 })
 
+test_that("ggPSE_interactive uses your values for a column named like a tile column", {
+  skip_if_not_installed("ggiraph")
+  skip_if_not_installed("testthat", "3.2.0")      # local_mocked_bindings()
+  testthat::local_mocked_bindings(girafe = function(ggobj, ...) ggobj, .package = "ggiraph")
+  p  <- ggPSE_interactive(data.frame(symbol = c("Fe", "Au"), row = c(10, 20)), "row")
+  fe <- p$data[p$data$symbol == "Fe", ]
+  expect_equal(fe$row, .ggpse_elements()$row[.ggpse_elements()$symbol == "Fe"])   # tile did not move
+  expect_equal(fe$.pse_value, 10)                                                 # your value
+  expect_match(fe$tooltip, "row: 10", fixed = TRUE)                               # under your name
+  # a column that clashes and is named in tooltip_cols still resolves
+  q <- ggPSE_interactive(ggPSE::ggpse_elements, "atomic_number",
+                         tooltip_cols = c("name", "atomic_number"))
+  expect_match(q$data$tooltip[q$data$symbol == "Fe"], "atomic_number: 26", fixed = TRUE)
+})
 
 # ── data set, badge, profile and bar fixes ────────────────────────────────────
 
@@ -834,4 +851,104 @@ test_that("constant, all-zero and negative values give sensible bars", {
 test_that("ggPSE_bar warns that legend_title is ignored, and only then", {
   expect_warning(ggPSE_bar(bar_d, "risk", legend_title = "Risk"), "no legend")
   expect_no_warning(ggPSE_bar(bar_d, "risk"))
+})
+
+
+# ── fill scale (colors, limits, midpoint, breaks, labels) and text colours ────
+
+fs_fills <- function(p) as.character(ggplot2::ggplot_build(p)$data[[1]]$fill)
+fs_text_ok <- function(p) {                  # text colour = contrast against the fill that is drawn
+  identical(unname(p$data$text_color),
+            unname(vapply(fs_fills(p), .contrast_color, character(1))))
+}
+fs_d <- data.frame(symbol = c("Fe", "Cu", "Au", "Ag"), v = c(-2, 0, 1, 3))
+fs_pal4 <- c("#c2d3cd", "#87b37a", "#efcb68", "#ED6A5E")
+
+test_that("the text colour is chosen against the colour each tile really has", {
+  el <- ggPSE::ggpse_elements
+  expect_true(fs_text_ok(ggPSE(el, "electronegativity", label_value = FALSE)))
+  expect_true(fs_text_ok(ggPSE(el, "electronegativity", colors = fs_pal4)))
+  expect_true(fs_text_ok(ggPSE(el, "electronegativity", limits = c(0, 10))))
+  expect_true(fs_text_ok(ggPSE(fs_d, "v", colors = c("#8fa6cb", "#f5f0e6", "#FF5A5F"), midpoint = 0)))
+})
+
+test_that("colors = c(low, high) is the same as color_low / color_high", {
+  a <- ggPSE(fs_d, "v", color_low = "#ffffff", color_high = "#00aa00")
+  b <- ggPSE(fs_d, "v", colors = c("#ffffff", "#00aa00"))
+  expect_equal(fs_fills(a), fs_fills(b))
+})
+
+test_that("midpoint puts the middle colour at that value; limits squish instead of dropping", {
+  cols <- c("#8fa6cb", "#f5f0e6", "#FF5A5F")
+  p    <- ggPSE(fs_d, "v", colors = cols, midpoint = 0)
+  expect_equal(toupper(fs_fills(p)[p$data$symbol == "Cu"]), toupper(cols[2]))
+  q <- ggPSE(fs_d, "v", colors = c("#000000", "#ffffff"), limits = c(0, 2))
+  f <- fs_fills(q)
+  expect_equal(toupper(f[q$data$symbol == "Fe"]), "#000000")      # -2 is below the limits
+  expect_equal(toupper(f[q$data$symbol == "Ag"]), "#FFFFFF")      #  3 is above the limits
+  expect_false(anyNA(f))
+})
+
+test_that("fixed limits keep colours and text colours the same from frame to frame", {
+  frame <- function(extra) {
+    d <- data.frame(symbol = c("Fe", "Cu", "Au"), v = c(5, extra, 10))
+    ggPSE(d, "v", colors = c("#1f4ec9", "#e0a940", "#2ca02c"), limits = c(1, 25))
+  }
+  f1 <- frame(1); f2 <- frame(20)
+  at <- function(p, col) p[[col]][p$symbol == "Fe"]
+  expect_equal(fs_fills(f1)[f1$data$symbol == "Fe"], fs_fills(f2)[f2$data$symbol == "Fe"])
+  expect_equal(f1$data$text_color[f1$data$symbol == "Fe"], f2$data$text_color[f2$data$symbol == "Fe"])
+  # without limits the same element changes colour with the range of the frame
+  g1 <- ggPSE(data.frame(symbol = c("Fe", "Cu", "Au"), v = c(5, 1, 10)), "v")
+  g2 <- ggPSE(data.frame(symbol = c("Fe", "Cu", "Au"), v = c(5, 20, 10)), "v")
+  expect_false(identical(fs_fills(g1)[g1$data$symbol == "Fe"], fs_fills(g2)[g2$data$symbol == "Fe"]))
+})
+
+test_that("tiles without data get a text colour that suits color_na", {
+  q <- ggPSE(data.frame(symbol = c("Fe", "Au"), v = c(0, 1)), "v",
+             color_low = "#000022", color_high = "#000066")
+  expect_equal(unique(q$data$text_color[is.na(q$data$v)]), "grey20")   # on light grey, not white
+  q2 <- ggPSE(data.frame(symbol = c("Fe", "Au"), v = c(0, 1)), "v", color_na = "#101010")
+  expect_equal(unique(q2$data$text_color[is.na(q2$data$v)]), "white")
+})
+
+test_that("breaks and labels reach the legend", {
+  p  <- ggPSE(fs_d, "v", breaks = c(0, 2), labels = c("zero", "two"))
+  sc <- ggplot2::ggplot_build(p)$plot$scales$get_scales("fill")
+  expect_equal(sc$get_breaks(), c(0, 2))
+  expect_equal(sc$get_labels(), c("zero", "two"))
+})
+
+test_that("text_color can be a column with one colour per element", {
+  dd <- data.frame(symbol = c("Fe", "Au", "Cu"), v = c(1, 2, 3), tc = c("red", NA, "navy"))
+  p  <- ggPSE(dd, "v", text_color = "tc")
+  got <- stats::setNames(p$data$text_color, p$data$symbol)
+  expect_equal(unname(got[c("Fe", "Cu")]), c("red", "navy"))
+  expect_equal(unname(got["Au"]), unname(vapply(fs_fills(p)[p$data$symbol == "Au"], .contrast_color, "")))  # NA = automatic
+  # a column that happens to be called text_color
+  x <- dd; names(x)[names(x) == "tc"] <- "text_color"
+  expect_equal(ggPSE(x, "v", text_color = "text_color")$data$text_color, p$data$text_color)
+  # a single colour keeps working, bad input is an error
+  expect_equal(unique(ggPSE(dd, "v", text_color = "grey15")$data$text_color), "grey15")
+  expect_error(ggPSE(transform(dd, tc = c("red", "nope", "navy")), "v", text_color = "tc"), "not colours")
+  expect_error(ggPSE(dd, "v", text_color = "notacolour"), "text_color")
+})
+
+test_that("colors, midpoint and limits are validated", {
+  expect_error(ggPSE(fs_d, "v", colors = "red"), "at least two")
+  expect_error(ggPSE(fs_d, "v", colors = c("red", "notacolour")), "valid colours")
+  expect_error(ggPSE(fs_d, "v", midpoint = 0), "three")
+  expect_error(ggPSE(fs_d, "v", colors = c("red", "white", "blue"), midpoint = "a"), "single number")
+  expect_error(ggPSE(fs_d, "v", limits = c(2, 1)), "lower < upper")
+  expect_error(ggPSE(fs_d, "v", limits = 1), "two finite numbers")
+})
+
+test_that("ggPSE_interactive accepts the same colour arguments", {
+  skip_if_not_installed("ggiraph")
+  skip_if_not_installed("testthat", "3.2.0")
+  testthat::local_mocked_bindings(girafe = function(ggobj, ...) ggobj, .package = "ggiraph")
+  dd <- data.frame(symbol = c("Fe", "Au"), v = c(1, 2), tc = c("red", "navy"))
+  p  <- ggPSE_interactive(dd, "v", colors = c("#1f4ec9", "#e0a940"), limits = c(0, 5), text_color = "tc")
+  expect_equal(p$data$text_color[match(c("Fe", "Au"), p$data$symbol)], c("red", "navy"))
+  expect_equal(p$scales$get_scales("fill")$limits, c(0, 5))
 })

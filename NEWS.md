@@ -48,6 +48,15 @@
   `read.csv()`) now give a warning.
 - `ggPSE_profile()` gives a clear error if `period` or `group` is not a single number.
 - Documentation: `tile_border` no longer claims to detect the background.
+- Colours: `ggPSE()` and `ggPSE_interactive()` have new arguments `colors` (two or more
+  colours), `midpoint` (diverging scales), `limits` (a fixed colour range, e.g. for the frames
+  of an animation), `breaks` and `labels`, so the fill scale no longer has to be replaced
+  afterwards. The text colour of each tile is now chosen against the colour the tile really
+  gets (it was estimated from `color_low`/`color_high` on the range of each call, which
+  changed it from frame to frame, used the wrong colour space and gave tiles without data the
+  mid-gradient colour). Fills are unchanged; in the default gradient the symbol colour changes
+  on a few tiles where it was wrong (4 of 87 in the electronegativity example).
+- `text_color` can now name a column in `data` with one colour per element.
 - Text layout is now defined in one internal helper shared by `ggPSE()` and
   `ggPSE_interactive()`.
 - Documentation fix: `base_size` default is 10, not 8.

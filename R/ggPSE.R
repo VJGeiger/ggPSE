@@ -13,8 +13,22 @@
 #'   Default "symbol".
 #' @param label_value Logical. Print numeric values inside tiles. Default TRUE.
 #' @param value_digits Integer. Decimal places for displayed values. Default 2.
-#' @param color_low Hex color for the low end of the gradient. Default "#fdf0f2".
-#' @param color_high Hex color for the high end of the gradient. Default "#9a031e".
+#' @param color_low,color_high Colors of the low and high end of the gradient.
+#'   Defaults \code{"#fdf0f2"} and \code{"#9a031e"}. Shorthand for
+#'   \code{colors = c(color_low, color_high)}.
+#' @param colors Character vector of two or more colors for the gradient, from
+#'   low to high, evenly spaced. Overrides \code{color_low} and
+#'   \code{color_high}. The text colour of every tile is chosen against the
+#'   colour the tile really gets, so you do not have to replace the fill scale
+#'   afterwards.
+#' @param midpoint Numeric. For diverging scales: the value that gets the middle
+#'   one of (at least three) \code{colors}, e.g. \code{midpoint = 0}.
+#' @param limits Numeric vector \code{c(lower, upper)}: the values that get the
+#'   first and the last color. Fix it to keep colours (and the legend) identical
+#'   between plots, e.g. for the frames of an animation; without it the range of
+#'   each plot's own data is used. Values outside the limits get the end colors.
+#' @param breaks,labels Legend breaks (values) and their labels, as in
+#'   \code{ggplot2::scale_fill_gradientn()}.
 #' @param color_na Hex color for elements with no data. Default "#f0f0f0".
 #' @param tile_border Color for tile borders. If NULL (default) no border is
 #'   drawn (\code{"transparent"}). Set a color such as \code{"white"} or
@@ -70,11 +84,11 @@
 #'   value (or are not part of a \code{highlight} group) stay blank, which is
 #'   useful when only a subset of elements is covered by your data. Ignored
 #'   when neither \code{value_col} nor \code{highlight} is given.
-#' @param text_color A single colour used for all tile text instead of the
-#'   automatic black/white contrast colour. Default \code{NULL}. Useful when the
-#'   fill scale is replaced afterwards (e.g. with
-#'   \code{scale_fill_gradient2()}), because the automatic colour is derived
-#'   from \code{color_low} / \code{color_high}.
+#' @param text_color Colour of the tile text instead of the automatic
+#'   black/white contrast colour. Either a single colour for all tiles, or the
+#'   name of a column in \code{data} with one colour per element (\code{NA} = automatic
+#'   colour for that element), e.g. \code{ifelse(x > 200, "white", "grey15")}.
+#'   Default \code{NULL}.
 #' @param symbol_nudge,number_nudge Numeric. Vertical shift of the symbol /
 #'   atomic number in tile units (a tile is 0.92 high; positive moves up),
 #'   added to the position set by \code{symbol_position} /
@@ -123,6 +137,14 @@
 #' # Fine-tune: symbol slightly above its position
 #' ggPSE(battery, value_col = "importance", symbol_position = "top",
 #'       symbol_nudge = 0.05)
+#'
+#' # Own palette with a fixed range (same colours in every plot / animation frame)
+#' ggPSE(battery, value_col = "importance",
+#'       colors = c("#1f4ec9", "#e0a940", "#2ca02c"), limits = c(0, 1))
+#'
+#' # Diverging scale around zero
+#' ggPSE(data.frame(symbol = c("Li", "Fe", "Cu"), E = c(-3.04, -0.44, 0.34)),
+#'       value_col = "E", colors = c("#8fa6cb", "#f5f0e6", "#FF5A5F"), midpoint = 0)
 ggPSE <- function(
     data               = NULL,
     value_col          = NULL,
@@ -148,11 +170,18 @@ ggPSE <- function(
     text_color         = NULL,
     symbol_nudge       = 0,
     number_nudge       = 0,
-    highlight_colors = NULL
+    highlight_colors = NULL,
+    colors          = NULL,
+    midpoint        = NULL,
+    limits          = NULL,
+    breaks          = ggplot2::waiver(),
+    labels          = ggplot2::waiver()
 ) {
   symbol_position <- match.arg(symbol_position, .symbol_positions)
   number_position <- match.arg(number_position, .number_positions)
-  .check_text_color(text_color)
+  tc_col <- .text_color_column(text_color, data)      # text_color can name a column of `data`
+  if (is.null(tc_col)) .check_text_color(text_color)
+  .check_fill_args(colors, color_low, color_high, midpoint, limits)
   .check_nudge(symbol_nudge, "symbol_nudge")
   .check_nudge(number_nudge, "number_nudge")
   highlight <- .normalize_highlight(highlight, highlight_colors)
@@ -167,7 +196,8 @@ ggPSE <- function(
   data_value_col <- value_col
   if (!is.null(data)) {
     joined         <- .join_element_data(grid, data, symbol_col, value_col,
-                                         fn = "ggPSE()", category_hint = TRUE)
+                                         fn = "ggPSE()", category_hint = TRUE,
+                                         text_col = tc_col)
     grid           <- joined$grid
     data_value_col <- joined$value_col
   }
@@ -188,11 +218,14 @@ ggPSE <- function(
   
   # ── Text contrast color ───────────────────────────────────────────────────────
   # helper from zzz.R
+  # one fill scale for the plot and for the colour estimate: the text colour is
+  # chosen against the colour each tile really gets (also for tiles without data)
+  make_fill_scale <- function(name)
+    .fill_scale(colors, color_low, color_high, midpoint, limits, breaks, labels,
+                color_na, name)
   if (!is.null(fill_col) && fill_col %in% names(grid)) {
-    val <- grid[[fill_col]]
-    nv  <- .normalize_values(val, color_low, color_high, color_na)
-    norm_val        <- nv$norm_val
-    grid$text_color <- nv$text_color
+    tile_fill       <- .tile_fill_colors(grid, fill_col, make_fill_scale(ggplot2::waiver()))
+    grid$text_color <- vapply(tile_fill, .contrast_color, character(1))
   } else if (!is.null(highlight)) {
     hi_colors <- rep(color_na, nrow(grid))
     for (grp in highlight) {
@@ -202,8 +235,15 @@ ggPSE <- function(
   } else {
     grid$text_color <- "grey20" #standard text color
   }
-  # fixed text colour overrides the automatic contrast colour
-  if (!is.null(text_color)) grid$text_color <- text_color
+  # a given text colour overrides the automatic contrast colour: either one
+  # colour for all tiles, or a column with one colour per element (NA = automatic)
+  if (!is.null(tc_col)) {
+    user_tc         <- as.character(grid$.pse_text_color)
+    grid$text_color <- ifelse(is.na(user_tc), grid$text_color, user_tc)
+    grid$.pse_text_color <- NULL
+  } else if (!is.null(text_color)) {
+    grid$text_color <- text_color
+  }
   # ── Tile border ───────────────────────────────────────────────────────────────
   tile_border <- tile_border %||% "transparent"
   
@@ -246,12 +286,7 @@ ggPSE <- function(
         height    = 0.92,
         linewidth = 0.3
       ) +
-      ggplot2::scale_fill_gradient(
-        low      = color_low,
-        high     = color_high,
-        na.value = color_na,
-        name     = legend_title
-      )
+      make_fill_scale(legend_title)
   } else {
     # Blank table
     p <- p +
