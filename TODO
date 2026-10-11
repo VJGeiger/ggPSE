@@ -6,20 +6,26 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 - [ ] split up the profile file in multiple functions
 - [ ] `ggPSE_donut()` : widen the color palette 
 - [ ] fix the font color to be independant on other tiles 
+  (the text colour is derived from `color_low`/`color_high`, not from the real fill scale, and
+  tiles without data use the mid-gradient colour. Planned: `colors`/`limits` in `ggPSE()` and a
+  per-tile `text_color`; `label_na` and a fixed `text_color` are the workarounds for now)
 ---
 
 ## known issues / technical debt
 - [ ] `ggPSE_interactive()` is not well integrated, this needs some refinement
-- [ ] `ggPSE_badge()`: the new features like hiearachy do not integrate well. Also the hardcoded ISO country names might need a better solution.		
-- [ ] `ggnewscale` in Suggests: when both `value_col` and `highlight` are supplied
+- [ ] `ggPSE_badge()`: the new features like hiearachy do not integrate well. Also the hardcoded ISO country names might need a better solution
+  (the table covers only part of the ISO 3166-1 codes; unknown codes are now shown as given).
+- [ ] `ggnewscale` (not yet listed in Suggests): when both `value_col` and `highlight` are supplied
   simultaneously, scale conflict occurs - proper fix needs `ggnewscale::new_scale_fill()`
-- [ ] `ggPSE_donut()` still ahs a scale confilct.
-- [ ] `ggPSE_bubble()` combined with `ggPSE()`: using both together requires
-  manual legend cleanup - document the recommended pattern or add a combined helper
-- [ ] `ggflags` not on CRAN - installation requires `remotes::install_github("rensa/ggflags")`
-  and system libraries (`libjpeg-turbo-devel`, `libpng-devel` on Fedora/RHEL)
+- [ ] `ggPSE_donut()` still has a scale confilct (it fails after a gradient base plot).
+- [ ] `ggPSE_donut()` removes all text layers of the plot it receives, including value labels; call `ggPSE_text()` after it.
+- [ ] `ggPSE_donut()` uses ggforce: ggforce 0.4.x ignores `linewidth` (the declared minimum is 0.4.0).
+- [ ] `ggPSE_bubble()` combined with `ggPSE()`: using both together requires manual legend cleanup 
 - [ ] `ggPSE_profile()` has outgrown the function and should be split.
-- [ ] Using `ggPSE` for produicing frames in loops to create videos can lead to change in font color
+- [ ] `ggPSE_bar()` draws no legend
+- [ ] `symbol_position`/`number_position`: the overlap warning was tuned for `base_size = 10` (tiles of about 1 cm)
+- [ ] `ggPSE_theme("dark")` is a starting point: tiles without data and the symbol colours keep their light-theme look
+  (probably each frame is normalised to its own min/max; a `limits` argument would fix this - untested)
 
 ---
 
@@ -68,6 +74,20 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 
 ---
 
+## v0.3.0 - done so far
+
+- [x] `symbol_position`, `number_position`, `symbol_size`, `symbol_nudge`, `number_nudge` in `ggPSE()` and `ggPSE_interactive()`
+- [x] `label_na` (blank tiles without data) and `text_color` (one fixed text colour)
+- [x] `ggPSE_text()`: extra text lines per tile from a data column
+- [x] categorical `highlight` as a named list of symbol vectors + `highlight_colors`; named colours no longer crash
+- [x] `ggPSE_theme()` keeps colour scales and does not modify the plot it receives; `"publication"` redesigned for print
+- [x] data checks: element symbols, repeated rows, numeric values; value columns named like tile columns work
+- [x] `LazyData`: `ggpse_elements` and `ggpse_grid` available without `data()`
+- [x] `ggPSE_bar()`: bars start at zero, `limits` argument
+- [x] `ggPSE_badge()`: `badge_size`, unknown ISO codes, warnings for extra flags and missing codes
+
+---
+
 ## v0.2.0 - updates for usecases
 
 ### new features
@@ -76,12 +96,12 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 - [x] `ggPSE_profile()`: Showing trendlines over periods or groups incl f-block
 - [x] `ggPSE_save()`: wrapper for ggsave
 - [x] update `ggPSE_badge()`: add sizing of the flags as another parameter to create a sort of hierarchy.
-- [x] `pse_sparkline()` - mini chart per tile for time-series data (experimental)
+- [x] `ggPSE_sparkline()` - mini chart per tile for time-series data (experimental)
   - [x] sparkbar: A per-tile bar chart displaying continous values.
   - [x] Make sparkline and sparkbar experimental features
   - [x] Documentation of the experimental features
 - [x] Fix group line ordering bug in `ggPSE_profile()`
-- [x] Add `pse_theme()` - a few pre-built theme variants (minimal, dark, publication)
+- [x] Add `ggPSE_theme()` - a few pre-built theme variants (minimal, dark, publication)
 - [x] Change to MIT license
 - [x] pkgdown site setup  
 
