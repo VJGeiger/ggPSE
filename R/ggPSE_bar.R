@@ -5,6 +5,12 @@
 #' in length proportionally to the normalised value. All tiles are drawn in
 #' a neutral background so the bars are the primary visual signal.
 #'
+#' By default the bars start at zero, so their length is proportional to the
+#' value (twice the value, twice the length). If the values contain negative
+#' numbers the bars start at the minimum instead. Use \code{limits} to choose
+#' the scale yourself, e.g. \code{limits = range(x)} to start at the smallest
+#' value (that value then has no visible bar). The plot has no legend.
+#'
 #' @param data A data frame containing element symbols and a value column.
 #'   If NULL, a blank table is drawn.
 #' @param value_col Character. Column in data to map to bar length.
@@ -18,9 +24,14 @@
 #'   tile. Default 0.2 (20 percent of tile height/width).
 #' @param color_na Hex color for tile backgrounds. Default "#ffffff".
 #' @param tile_border Hex color for tile borders. Default "transparent".
-#' @param legend_title Character. Legend title. Defaults to value_col.
+#' @param legend_title Ignored: the bar plot has no legend. Kept so that existing
+#'   calls keep working; a warning is given if it is set.
 #' @param show_atomic_number Logical. Show atomic numbers. Default FALSE.
 #' @param base_size Numeric. Base font size in pt. Default 10.
+#' @param limits Numeric vector of length 2, \code{c(lower, upper)}: the values
+#'   that correspond to an empty and a full-length bar. Values outside are drawn
+#'   clipped (with a warning). Default \code{NULL} uses \code{c(min(0, min(x)),
+#'   max(x))}.
 #'
 #' @return A ggplot object.
 #' @export
@@ -32,13 +43,14 @@
 #' )
 #'
 #' # Bar growing from the bottom
-#' ggPSE_bar(supply_risk, value_col = "risk",
-#'           legend_title = "Supply risk")
+#' ggPSE_bar(supply_risk, value_col = "risk")
 #'
 #' # Bar growing from the left
 #' ggPSE_bar(supply_risk, value_col = "risk",
-#'           bar_side = "left", bar_color = "#e63946",
-#'           legend_title = "Supply risk")
+#'           bar_side = "left", bar_color = "#e63946")
+#'
+#' # Start the bars at the smallest value instead of zero
+#' ggPSE_bar(supply_risk, value_col = "risk", limits = range(supply_risk$risk))
 ggPSE_bar <- function(
     data               = NULL,
     value_col          = NULL,
@@ -51,13 +63,19 @@ ggPSE_bar <- function(
     tile_border        = "transparent",
     legend_title       = NULL,
     show_atomic_number = FALSE,
-    base_size          = 10
+    base_size          = 10,
+    limits             = NULL
 ) {
   bar_side <- match.arg(bar_side, c("bottom", "top", "left", "right"))
+  if (!is.null(legend_title))
+    warning("ggPSE_bar() draws no legend; 'legend_title' is ignored.", call. = FALSE)
+  if (!is.null(limits) && (!is.numeric(limits) || length(limits) != 2L ||
+                           anyNA(limits) || !all(is.finite(limits)) || limits[1] >= limits[2]))
+    stop("'limits' must be two finite numbers c(lower, upper) with lower < upper.",
+         call. = FALSE)
   
   grid <- .ggpse_elements()
   
-  legend_title    <- legend_title %||% value_col %||% ""
 
   # validate the data and join it onto the tiles; helper in zzz.R
   if (!is.null(data)) {
@@ -85,11 +103,21 @@ ggPSE_bar <- function(
   if (!is.null(value_col) && value_col %in% names(grid)) {
     grid_bars <- grid[!is.na(grid[[value_col]]), , drop = FALSE]
     
-    # Normalise values to 0-1
-    val_min <- min(grid_bars[[value_col]], na.rm = TRUE)
-    val_max <- max(grid_bars[[value_col]], na.rm = TRUE)
-    grid_bars$bar_norm <- (grid_bars[[value_col]] - val_min) /
-      (val_max - val_min)
+    # Normalise values to 0-1. Default: bars start at zero (or at the minimum
+    # if there are negative values), so that length is proportional to value.
+    vals <- grid_bars[[value_col]]
+    if (is.null(limits)) {
+      lims <- c(min(0, vals), max(vals))
+    } else {
+      lims <- limits
+      n_out <- sum(vals < lims[1] | vals > lims[2])
+      if (n_out > 0)
+        warning(sprintf("%d value(s) lie outside 'limits' and are drawn clipped.", n_out),
+                call. = FALSE)
+    }
+    span <- lims[2] - lims[1]
+    # no range (e.g. all values zero): no visible bars instead of NaN
+    grid_bars$bar_norm <- if (span > 0) pmin(pmax((vals - lims[1]) / span, 0), 1) else 0
     
     hw <- 0.46                  # half of tile size (0.92 / 2)
     th <- bar_thickness * 0.92  # bar thickness in data units

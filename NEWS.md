@@ -35,6 +35,19 @@
   the tile positions instead of your values).
 - `ggPSE_bubble()` without `size_col` draws a blank table instead of failing.
 - README: fixed typos `gPSE_donut` and `ggpse_elemts`.
+- `ggPSE_bar()`: bars now start at zero by default, so their length is proportional to the
+  value; before, the smallest value got no bar and constant values gave `NaN`. New `limits`
+  argument; `limits = range(x)` gives the previous scaling. `legend_title` was never used
+  (bars have no legend) and now warns when set. This changes the look of existing bar plots.
+- The element tables are lazy-loaded (`LazyData: true`): `ggpse_elements` and `ggpse_grid`
+  are available after `library(ggPSE)` without `data()`, and the hard-coded copy of the
+  tile table inside the package is gone.
+- `ggPSE_badge()`: `badge_size` was multiplied by 0.22 when ggflags is not installed; an
+  unknown country code is shown as given instead of `NA` in the legend; elements with more
+  than 3 countries and rows without a country code (e.g. Namibia's `"NA"` read by
+  `read.csv()`) now give a warning.
+- `ggPSE_profile()` gives a clear error if `period` or `group` is not a single number.
+- Documentation: `tile_border` no longer claims to detect the background.
 - Text layout is now defined in one internal helper shared by `ggPSE()` and
   `ggPSE_interactive()`.
 - Documentation fix: `base_size` default is 10, not 8.

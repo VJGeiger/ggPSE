@@ -84,6 +84,15 @@ ggPSE_badge <- function(
   grid <- .ggpse_elements()
   names(data)[names(data) == symbol_col] <- "symbol"
 
+  na_country <- is.na(data[[country_col]])
+  if (any(na_country)) {
+    warning(sprintf(paste0(
+      "%d row(s) without a country code were ignored. Note that read.csv() reads ",
+      "Namibia's code \"NA\" as missing; use na.strings = \"\" when reading."),
+      sum(na_country)), call. = FALSE)
+    data <- data[!na_country, , drop = FALSE]
+  }
+
   badge_data <- merge(
     grid,
     data[, c("symbol", country_col), drop = FALSE],
@@ -95,6 +104,12 @@ ggPSE_badge <- function(
   badge_data$flag_idx <- as.integer(stats::ave(
     seq_len(nrow(badge_data)), badge_data$symbol, FUN = seq_along
   ))
+  too_many <- unique(badge_data$symbol[badge_data$flag_idx > 3L])
+  if (length(too_many))
+    warning(sprintf(paste0(
+      "ggPSE_badge() draws at most 3 flags per element; only the first 3 countries ",
+      "(in the order of your data) are shown for: %s."),
+      paste(too_many, collapse = ", ")), call. = FALSE)
   badge_data <- badge_data[badge_data$flag_idx <= 3L, , drop = FALSE]
 
   badge_data$flag_x <- badge_data$col + x_anchor -
@@ -105,7 +120,7 @@ ggPSE_badge <- function(
   base_flag_size <- if (requireNamespace("ggflags", quietly = TRUE))
     badge_size %||% 3.5
   else
-    badge_size %||% (base_size %||% 10) * 0.22
+    badge_size %||% ((base_size %||% 10) * 0.22)
 
   badge_data$flag_size <- if (hierarchy)
     hierarchy_scale[badge_data$flag_idx] * base_flag_size
@@ -195,8 +210,10 @@ ggPSE_badge <- function(
   unique_countries <- sort(unique(tolower(data[[country_col]])))
   legend_df <- data.frame(
     code = unique_countries,
-    name = vapply(unique_countries, function(x)
-      iso_names[x] %||% toupper(x), character(1)),
+    name = vapply(unique_countries, function(x) {
+      nm <- unname(iso_names[x])
+      if (is.na(nm)) toupper(x) else nm        # unknown code: show it as given
+    }, character(1)),
     x    = 1,
     y    = rev(seq_along(unique_countries)),
     stringsAsFactors = FALSE

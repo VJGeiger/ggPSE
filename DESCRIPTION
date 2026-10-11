@@ -12,6 +12,7 @@ Description: A ggplot2-based toolkit for visualizing data on the periodic
     Developed with AI assistance from Claude (Anthropic, 2026).
 License: MIT + file LICENSE
 Encoding: UTF-8
+LazyData: true
 Depends:
     R (>= 4.1.0)
 Imports:

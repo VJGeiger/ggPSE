@@ -16,8 +16,9 @@
 #' @param color_low Hex color for the low end of the gradient. Default "#fdf0f2".
 #' @param color_high Hex color for the high end of the gradient. Default "#9a031e".
 #' @param color_na Hex color for elements with no data. Default "#f0f0f0".
-#' @param tile_border Hex color for tile borders. If NULL (default), grey border
-#'   on light backgrounds, transparent on dark. Set "transparent" to suppress.
+#' @param tile_border Color for tile borders. If NULL (default) no border is
+#'   drawn (\code{"transparent"}). Set a color such as \code{"white"} or
+#'   \code{"grey30"} to draw borders.
 #' @param highlight Elements to colour by category. Either
 #'   \itemize{
 #'     \item a \emph{named list of symbol vectors}, e.g.

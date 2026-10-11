@@ -758,3 +758,80 @@ test_that("ggPSE_interactive uses your values for a column named like a tile col
   expect_equal(fe$row, .ggpse_elements()$row[.ggpse_elements()$symbol == "Fe"])   # tile did not move
   expect_match(fe$tooltip, "row: 10", fixed = TRUE)                               # your value, your name
 })
+
+
+# ── data set, badge, profile and bar fixes ────────────────────────────────────
+
+test_that("the data sets are lazy-loaded and the tile table comes from them", {
+  expect_equal(nrow(ggPSE::ggpse_grid), 118L)
+  expect_equal(nrow(ggPSE::ggpse_elements), 118L)
+  expect_identical(.ggpse_elements(), ggPSE::ggpse_grid)
+})
+
+test_that("ggPSE_badge: badge_size is used as given; extra flags and NA codes warn", {
+  d  <- data.frame(symbol = c("Li", "Co"), country = c("CL", "CD"))
+  ly <- function(p) p$layers[[length(p$layers)]]$data
+  expect_equal(unique(ly(ggPSE_badge(data = d, badge_size = 5))$flag_size), 5)
+  four <- data.frame(symbol = rep("Co", 4), country = c("CD", "AU", "CN", "ID"))
+  expect_warning(ggPSE_badge(data = four), "at most 3 flags.*Co")
+  expect_equal(sum(ly(suppressWarnings(ggPSE_badge(data = four)))$symbol == "Co"), 3L)
+  expect_warning(ggPSE_badge(data = data.frame(symbol = c("Li", "Co"), country = c(NA, "CD"))),
+                 "without a country code")
+})
+
+test_that("ggPSE_badge legend shows unknown country codes as given", {
+  skip_if_not_installed("patchwork")
+  r  <- ggPSE_badge(data = data.frame(symbol = c("Li", "Co"), country = c("XX", "CD")),
+                    show_legend = TRUE)
+  lg <- r[[2]]$data
+  expect_equal(lg$name[lg$code == "xx"], "XX")
+  expect_false(anyNA(lg$name))
+})
+
+test_that("ggPSE_profile rejects vectors for period and group", {
+  el <- ggPSE::ggpse_elements
+  expect_error(ggPSE_profile(el, "atomic_weight", period = c(1, 2)), "single integer")
+  expect_error(ggPSE_profile(el, "atomic_weight", group = c(1, 2)), "single integer")
+  expect_error(ggPSE_profile(el, "atomic_weight", period = 9), "single integer")
+})
+
+bar_len <- function(p) {
+  # GeomTile inherits from GeomRect, so match the class exactly
+  k   <- which(vapply(p$layers, function(l) class(l$geom)[1] == "GeomRect", logical(1)))[1]
+  lay <- p$layers[[k]]$data
+  stats::setNames(lay$xmax - lay$xmin, lay$symbol)
+}
+bar_d <- data.frame(symbol = c("Li", "Co", "Cu"), risk = c(0.62, 0.91, 0.45))
+
+test_that("bars start at zero by default: length is proportional to the value", {
+  len <- bar_len(ggPSE_bar(bar_d, "risk"))
+  expect_equal(len[["Co"]], 0.92)
+  expect_equal(len[["Li"]], 0.92 * 0.62 / 0.91)
+  expect_gt(len[["Cu"]], 0)                         # the smallest value is visible
+  expect_equal(len[["Co"]] / len[["Cu"]], 0.91 / 0.45)
+})
+
+test_that("limits = range() reproduces the old min-max scaling; limits clip with a warning", {
+  len <- bar_len(ggPSE_bar(bar_d, "risk", limits = range(bar_d$risk)))
+  expect_equal(len[["Cu"]], 0)
+  expect_equal(len[["Co"]], 0.92)
+  expect_warning(l2 <- bar_len(ggPSE_bar(bar_d, "risk", limits = c(0, 0.8))), "outside 'limits'")
+  expect_equal(l2[["Co"]], 0.92)                     # clipped to a full bar
+  expect_error(ggPSE_bar(bar_d, "risk", limits = c(1, 0)), "lower < upper")
+  expect_error(ggPSE_bar(bar_d, "risk", limits = 1), "two finite numbers")
+})
+
+test_that("constant, all-zero and negative values give sensible bars", {
+  const <- bar_len(ggPSE_bar(data.frame(symbol = c("Fe", "Au"), v = c(1, 1)), "v"))
+  expect_equal(unname(const), c(0.92, 0.92))                    # was NaN
+  zero  <- bar_len(ggPSE_bar(data.frame(symbol = c("Fe", "Au"), v = c(0, 0)), "v"))
+  expect_equal(unname(zero), c(0, 0))
+  neg   <- bar_len(ggPSE_bar(data.frame(symbol = c("Fe", "Au", "Cu"), v = c(-1, 0, 1)), "v"))
+  expect_equal(neg[["Fe"]], 0)                                  # negatives: start at the minimum
+  expect_equal(neg[["Cu"]], 0.92)
+})
+
+test_that("ggPSE_bar warns that legend_title is ignored, and only then", {
+  expect_warning(ggPSE_bar(bar_d, "risk", legend_title = "Risk"), "no legend")
+  expect_no_warning(ggPSE_bar(bar_d, "risk"))
+})

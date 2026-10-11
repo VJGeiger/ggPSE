@@ -114,13 +114,13 @@ ggPSE_profile <- function(
   d_block_cols <- 3:12
 
   if (mode == "period") {
-    if (!period %in% 1:7)
-      stop("'period' must be an integer between 1 and 7.")
+    if (length(period) != 1L || !is.numeric(period) || !period %in% 1:7)
+      stop("'period' must be a single integer between 1 and 7.", call. = FALSE)
     slice     <- grid[grid$row == period, ]
     has_d_gap <- period %in% 1:3
   } else if (mode == "group") {
-    if (!group %in% 1:18)
-      stop("'group' must be an integer between 1 and 18.")
+    if (length(group) != 1L || !is.numeric(group) || !group %in% 1:18)
+      stop("'group' must be a single integer between 1 and 18.", call. = FALSE)
     slice     <- grid[grid$col == group & grid$row %in% 1:7, ]
     has_d_gap <- FALSE
   } else if (mode == "lanthanides") {
