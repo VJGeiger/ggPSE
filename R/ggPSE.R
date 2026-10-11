@@ -170,12 +170,12 @@ ggPSE <- function(
     text_color         = NULL,
     symbol_nudge       = 0,
     number_nudge       = 0,
-    highlight_colors = NULL,
-    colors          = NULL,
-    midpoint        = NULL,
-    limits          = NULL,
-    breaks          = ggplot2::waiver(),
-    labels          = ggplot2::waiver()
+    highlight_colors   = NULL,
+    colors             = NULL,
+    midpoint           = NULL,
+    limits             = NULL,
+    breaks             = ggplot2::waiver(),
+    labels             = ggplot2::waiver()
 ) {
   symbol_position <- match.arg(symbol_position, .symbol_positions)
   number_position <- match.arg(number_position, .number_positions)
@@ -190,7 +190,7 @@ ggPSE <- function(
 
   # ── Subset grid by groups / periods / lanthanides / actinides ────────────────
   grid <- .filter_grid(grid, groups, periods, lanthanides, actinides) #helper in zzz.R
-  
+
   # validate the data (element symbols, one row per element, numeric values)
   # and join it onto the tiles; helper in zzz.R
   data_value_col <- value_col
@@ -201,21 +201,21 @@ ggPSE <- function(
     grid           <- joined$grid
     data_value_col <- joined$value_col
   }
-  
+
   highlight_title <- legend_title            # NULL = no title for highlight groups
   legend_title <- legend_title %||% value_col %||% ""
   fill_col     <- if (!is.null(data_value_col) && data_value_col %in% names(grid)) data_value_col else NULL
-  
+
   # ── Bake highlight colors into grid ──────────────────────────────────────────
   grid$highlight_label <- NA_character_
-  
+
   if (!is.null(highlight)) {
     for (grp in highlight) {
       idx <- grid$symbol %in% grp$symbols
       grid$highlight_label[idx] <- grp$label %||% grp$color
     }
   }
-  
+
   # ── Text contrast color ───────────────────────────────────────────────────────
   # helper from zzz.R
   # one fill scale for the plot and for the colour estimate: the text colour is
@@ -246,7 +246,7 @@ ggPSE <- function(
   }
   # ── Tile border ───────────────────────────────────────────────────────────────
   tile_border <- tile_border %||% "transparent"
-  
+
   # ── Build tile layer ──────────────────────────────────────────────────────────
   p <- ggplot2::ggplot(
     grid,
@@ -255,7 +255,7 @@ ggPSE <- function(
       y = -.data[["row"]]
     )
   )
-  
+
   if (!is.null(highlight)) {
     # Highlight mode: discrete fill mapped to group labels
     hi_values <- stats::setNames(
@@ -298,7 +298,7 @@ ggPSE <- function(
         linewidth = 0.3
       )
   }
-  
+
   # ── Text layers (symbol, atomic number, value) ───────────────────────────────
   # layout logic lives in zzz.R so ggPSE() and ggPSE_interactive() stay in sync
   .check_text_collision(symbol_position, number_position, show_atomic_number,
@@ -330,6 +330,6 @@ ggPSE <- function(
       legend.text      = ggplot2::element_text(size = base_size * 0.85),
       plot.margin      = ggplot2::margin(4, 4, 4, 4)
     )
-  
+
   p
 }

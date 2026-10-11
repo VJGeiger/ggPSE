@@ -8,3 +8,6 @@
 #' @importFrom grDevices col2rgb
 #' @importFrom utils head
 "_PACKAGE"
+
+# column that ggPSE_bar() creates and then uses inside within()
+utils::globalVariables("bar_norm")

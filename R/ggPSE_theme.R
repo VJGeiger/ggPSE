@@ -168,7 +168,7 @@ ggPSE_theme <- function(
                                                names(color_map))]
     tile_data$crazy_text <- text_colors[match(tile_data$symbol,
                                               names(text_map))]
-    
+
     plot +
       ggplot2::geom_tile(
         data        = tile_data,

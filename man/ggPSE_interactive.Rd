@@ -35,7 +35,12 @@ ggPSE_interactive(
   text_color = NULL,
   symbol_nudge = 0,
   number_nudge = 0,
-  highlight_colors = NULL
+  highlight_colors = NULL,
+  colors = NULL,
+  midpoint = NULL,
+  limits = NULL,
+  breaks = ggplot2::waiver(),
+  labels = ggplot2::waiver()
 )
 }
 \arguments{
@@ -54,9 +59,9 @@ Default "symbol".}
 
 \item{value_digits}{Integer. Decimal places for displayed values. Default 2.}
 
-\item{color_low}{Hex color for the low end of the gradient. Default "#fdf0f2".}
-
-\item{color_high}{Hex color for the high end of the gradient. Default "#9a031e".}
+\item{color_low, color_high}{Colors of the low and high end of the gradient.
+Defaults \code{"#fdf0f2"} and \code{"#9a031e"}. Shorthand for
+\code{colors = c(color_low, color_high)}.}
 
 \item{color_na}{Hex color for elements with no data. Default "#f0f0f0".}
 
@@ -146,11 +151,11 @@ value (or are not part of a \code{highlight} group) stay blank, which is
 useful when only a subset of elements is covered by your data. Ignored
 when neither \code{value_col} nor \code{highlight} is given.}
 
-\item{text_color}{A single colour used for all tile text instead of the
-automatic black/white contrast colour. Default \code{NULL}. Useful when the
-fill scale is replaced afterwards (e.g. with
-\code{scale_fill_gradient2()}), because the automatic colour is derived
-from \code{color_low} / \code{color_high}.}
+\item{text_color}{Colour of the tile text instead of the automatic
+black/white contrast colour. Either a single colour for all tiles, or the
+name of a column in \code{data} with one colour per element (\code{NA} = automatic
+colour for that element), e.g. \code{ifelse(x > 200, "white", "grey15")}.
+Default \code{NULL}.}
 
 \item{symbol_nudge, number_nudge}{Numeric. Vertical shift of the symbol /
 atomic number in tile units (a tile is 0.92 high; positive moves up),
@@ -164,6 +169,23 @@ an unnamed vector matched by position. Any R colour is accepted. Default
 \code{NULL} uses a colour-blind-safe palette (Okabe-Ito, extended beyond 8
 groups). Ignored, with a warning, if the groups carry their own
 \code{color}.}
+
+\item{colors}{Character vector of two or more colors for the gradient, from
+low to high, evenly spaced. Overrides \code{color_low} and
+\code{color_high}. The text colour of every tile is chosen against the
+colour the tile really gets, so you do not have to replace the fill scale
+afterwards.}
+
+\item{midpoint}{Numeric. For diverging scales: the value that gets the middle
+one of (at least three) \code{colors}, e.g. \code{midpoint = 0}.}
+
+\item{limits}{Numeric vector \code{c(lower, upper)}: the values that get the
+first and the last color. Fix it to keep colours (and the legend) identical
+between plots, e.g. for the frames of an animation; without it the range of
+each plot's own data is used. Values outside the limits get the end colors.}
+
+\item{breaks, labels}{Legend breaks (values) and their labels, as in
+\code{ggplot2::scale_fill_gradientn()}.}
 }
 \value{
 A \code{girafe} object (interactive SVG).

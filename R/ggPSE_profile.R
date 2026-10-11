@@ -224,7 +224,7 @@ ggPSE_profile <- function(
   if (mode == "group") {
     # Vertical line plot — period 1 at top, period 7 at bottom
     line_data$y_idx <- seq_len(nrow(line_data))  # 1,2,3... in row order
-    
+
     line_plot <- ggplot2::ggplot(
       line_data,
       ggplot2::aes(x = .data[[value_col]], y = .data[["y_idx"]])

@@ -1,4 +1,4 @@
-# Null-coalescing operator — returns x if not NULL, otherwise 
+# Null-coalescing operator — returns x if not NULL, otherwise
 `%||%` <- function(x, y) if (!is.null(x)) x else y
 
 # Returns a dark or white text colour depending on which contrasts better with
@@ -28,17 +28,17 @@
       stop("'groups' must be a numeric vector of length 2, e.g. c(3, 12).")
     grid <- grid[grid$col >= min(groups) & grid$col <= max(groups), ]
   }
-  
+
   if (!is.null(periods)) {
     if (length(periods) != 2 || !is.numeric(periods))
       stop("'periods' must be a numeric vector of length 2, e.g. c(4, 6).")
     grid <- grid[grid$row > 7 | (grid$row >= min(periods) &
                                    grid$row <= max(periods)), ]
   }
-  
+
   if (!lanthanides) grid <- grid[grid$row != 9L, ]
   if (!actinides)   grid <- grid[grid$row != 10L, ]
-  
+
   grid
 }
 

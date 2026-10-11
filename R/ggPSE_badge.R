@@ -65,7 +65,7 @@ ggPSE_badge <- function(
     badge_color      = "#333333"
 ) {
   legend_position <- match.arg(legend_position)
-  
+
   # error handling, patchwork can lead to problems
   if (show_legend && !requireNamespace("patchwork", quietly = TRUE))
     stop("Package 'patchwork' is required when show_legend = TRUE. ",
@@ -115,7 +115,7 @@ ggPSE_badge <- function(
   badge_data$flag_x <- badge_data$col + x_anchor -
     (badge_data$flag_idx - 1) * flag_spacing
   badge_data$flag_y <- -badge_data$row + y_anchor
-  
+
   # ggflags is not on CRAN, but simplest solution to the flags
   base_flag_size <- if (requireNamespace("ggflags", quietly = TRUE))
     badge_size %||% 3.5

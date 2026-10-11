@@ -73,9 +73,9 @@ ggPSE_bar <- function(
                            anyNA(limits) || !all(is.finite(limits)) || limits[1] >= limits[2]))
     stop("'limits' must be two finite numbers c(lower, upper) with lower < upper.",
          call. = FALSE)
-  
+
   grid <- .ggpse_elements()
-  
+
 
   # validate the data and join it onto the tiles; helper in zzz.R
   if (!is.null(data)) {
@@ -85,7 +85,7 @@ ggPSE_bar <- function(
     value_col <- joined$value_col
   }
   grid$text_color <- "grey20"
-  
+
   # ── Base tiles ────────────────────────────────────────────────────────────────
   p <- ggplot2::ggplot(
     grid,
@@ -98,11 +98,11 @@ ggPSE_bar <- function(
       height    = 0.92,
       linewidth = 0.3
     )
-  
+
   # ── Bar layer ─────────────────────────────────────────────────────────────────
   if (!is.null(value_col) && value_col %in% names(grid)) {
     grid_bars <- grid[!is.na(grid[[value_col]]), , drop = FALSE]
-    
+
     # Normalise values to 0-1. Default: bars start at zero (or at the minimum
     # if there are negative values), so that length is proportional to value.
     vals <- grid_bars[[value_col]]
@@ -118,10 +118,10 @@ ggPSE_bar <- function(
     span <- lims[2] - lims[1]
     # no range (e.g. all values zero): no visible bars instead of NaN
     grid_bars$bar_norm <- if (span > 0) pmin(pmax((vals - lims[1]) / span, 0), 1) else 0
-    
+
     hw <- 0.46                  # half of tile size (0.92 / 2)
     th <- bar_thickness * 0.92  # bar thickness in data units
-    
+
     # bar_norm controls the length along the tile edge (0 to full tile width)
     # th controls the fixed narrow dimension of the bar
     grid_bars <- switch(bar_side,
@@ -150,7 +150,7 @@ ggPSE_bar <- function(
                           ymax <- -row + hw
                         })
     )
-    
+
     p <- p +
       ggplot2::geom_rect(
         data        = grid_bars,
@@ -165,7 +165,7 @@ ggPSE_bar <- function(
         inherit.aes = FALSE
       )
   }
-  
+
   # ── Symbol text ───────────────────────────────────────────────────────────────
   p <- p +
     ggplot2::geom_text(
@@ -174,7 +174,7 @@ ggPSE_bar <- function(
       size     = base_size * 0.40,
       vjust    = 0.5
     )
-  
+
   if (show_atomic_number) {
     p <- p +
       ggplot2::geom_text(
@@ -190,7 +190,7 @@ ggPSE_bar <- function(
         fontface = "plain"
       )
   }
-  
+
   # ── Scales and theme ──────────────────────────────────────────────────────────
   p <- p +
     ggplot2::scale_color_identity() +
@@ -203,6 +203,6 @@ ggPSE_bar <- function(
       legend.text      = ggplot2::element_text(size = base_size * 0.85),
       plot.margin      = ggplot2::margin(4, 4, 4, 4)
     )
-  
+
   p
 }

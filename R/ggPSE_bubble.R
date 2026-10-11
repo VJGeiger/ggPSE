@@ -47,7 +47,7 @@ ggPSE_bubble <- function(
     base_size          = 10
 ) {
   grid <- .ggpse_elements()
-  
+
   legend_title <- legend_title %||% size_col %||% ""
 
   # validate the data and join it onto the tiles; helper in zzz.R
@@ -57,10 +57,10 @@ ggPSE_bubble <- function(
     grid     <- joined$grid
     size_col <- joined$value_col
   }
-  
+
   # Text is always dark on the neutral background
   grid$text_color <- "grey20"
-  
+
   p <- ggplot2::ggplot(
     grid,
     ggplot2::aes(x = .data[["col"]], y = -.data[["row"]])
@@ -73,11 +73,11 @@ ggPSE_bubble <- function(
       height    = 0.92,
       linewidth = 0.3
     )
-  
+
   # Bubble layer
   if (!is.null(size_col) && size_col %in% names(grid)) {
     grid_bubbles <- grid[!is.na(grid[[size_col]]), , drop = FALSE]
-    
+
     p <- p +
       ggplot2::geom_point(
         data   = grid_bubbles,
@@ -97,7 +97,7 @@ ggPSE_bubble <- function(
         name  = legend_title
       )
   }
-  
+
   # Symbol text on top of bubble
   p <- p +
     ggplot2::geom_text(
@@ -106,7 +106,7 @@ ggPSE_bubble <- function(
       size     = base_size * 0.40,
       vjust    = 0.5
     )
-  
+
   if (show_atomic_number) {
     p <- p +
       ggplot2::geom_text(
@@ -122,7 +122,7 @@ ggPSE_bubble <- function(
         fontface = "plain"
       )
   }
-  
+
   p <- p +
     ggplot2::scale_color_identity() +
     ggplot2::coord_fixed() +
@@ -134,6 +134,6 @@ ggPSE_bubble <- function(
       legend.text      = ggplot2::element_text(size = base_size * 0.85),
       plot.margin      = ggplot2::margin(4, 4, 4, 4)
     )
-  
+
   p
 }

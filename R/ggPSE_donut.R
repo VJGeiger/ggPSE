@@ -142,7 +142,7 @@ ggPSE_donut <- function(
   # ── Color palette ─────────────────────────────────────────────────────────────
   categories <- unique(arc_data$category)
   n          <- length(categories)
-  
+
   # set color palette
   if (is.null(colors)) {
     default_pal <- c(
