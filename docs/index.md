@@ -8,6 +8,14 @@ so plots can be extended with themes, annotations, faceting, and
 
 ------------------------------------------------------------------------
 
+## Disclaimer
+
+This is an old script I wrote back in the day of my PhD thesis and never
+uploaded. Furthermore, this is my first published R project, so, keep
+that in mind…
+
+------------------------------------------------------------------------
+
 ## Contents
 
 - [Installation](#installation)
@@ -243,7 +251,7 @@ supply <- data.frame(
  )
 
 ggPSE(groups = c(3,12)) |>
-gPSE_donut(supply, category_col = "category", share_col = "share", plot_all = FALSE)
+ggPSE_donut(supply, category_col = "category", share_col = "share", plot_all = FALSE)
 ```
 
 ![](reference/figures/ggPSE_plot_donut.png)
@@ -375,7 +383,7 @@ for ease. For more custom plots, `ggsave()` can be used as well.
 
 ``` r
 
-data(ggpse_elemts)
+data(ggpse_elements)
 p <- ggPSE(ggpse_elements, value_col = "electronegativity")
 
 ggPSE_save(p, "electronegativity.png")   # PNG 18x14cm at 400dpi

@@ -1,6 +1,6 @@
 Package: ggPSE
 Title: Periodic Table Visualization Using ggplot2
-Version: 0.2.0
+Version: 0.3.1
 Authors@R: person("Valentin", "Geiger", email = "geiger@westbor.com",
     role = c("aut", "cre"), comment = c(ORCID = "0000-0001-8794-2583"))
 Description: A ggplot2-based toolkit for visualizing data on the periodic

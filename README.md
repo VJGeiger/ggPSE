@@ -13,6 +13,7 @@
 **ggPSE** is a [ggplot2 ](https://ggplot2.tidyverse.org/)-based toolkit for visualizing element-, group- or period-resolved data on the periodic table of elements. Every function returns a standard `ggplot2` object - so plots can be extended with themes, annotations, faceting, and `patchwork`.
 
 ---
+
 ## Disclaimer
 
 This is an old script I wrote back in the day of my PhD thesis and never uploaded.

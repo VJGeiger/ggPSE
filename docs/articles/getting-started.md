@@ -115,6 +115,7 @@ ggPSE_bar(supply_risk, value_col = "risk",
           bar_side     = "bottom",
           bar_color    = "#2166ac",
           legend_title = "Supply risk score")
+#> Warning: ggPSE_bar() draws no legend; 'legend_title' is ignored.
 ```
 
 ![](getting-started_files/figure-html/bar-1.png)

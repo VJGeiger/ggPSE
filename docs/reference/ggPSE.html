@@ -11,7 +11,7 @@ further modified."><meta property="og:image" content="https://vjgeiger.github.io
 
     <a class="navbar-brand me-2" href="../index.html">ggPSE</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,7 +64,15 @@ further modified.</p>
 <span>  groups <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  periods <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lanthanides <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  actinides <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  actinides <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  symbol_position <span class="op">=</span> <span class="st">"center"</span>,</span>
+<span>  number_position <span class="op">=</span> <span class="st">"top-left"</span>,</span>
+<span>  symbol_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  label_na <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  text_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  symbol_nudge <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  number_nudge <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  highlight_colors <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -73,8 +81,11 @@ further modified.</p>
 
 
 <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
-<dd><p>A data frame containing element symbols and a value column.
-If NULL, a blank table using the NA color is drawn.</p></dd>
+<dd><p>A data frame with the element symbols (case-sensitive, e.g.
+<code>"Cl"</code>) and the value column. Rows may repeat for an element (e.g. one
+row per country) as long as they agree on the value; different values for
+the same element, unknown or <code>NA</code> symbols and non-numeric values give an
+error. If <code>NULL</code>, a blank table using the NA color is drawn.</p></dd>
 
 
 <dt id="arg-value-col">value_col<a class="anchor" aria-label="anchor" href="#arg-value-col"></a></dt>
@@ -107,36 +118,39 @@ Default "symbol".</p></dd>
 
 
 <dt id="arg-tile-border">tile_border<a class="anchor" aria-label="anchor" href="#arg-tile-border"></a></dt>
-<dd><p>Hex color for tile borders. If NULL (default), grey border
-on light backgrounds, transparent on dark. Set "transparent" to suppress.</p></dd>
+<dd><p>Color for tile borders. If NULL (default) no border is
+drawn (<code>"transparent"</code>). Set a color such as <code>"white"</code> or
+<code>"grey30"</code> to draw borders.</p></dd>
 
 
 <dt id="arg-highlight">highlight<a class="anchor" aria-label="anchor" href="#arg-highlight"></a></dt>
-<dd><p>A list of highlight groups. Each group is a list with:</p><dl><dt>symbols</dt>
-<dd><p>Character vector of element symbols to highlight.</p></dd>
-
-  <dt>color</dt>
-<dd><p>Fill color for highlighted tiles.</p></dd>
-
-  <dt>label</dt>
-<dd><p>Optional legend label for this group.</p></dd>
-
-
-</dl><p>Example: <code>list(list(symbols = c("Li","Co"), color = "#2166ac",
-label = "Battery metals"))</code></p></dd>
+<dd><p>Elements to colour by category. Either</p><ul><li><p>a <em>named list of symbol vectors</em>, e.g.
+    <code>list("Alkali metals" = c("Li", "Na", "K"), Halogens = c("F", "Cl"))</code>.
+    The names become the legend labels and the list order the legend
+    order. <code>split(df$symbol, df$category)</code> gives such a list; use a
+    factor for <code>category</code> to control the order. Colours come from
+    <code>highlight_colors</code>.</p></li>
+<li><p>or a list of groups, each a list with
+    <code>symbols</code> (character vector of element symbols), <code>color</code>
+    (fill color) and an optional <code>label</code> (legend label), e.g.
+    <code>list(list(symbols = c("Li","Co"), color = "#2166ac",
+    label = "Battery metals"))</code>.</p></li>
+</ul><p>Unknown symbols and elements listed in more than one group give a warning
+(in that case the last group wins).</p></dd>
 
 
 <dt id="arg-legend-title">legend_title<a class="anchor" aria-label="anchor" href="#arg-legend-title"></a></dt>
-<dd><p>Character. Legend title. Defaults to value_col.</p></dd>
+<dd><p>Character. Legend title. Defaults to value_col; for
+<code>highlight</code> groups there is no title unless you set one.</p></dd>
 
 
 <dt id="arg-show-atomic-number">show_atomic_number<a class="anchor" aria-label="anchor" href="#arg-show-atomic-number"></a></dt>
-<dd><p>Logical. Show atomic numbers in top-left of tile.
-Default FALSE.</p></dd>
+<dd><p>Logical. Show atomic numbers inside the tile.
+Default FALSE. See <code>number_position</code> for where it is drawn.</p></dd>
 
 
 <dt id="arg-base-size">base_size<a class="anchor" aria-label="anchor" href="#arg-base-size"></a></dt>
-<dd><p>Numeric. Base font size in pt. Default 8.</p></dd>
+<dd><p>Numeric. Base font size in pt. Default 10.</p></dd>
 
 
 <dt id="arg-groups">groups<a class="anchor" aria-label="anchor" href="#arg-groups"></a></dt>
@@ -159,6 +173,63 @@ periods. Note: lanthanides and actinides are controlled separately via
 <dt id="arg-actinides">actinides<a class="anchor" aria-label="anchor" href="#arg-actinides"></a></dt>
 <dd><p>Logical. Show the actinide row. Default TRUE.</p></dd>
 
+
+<dt id="arg-symbol-position">symbol_position<a class="anchor" aria-label="anchor" href="#arg-symbol-position"></a></dt>
+<dd><p>Where the element symbol is drawn inside the tile:
+<code>"center"</code> (default), <code>"top"</code>, <code>"bottom"</code>, <code>"left"</code>
+or <code>"right"</code>. If a value label is shown (<code>label_value = TRUE</code>),
+it is placed on the opposite side for <code>"top"</code> / <code>"bottom"</code>, and
+stacked under the symbol for <code>"left"</code> / <code>"right"</code>.</p></dd>
+
+
+<dt id="arg-number-position">number_position<a class="anchor" aria-label="anchor" href="#arg-number-position"></a></dt>
+<dd><p>Where the atomic number is drawn when
+<code>show_atomic_number = TRUE</code>: <code>"top-left"</code> (default),
+<code>"top"</code>, <code>"top-right"</code>, <code>"left"</code>, <code>"right"</code>,
+<code>"bottom-left"</code>, <code>"bottom"</code> or <code>"bottom-right"</code>. A
+warning is given if it overlaps with the symbol or value text.</p></dd>
+
+
+<dt id="arg-symbol-size">symbol_size<a class="anchor" aria-label="anchor" href="#arg-symbol-size"></a></dt>
+<dd><p>Size of the element symbol in ggplot2 text units (mm,
+as in the <code>size</code> argument of <code>geom_text()</code>). Default <code>NULL</code>
+scales with <code>base_size</code> (<code>base_size * 0.4</code>). Only the symbol is
+affected; the value and atomic number keep scaling with <code>base_size</code>.
+Large symbols need more room, see <code>symbol_position</code>.</p></dd>
+
+
+<dt id="arg-label-na">label_na<a class="anchor" aria-label="anchor" href="#arg-label-na"></a></dt>
+<dd><p>Logical. Draw symbols (and atomic numbers / values) on tiles
+without data? Default <code>TRUE</code>. With <code>FALSE</code>, tiles that have no
+value (or are not part of a <code>highlight</code> group) stay blank, which is
+useful when only a subset of elements is covered by your data. Ignored
+when neither <code>value_col</code> nor <code>highlight</code> is given.</p></dd>
+
+
+<dt id="arg-text-color">text_color<a class="anchor" aria-label="anchor" href="#arg-text-color"></a></dt>
+<dd><p>A single colour used for all tile text instead of the
+automatic black/white contrast colour. Default <code>NULL</code>. Useful when the
+fill scale is replaced afterwards (e.g. with
+<code>scale_fill_gradient2()</code>), because the automatic colour is derived
+from <code>color_low</code> / <code>color_high</code>.</p></dd>
+
+
+<dt id="arg-symbol-nudge-number-nudge">symbol_nudge, number_nudge<a class="anchor" aria-label="anchor" href="#arg-symbol-nudge-number-nudge"></a></dt>
+<dd><p>Numeric. Vertical shift of the symbol /
+atomic number in tile units (a tile is 0.92 high; positive moves up),
+added to the position set by <code>symbol_position</code> /
+<code>number_position</code>. Default <code>0</code>. The value label is not moved,
+and the overlap warning does not take the nudge into account.</p></dd>
+
+
+<dt id="arg-highlight-colors">highlight_colors<a class="anchor" aria-label="anchor" href="#arg-highlight-colors"></a></dt>
+<dd><p>Colours for a named-list <code>highlight</code>: either a
+vector named by group (order does not matter, extra names are ignored) or
+an unnamed vector matched by position. Any R colour is accepted. Default
+<code>NULL</code> uses a colour-blind-safe palette (Okabe-Ito, extended beyond 8
+groups). Ignored, with a warning, if the groups carry their own
+<code>color</code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -180,9 +251,35 @@ periods. Note: lanthanides and actinides are controlled separately via
 <span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="ggPSE-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Categories from a named list, with your own colours</span></span></span>
+<span class="r-in"><span><span class="fu">ggPSE</span><span class="op">(</span>highlight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Alkali <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Li"</span>, <span class="st">"Na"</span>, <span class="st">"K"</span><span class="op">)</span>, Halogens <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"F"</span>, <span class="st">"Cl"</span>, <span class="st">"Br"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>      highlight_colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Alkali <span class="op">=</span> <span class="st">"firebrick"</span>, Halogens <span class="op">=</span> <span class="st">"steelblue"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>      legend_title <span class="op">=</span> <span class="st">"Group"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="ggPSE-3.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Show only transition metals (groups 3-12, periods 4-6)</span></span></span>
 <span class="r-in"><span><span class="fu">ggPSE</span><span class="op">(</span>groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">12</span><span class="op">)</span>, periods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">6</span><span class="op">)</span>, lanthanides <span class="op">=</span> <span class="cn">FALSE</span>, actinides <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="ggPSE-3.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="ggPSE-4.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Symbol at the top, atomic number in the bottom-right corner</span></span></span>
+<span class="r-in"><span><span class="fu">ggPSE</span><span class="op">(</span><span class="va">battery</span>, value_col <span class="op">=</span> <span class="st">"importance"</span>,</span></span>
+<span class="r-in"><span>      symbol_position <span class="op">=</span> <span class="st">"top"</span>, show_atomic_number <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>      number_position <span class="op">=</span> <span class="st">"bottom-right"</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>number_position = "bottom-right" overlaps with the symbol or value text when symbol_position = "top"; choose another number_position.</span>
+<span class="r-plt img"><img src="ggPSE-5.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Smaller symbols independent of base_size</span></span></span>
+<span class="r-in"><span><span class="fu">ggPSE</span><span class="op">(</span><span class="va">battery</span>, value_col <span class="op">=</span> <span class="st">"importance"</span>, symbol_size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="ggPSE-6.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Only label the elements that have data, with one fixed text colour</span></span></span>
+<span class="r-in"><span><span class="fu">ggPSE</span><span class="op">(</span><span class="va">battery</span>, value_col <span class="op">=</span> <span class="st">"importance"</span>, label_na <span class="op">=</span> <span class="cn">FALSE</span>, text_color <span class="op">=</span> <span class="st">"grey15"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="ggPSE-7.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Fine-tune: symbol slightly above its position</span></span></span>
+<span class="r-in"><span><span class="fu">ggPSE</span><span class="op">(</span><span class="va">battery</span>, value_col <span class="op">=</span> <span class="st">"importance"</span>, symbol_position <span class="op">=</span> <span class="st">"top"</span>,</span></span>
+<span class="r-in"><span>      symbol_nudge <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="ggPSE-8.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -33,7 +33,7 @@
 
     <a class="navbar-brand me-2" href="index.html">ggPSE</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,6 +71,12 @@
 
 <p><strong>ggPSE</strong> is a <a href="https://ggplot2.tidyverse.org/" class="external-link">ggplot2</a>-based toolkit for visualizing element-, group- or period-resolved data on the periodic table of elements. Every function returns a standard <code>ggplot2</code> object - so plots can be extended with themes, annotations, faceting, and <code>patchwork</code>.</p>
 <hr>
+<div class="section level2">
+<h2 id="disclaimer">Disclaimer<a class="anchor" aria-label="anchor" href="#disclaimer"></a>
+</h2>
+<p>This is an old script I wrote back in the day of my PhD thesis and never uploaded. Furthermore, this is my first published R project, so, keep that in mind…</p>
+<hr>
+</div>
 <div class="section level2">
 <h2 id="contents">Contents<a class="anchor" aria-label="anchor" href="#contents"></a>
 </h2>
@@ -260,7 +266,7 @@
 <span> <span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/ggPSE.html">ggPSE</a></span><span class="op">(</span>groups <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>,<span class="fl">12</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span><span class="fu">gPSE_donut</span><span class="op">(</span><span class="va">supply</span>, category_col <span class="op">=</span> <span class="st">"category"</span>, share_col <span class="op">=</span> <span class="st">"share"</span>, plot_all <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="reference/ggPSE_donut.html">ggPSE_donut</a></span><span class="op">(</span><span class="va">supply</span>, category_col <span class="op">=</span> <span class="st">"category"</span>, share_col <span class="op">=</span> <span class="st">"share"</span>, plot_all <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/ggPSE_plot_donut.png"></p>
 <hr>
 <div class="section level3">
@@ -351,7 +357,7 @@
 </h2>
 <p>Figures can be saved via the wrapper <code><a href="reference/ggPSE_save.html">ggPSE_save()</a></code> for ease. For more custom plots, <code>ggsave()</code> can be used as well.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ggpse_elemts</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ggpse_elements</span><span class="op">)</span></span>
 <span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ggPSE.html">ggPSE</a></span><span class="op">(</span><span class="va">ggpse_elements</span>, value_col <span class="op">=</span> <span class="st">"electronegativity"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/ggPSE_save.html">ggPSE_save</a></span><span class="op">(</span><span class="va">p</span>, <span class="st">"electronegativity.png"</span><span class="op">)</span>   <span class="co"># PNG 18x14cm at 400dpi</span></span>

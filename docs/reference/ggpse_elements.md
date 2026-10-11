@@ -8,7 +8,7 @@ external data.
 ## Usage
 
 ``` r
-data(ggpse_elements)
+ggpse_elements
 ```
 
 ## Format

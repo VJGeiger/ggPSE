@@ -9,7 +9,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ggPSE</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,38 @@
       <small>Source: <a href="https://github.com/VJGeiger/ggPSE/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.3.0" id="ggpse-030">ggPSE 0.3.0<a class="anchor" aria-label="anchor" href="#ggpse-030"></a></h2>
+<ul><li>New <code>symbol_position</code> argument in <code><a href="../reference/ggPSE.html">ggPSE()</a></code> and <code><a href="../reference/ggPSE_interactive.html">ggPSE_interactive()</a></code> to draw the element symbol at the <code>"center"</code> (default), <code>"top"</code>, <code>"bottom"</code>, <code>"left"</code> or <code>"right"</code> of each tile.</li>
+<li>New <code>number_position</code> argument to place the atomic number at any of the eight border positions of the tile (default <code>"top-left"</code>).</li>
+<li>New <code>symbol_size</code> argument to set the symbol size independently of <code>base_size</code>.</li>
+<li>New <code><a href="../reference/ggPSE_text.html">ggPSE_text()</a></code> adds a line of text per tile from a data column (positions <code>"top"</code>, <code>"center"</code>, <code>"bottom"</code>, plus a fine-tuning <code>position_nudge</code>). Call it after <code><a href="../reference/ggPSE_donut.html">ggPSE_donut()</a></code>, which removes all text layers.</li>
+<li>New <code>symbol_nudge</code> and <code>number_nudge</code> arguments shift the symbol / atomic number vertically from their <code>*_position</code>.</li>
+<li>New <code>label_na</code> argument (hide symbols on tiles without data) and <code>text_color</code> (one fixed text colour instead of the automatic contrast colour) in <code><a href="../reference/ggPSE.html">ggPSE()</a></code> and <code><a href="../reference/ggPSE_interactive.html">ggPSE_interactive()</a></code>.</li>
+<li>
+<code>highlight</code> now also accepts a named list of symbol vectors, e.g. <code>highlight = split(df$symbol, df$category)</code>, with the new <code>highlight_colors</code> argument (named or by position). <code>legend_title</code> now labels the highlight legend.</li>
+<li>
+<code><a href="../reference/ggPSE_theme.html">ggPSE_theme()</a></code> no longer removes your colour scales (<code>"minimal"</code>, <code>"publication"</code> and <code>"dark"</code> used to replace gradients and highlight colours by ggplot2’s defaults and turn the symbols salmon). Only <code>"crazy"</code> replaces the fills. The plot you pass in is no longer modified, and the docs examples now use <code>ggPSE(...) |&gt; ggPSE_theme("publication")</code>.</li>
+<li>Redesigned <code>"publication"</code> theme for print: white background, thin dark-grey tile borders, white tiles for elements without data, compact legend that fits, and plain title, subtitle and caption styles.</li>
+<li>Data given to <code><a href="../reference/ggPSE.html">ggPSE()</a></code>, <code><a href="../reference/ggPSE_interactive.html">ggPSE_interactive()</a></code>, <code><a href="../reference/ggPSE_bubble.html">ggPSE_bubble()</a></code>, <code><a href="../reference/ggPSE_bar.html">ggPSE_bar()</a></code> and <code><a href="../reference/ggPSE_profile.html">ggPSE_profile()</a></code> is checked: symbols that are not element symbols (typos, lower case, stray spaces, element names, <code>NA</code>) are now an error that names them instead of leaving the tile silently blank, and so are non-numeric or all-<code>NA</code> value columns. Repeated rows for an element are allowed if they agree (e.g. one row per country), different values for the same element are an error. <code><a href="../reference/ggPSE_badge.html">ggPSE_badge()</a></code>, <code><a href="../reference/ggPSE_donut.html">ggPSE_donut()</a></code> and <code><a href="../reference/ggPSE_text.html">ggPSE_text()</a></code> check the symbols too. Unknown symbols in <code>highlight</code> are an error.</li>
+<li>A value column named <code>atomic_number</code>, <code>col</code> or <code>row</code> no longer clashes with the internal tile table (it used to give a blank plot or an error; <code><a href="../reference/ggPSE_interactive.html">ggPSE_interactive()</a></code> silently used the tile positions instead of your values).</li>
+<li>
+<code><a href="../reference/ggPSE_bubble.html">ggPSE_bubble()</a></code> without <code>size_col</code> draws a blank table instead of failing.</li>
+<li>README: fixed typos <code>gPSE_donut</code> and <code>ggpse_elemts</code>.</li>
+<li>
+<code><a href="../reference/ggPSE_bar.html">ggPSE_bar()</a></code>: bars now start at zero by default, so their length is proportional to the value; before, the smallest value got no bar and constant values gave <code>NaN</code>. New <code>limits</code> argument; <code>limits = range(x)</code> gives the previous scaling. <code>legend_title</code> was never used (bars have no legend) and now warns when set. This changes the look of existing bar plots.</li>
+<li>The element tables are lazy-loaded (<code>LazyData: true</code>): <code>ggpse_elements</code> and <code>ggpse_grid</code> are available after <code><a href="https://github.com/VJGeiger/ggPSE" class="external-link">library(ggPSE)</a></code> without <code><a href="https://rdrr.io/r/utils/data.html" class="external-link">data()</a></code>, and the hard-coded copy of the tile table inside the package is gone.</li>
+<li>
+<code><a href="../reference/ggPSE_badge.html">ggPSE_badge()</a></code>: <code>badge_size</code> was multiplied by 0.22 when ggflags is not installed; an unknown country code is shown as given instead of <code>NA</code> in the legend; elements with more than 3 countries and rows without a country code (e.g. Namibia’s <code>"NA"</code> read by <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv()</a></code>) now give a warning.</li>
+<li>
+<code><a href="../reference/ggPSE_profile.html">ggPSE_profile()</a></code> gives a clear error if <code>period</code> or <code>group</code> is not a single number.</li>
+<li>Documentation: <code>tile_border</code> no longer claims to detect the background.</li>
+<li>Colours: <code><a href="../reference/ggPSE.html">ggPSE()</a></code> and <code><a href="../reference/ggPSE_interactive.html">ggPSE_interactive()</a></code> have new arguments <code>colors</code> (two or more colours), <code>midpoint</code> (diverging scales), <code>limits</code> (a fixed colour range, e.g. for the frames of an animation), <code>breaks</code> and <code>labels</code>, so the fill scale no longer has to be replaced afterwards. The text colour of each tile is now chosen against the colour the tile really gets (it was estimated from <code>color_low</code>/<code>color_high</code> on the range of each call, which changed it from frame to frame, used the wrong colour space and gave tiles without data the mid-gradient colour). Fills are unchanged; in the default gradient the symbol colour changes on a few tiles where it was wrong (4 of 87 in the electronegativity example).</li>
+<li>
+<code>text_color</code> can now name a column in <code>data</code> with one colour per element.</li>
+<li>Text layout is now defined in one internal helper shared by <code><a href="../reference/ggPSE.html">ggPSE()</a></code> and <code><a href="../reference/ggPSE_interactive.html">ggPSE_interactive()</a></code>.</li>
+<li>Documentation fix: <code>base_size</code> default is 10, not 8.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="ggpse-020">ggPSE 0.2.0<a class="anchor" aria-label="anchor" href="#ggpse-020"></a></h2>
 <ul><li>Added selection parameters for <code><a href="../reference/ggPSE.html">ggPSE()</a></code>

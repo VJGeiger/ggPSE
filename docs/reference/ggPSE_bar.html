@@ -15,7 +15,7 @@ a neutral background so the bars are the primary visual signal."><meta property=
 
     <a class="navbar-brand me-2" href="../index.html">ggPSE</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,7 +65,8 @@ a neutral background so the bars are the primary visual signal.</p>
 <span>  tile_border <span class="op">=</span> <span class="st">"transparent"</span>,</span>
 <span>  legend_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  show_atomic_number <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  base_size <span class="op">=</span> <span class="fl">10</span></span>
+<span>  base_size <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  limits <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -114,7 +115,8 @@ tile. Default 0.2 (20 percent of tile height/width).</p></dd>
 
 
 <dt id="arg-legend-title">legend_title<a class="anchor" aria-label="anchor" href="#arg-legend-title"></a></dt>
-<dd><p>Character. Legend title. Defaults to value_col.</p></dd>
+<dd><p>Ignored: the bar plot has no legend. Kept so that existing
+calls keep working; a warning is given if it is set.</p></dd>
 
 
 <dt id="arg-show-atomic-number">show_atomic_number<a class="anchor" aria-label="anchor" href="#arg-show-atomic-number"></a></dt>
@@ -124,10 +126,25 @@ tile. Default 0.2 (20 percent of tile height/width).</p></dd>
 <dt id="arg-base-size">base_size<a class="anchor" aria-label="anchor" href="#arg-base-size"></a></dt>
 <dd><p>Numeric. Base font size in pt. Default 10.</p></dd>
 
+
+<dt id="arg-limits">limits<a class="anchor" aria-label="anchor" href="#arg-limits"></a></dt>
+<dd><p>Numeric vector of length 2, <code>c(lower, upper)</code>: the values
+that correspond to an empty and a full-length bar. Values outside are drawn
+clipped (with a warning). Default <code>NULL</code> uses <code>c(min(0, min(x)),
+max(x))</code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A ggplot object.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>By default the bars start at zero, so their length is proportional to the
+value (twice the value, twice the length). If the values contain negative
+numbers the bars start at the minimum instead. Use <code>limits</code> to choose
+the scale yourself, e.g. <code>limits = range(x)</code> to start at the smallest
+value (that value then has no visible bar). The plot has no legend.</p>
     </div>
 
     <div class="section level2">
@@ -138,15 +155,17 @@ tile. Default 0.2 (20 percent of tile height/width).</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Bar growing from the bottom</span></span></span>
-<span class="r-in"><span><span class="fu">ggPSE_bar</span><span class="op">(</span><span class="va">supply_risk</span>, value_col <span class="op">=</span> <span class="st">"risk"</span>,</span></span>
-<span class="r-in"><span>          legend_title <span class="op">=</span> <span class="st">"Supply risk"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">ggPSE_bar</span><span class="op">(</span><span class="va">supply_risk</span>, value_col <span class="op">=</span> <span class="st">"risk"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="ggPSE_bar-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Bar growing from the left</span></span></span>
 <span class="r-in"><span><span class="fu">ggPSE_bar</span><span class="op">(</span><span class="va">supply_risk</span>, value_col <span class="op">=</span> <span class="st">"risk"</span>,</span></span>
-<span class="r-in"><span>          bar_side <span class="op">=</span> <span class="st">"left"</span>, bar_color <span class="op">=</span> <span class="st">"#e63946"</span>,</span></span>
-<span class="r-in"><span>          legend_title <span class="op">=</span> <span class="st">"Supply risk"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>          bar_side <span class="op">=</span> <span class="st">"left"</span>, bar_color <span class="op">=</span> <span class="st">"#e63946"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="ggPSE_bar-2.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Start the bars at the smallest value instead of zero</span></span></span>
+<span class="r-in"><span><span class="fu">ggPSE_bar</span><span class="op">(</span><span class="va">supply_risk</span>, value_col <span class="op">=</span> <span class="st">"risk"</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">supply_risk</span><span class="op">$</span><span class="va">risk</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="ggPSE_bar-3.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

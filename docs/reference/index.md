@@ -28,6 +28,8 @@ Overlay annotations on tiles
 
 - [`ggPSE_badge()`](https://vjgeiger.github.io/ggPSE/reference/ggPSE_badge.md)
   : Overlay country-of-origin badges on a periodic table
+- [`ggPSE_text()`](https://vjgeiger.github.io/ggPSE/reference/ggPSE_text.md)
+  : Add a line of text from a data column to every tile
 
 ## Analytical views
 

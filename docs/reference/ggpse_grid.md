@@ -7,7 +7,7 @@ functions. It contains only what is needed to position tiles correctly.
 ## Usage
 
 ``` r
-data(ggpse_grid)
+ggpse_grid
 ```
 
 ## Format

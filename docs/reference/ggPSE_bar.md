@@ -20,7 +20,8 @@ ggPSE_bar(
   tile_border = "transparent",
   legend_title = NULL,
   show_atomic_number = FALSE,
-  base_size = 10
+  base_size = 10,
+  limits = NULL
 )
 ```
 
@@ -68,7 +69,8 @@ ggPSE_bar(
 
 - legend_title:
 
-  Character. Legend title. Defaults to value_col.
+  Ignored: the bar plot has no legend. Kept so that existing calls keep
+  working; a warning is given if it is set.
 
 - show_atomic_number:
 
@@ -78,9 +80,25 @@ ggPSE_bar(
 
   Numeric. Base font size in pt. Default 10.
 
+- limits:
+
+  Numeric vector of length 2, `c(lower, upper)`: the values that
+  correspond to an empty and a full-length bar. Values outside are drawn
+  clipped (with a warning). Default `NULL` uses
+  `c(min(0, min(x)), max(x))`.
+
 ## Value
 
 A ggplot object.
+
+## Details
+
+By default the bars start at zero, so their length is proportional to
+the value (twice the value, twice the length). If the values contain
+negative numbers the bars start at the minimum instead. Use `limits` to
+choose the scale yourself, e.g. `limits = range(x)` to start at the
+smallest value (that value then has no visible bar). The plot has no
+legend.
 
 ## Examples
 
@@ -91,12 +109,14 @@ supply_risk <- data.frame(
 )
 
 # Bar growing from the bottom
-ggPSE_bar(supply_risk, value_col = "risk",
-          legend_title = "Supply risk")
+ggPSE_bar(supply_risk, value_col = "risk")
 
 
 # Bar growing from the left
 ggPSE_bar(supply_risk, value_col = "risk",
-          bar_side = "left", bar_color = "#e63946",
-          legend_title = "Supply risk")
+          bar_side = "left", bar_color = "#e63946")
+
+
+# Start the bars at the smallest value instead of zero
+ggPSE_bar(supply_risk, value_col = "risk", limits = range(supply_risk$risk))
 ```
