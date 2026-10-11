@@ -33,8 +33,11 @@ ggPSE(
 )
 }
 \arguments{
-\item{data}{A data frame containing element symbols and a value column.
-If NULL, a blank table using the NA color is drawn.}
+\item{data}{A data frame with the element symbols (case-sensitive, e.g.
+\code{"Cl"}) and the value column. Rows may repeat for an element (e.g. one
+row per country) as long as they agree on the value; different values for
+the same element, unknown or \code{NA} symbols and non-numeric values give an
+error. If \code{NULL}, a blank table using the NA color is drawn.}
 
 \item{value_col}{Character. Column name in data to map to fill color.}
 
@@ -51,8 +54,9 @@ Default "symbol".}
 
 \item{color_na}{Hex color for elements with no data. Default "#f0f0f0".}
 
-\item{tile_border}{Hex color for tile borders. If NULL (default), grey border
-on light backgrounds, transparent on dark. Set "transparent" to suppress.}
+\item{tile_border}{Color for tile borders. If NULL (default) no border is
+drawn (\code{"transparent"}). Set a color such as \code{"white"} or
+\code{"grey30"} to draw borders.}
 
 \item{highlight}{Elements to colour by category. Either
 \itemize{

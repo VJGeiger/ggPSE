@@ -42,7 +42,7 @@ Physical properties: NIST WebBook.
 \url{https://webbook.nist.gov}
 }
 \usage{
-data(ggpse_elements)
+ggpse_elements
 }
 \description{
 A data frame with physical and chemical properties for all 118 elements,

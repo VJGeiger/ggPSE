@@ -18,7 +18,7 @@ IUPAC 18-column periodic table layout.
 \url{https://iupac.org/what-we-do/periodic-table-of-elements/}
 }
 \usage{
-data(ggpse_grid)
+ggpse_grid
 }
 \description{
 A data frame with the IUPAC 18-column periodic table layout for all 118

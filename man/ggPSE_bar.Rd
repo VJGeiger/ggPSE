@@ -16,7 +16,8 @@ ggPSE_bar(
   tile_border = "transparent",
   legend_title = NULL,
   show_atomic_number = FALSE,
-  base_size = 10
+  base_size = 10,
+  limits = NULL
 )
 }
 \arguments{
@@ -42,11 +43,17 @@ tile. Default 0.2 (20 percent of tile height/width).}
 
 \item{tile_border}{Hex color for tile borders. Default "transparent".}
 
-\item{legend_title}{Character. Legend title. Defaults to value_col.}
+\item{legend_title}{Ignored: the bar plot has no legend. Kept so that existing
+calls keep working; a warning is given if it is set.}
 
 \item{show_atomic_number}{Logical. Show atomic numbers. Default FALSE.}
 
 \item{base_size}{Numeric. Base font size in pt. Default 10.}
+
+\item{limits}{Numeric vector of length 2, \code{c(lower, upper)}: the values
+that correspond to an empty and a full-length bar. Values outside are drawn
+clipped (with a warning). Default \code{NULL} uses \code{c(min(0, min(x)),
+max(x))}.}
 }
 \value{
 A ggplot object.
@@ -57,6 +64,13 @@ tile. The bar occupies a fixed thickness along the chosen edge and grows
 in length proportionally to the normalised value. All tiles are drawn in
 a neutral background so the bars are the primary visual signal.
 }
+\details{
+By default the bars start at zero, so their length is proportional to the
+value (twice the value, twice the length). If the values contain negative
+numbers the bars start at the minimum instead. Use \code{limits} to choose
+the scale yourself, e.g. \code{limits = range(x)} to start at the smallest
+value (that value then has no visible bar). The plot has no legend.
+}
 \examples{
 supply_risk <- data.frame(
   symbol = c("Li", "Co", "Nd", "Dy", "Pt", "Ni", "Cu"),
@@ -64,11 +78,12 @@ supply_risk <- data.frame(
 )
 
 # Bar growing from the bottom
-ggPSE_bar(supply_risk, value_col = "risk",
-          legend_title = "Supply risk")
+ggPSE_bar(supply_risk, value_col = "risk")
 
 # Bar growing from the left
 ggPSE_bar(supply_risk, value_col = "risk",
-          bar_side = "left", bar_color = "#e63946",
-          legend_title = "Supply risk")
+          bar_side = "left", bar_color = "#e63946")
+
+# Start the bars at the smallest value instead of zero
+ggPSE_bar(supply_risk, value_col = "risk", limits = range(supply_risk$risk))
 }
