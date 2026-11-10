@@ -38,6 +38,7 @@ Furthermore, this is my first published R project, so, keep that in mind...
   - [Period and group profiles](#period-and-group-profiles)
   - [Interactive tooltips](#interactive-tooltips)
   - [Country badges](#country-of-origin-badges)
+  - [Category symbols](#category-symbols)
 - [Themes](#themes)
 - [Saving figures](#saving-figures)
 - [Experimental features](#experimental-features)
@@ -293,6 +294,40 @@ ggPSE(supply_multi, value_col = "value",
 ![](man/figures/ggPSE_plot_flags_multi.png)
 ![](man/figures/ggPSE_plot_flags_multi_ranked.png)
 ---
+
+### Category symbols
+
+`ggPSE_symbols()` marks elements by category with small point symbols: one shape and
+colour per category, up to six categories and at most four per element. An element can belong to several categories
+and then gets one marker per category. It is made for yes/no style information on top of
+another encoding. Here the melting point is the colour, and the markers show which elements
+are produced aluminothermically or by distillation (an illustrative selection, not a
+curated reference):
+
+```r
+data(ggpse_elements)
+prod <- data.frame(
+  symbol   = c("Cr", "V", "Nb", "Ca", "Sr", "Ba", "Hg", "Zn", "Cd", "Ca", "Sr", "Ba",
+               "N", "O", "Ar", "Ne", "Kr", "Xe"),
+  category = c(rep("aluminothermic", 6), rep("distillation", 12))
+)
+
+p <- ggPSE(ggpse_elements, value_col = "melting_point_K", label_value = FALSE,
+           legend_title = "Melting point (K)")
+ggPSE_symbols(p, prod,
+              pch    = c(aluminothermic = 24, distillation = 21),
+              colors = c(aluminothermic = "#D55E00", distillation = "#56B4E9"),
+              legend_title = "Production")
+```
+![](man/figures/ggPSE_symbols.png)
+
+A tile shows at most four markers, side by side in one row at the very bottom edge. The markers
+are placed by the measured size of their shapes, so the gaps are equal, the group is centred, and
+all markers rest on one line. They have a white edge, so they stay visible on dark or coloured
+tiles (`halo = FALSE` switches it off). To make room, the element symbol moves up
+(`move_text = TRUE`, the same as `symbol_position = "top"` in `ggPSE()`), and so does a value
+label. If `size` is too large for the markers in one row, it is reduced with a message. The
+legend uses ggplot2's `shape` scale, so call `ggPSE_symbols()` once per plot.
 
 ## Interactive plots 
 The displayed values can be made into interactive plots with `ggPSE_interactive()`

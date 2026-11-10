@@ -20,6 +20,7 @@ The roadmap summarizes what features are upcoming and some ideas. Roughly ordere
 - [ ] `ggPSE_profile()` has outgrown the function and should be split.
 - [ ] `ggPSE_bar()` draws no legend
 - [ ] `symbol_position`/`number_position`: the overlap warning was tuned for `base_size = 10` (tiles of about 1 cm)
+- [ ] `ggPSE_symbols()`: the marker sizes were measured for tiles of about 1 cm (re-measure with `data-raw/symbol_shapes` if the stroke or the edge width changes), the legend uses a `shape` scale (once per plot), and moving the text edits the y mapping of the text layers made in `.add_tile_text()`: keep the two in sync
 - [ ] `ggPSE_theme("dark")` is a starting point: tiles without data and the symbol colours keep their light-theme look
 
 ---
