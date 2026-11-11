@@ -297,12 +297,10 @@ ggPSE(supply_multi, value_col = "value",
 
 ### Category symbols
 
-`ggPSE_symbols()` marks elements by category with small point symbols: one shape and
-colour per category, up to six categories and at most four per element. An element can belong to several categories
-and then gets one marker per category. It is made for yes/no style information on top of
-another encoding. Here the melting point is the colour, and the markers show which elements
-are produced aluminothermically or by distillation (an illustrative selection, not a
-curated reference):
+`ggPSE_symbols()` marks elements by category with small symbols: one shape and
+colour per category, up to six categories and max four per element. An element can belong to several categories
+and then gets one marker per category. In the example, the melting point is the colour, and the markers show which elements
+are produced aluminothermically or by distillation (an illustrative selection curated reference):
 
 ```r
 data(ggpse_elements)
@@ -321,13 +319,10 @@ ggPSE_symbols(p, prod,
 ```
 ![](man/figures/ggPSE_symbols.png)
 
-A tile shows at most four markers, side by side in one row at the very bottom edge. The markers
-are placed by the measured size of their shapes, so the gaps are equal, the group is centred, and
-all markers rest on one line. They have a white edge, so they stay visible on dark or coloured
+They have a white edge, so they stay visible on dark or coloured
 tiles (`halo = FALSE` switches it off). To make room, the element symbol moves up
 (`move_text = TRUE`, the same as `symbol_position = "top"` in `ggPSE()`), and so does a value
-label. If `size` is too large for the markers in one row, it is reduced with a message. The
-legend uses ggplot2's `shape` scale, so call `ggPSE_symbols()` once per plot.
+label. 
 
 ## Interactive plots 
 The displayed values can be made into interactive plots with `ggPSE_interactive()`

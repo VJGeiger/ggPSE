@@ -1,4 +1,9 @@
+# ggPSE 0.3.2
+- New `ggPSE_symbols()` marks elements by category with point symbols: up to six categories and four per elements.
 # ggPSE 0.3.0
+- New `symbol_position` argument in `ggPSE()` and `ggPSE_interactive()` to draw the
+  element symbol at the `"center"`, `"top"`, `"bottom"`, `"left"` or `"right"`
+  of each tile. 
 - New `ggPSE_symbols()` marks elements by category with point symbols: up to six categories (at most four per
   element), one `pch` and colour each. The markers sit in one row at the very bottom of the tile, placed by the
   measured size of their shapes (equal gaps, centred, one common bottom line), while the element symbol and value
