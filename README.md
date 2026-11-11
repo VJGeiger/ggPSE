@@ -38,6 +38,7 @@ Furthermore, this is my first published R project, so, keep that in mind...
   - [Period and group profiles](#period-and-group-profiles)
   - [Interactive tooltips](#interactive-tooltips)
   - [Country badges](#country-of-origin-badges)
+  - [Category symbols](#category-symbols)
 - [Themes](#themes)
 - [Saving figures](#saving-figures)
 - [Experimental features](#experimental-features)
@@ -293,6 +294,35 @@ ggPSE(supply_multi, value_col = "value",
 ![](man/figures/ggPSE_plot_flags_multi.png)
 ![](man/figures/ggPSE_plot_flags_multi_ranked.png)
 ---
+
+### Category symbols
+
+`ggPSE_symbols()` marks elements by category with small symbols: one shape and
+colour per category, up to six categories and max four per element. An element can belong to several categories
+and then gets one marker per category. In the example, the melting point is the colour, and the markers show which elements
+are produced aluminothermically or by distillation (an illustrative selection curated reference):
+
+```r
+data(ggpse_elements)
+prod <- data.frame(
+  symbol   = c("Cr", "V", "Nb", "Ca", "Sr", "Ba", "Hg", "Zn", "Cd", "Ca", "Sr", "Ba",
+               "N", "O", "Ar", "Ne", "Kr", "Xe"),
+  category = c(rep("aluminothermic", 6), rep("distillation", 12))
+)
+
+p <- ggPSE(ggpse_elements, value_col = "melting_point_K", label_value = FALSE,
+           legend_title = "Melting point (K)")
+ggPSE_symbols(p, prod,
+              pch    = c(aluminothermic = 24, distillation = 21),
+              colors = c(aluminothermic = "#D55E00", distillation = "#56B4E9"),
+              legend_title = "Production")
+```
+![](man/figures/ggPSE_symbols.png)
+
+They have a white edge, so they stay visible on dark or coloured
+tiles (`halo = FALSE` switches it off). To make room, the element symbol moves up
+(`move_text = TRUE`, the same as `symbol_position = "top"` in `ggPSE()`), and so does a value
+label. 
 
 ## Interactive plots 
 The displayed values can be made into interactive plots with `ggPSE_interactive()`

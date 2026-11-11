@@ -39,6 +39,7 @@ reference:
     contents:
       - ggPSE_badge
       - ggPSE_text
+      - ggPSE_symbols
   - title: "Analytical views"
     desc: "Period, group and trend profiles"
     contents:
