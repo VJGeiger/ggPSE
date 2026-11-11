@@ -1,4 +1,4 @@
-#' Mark elements with symbols for up to six categories
+#' Mark elements with symbols by category
 #'
 #' Draws small point symbols (\code{pch}) in the tiles of a plot created with
 #' [ggPSE()], one symbol \emph{shape and colour} per category. It is made for
@@ -38,17 +38,21 @@
 #'   empty are dropped.
 #' @param category_col Character. Column in \code{data} with the category.
 #'   Default \code{"category"}. A factor keeps the order of its levels, other
-#'   columns are sorted alphabetically. At most 6 categories are allowed.
+#'   columns are sorted alphabetically. There is no limit to the number of
+#'   categories, but an element can have at most four (see \code{data}).
 #' @param symbol_col Character. Column in \code{data} with the element symbols.
 #'   Default \code{"symbol"}.
 #' @param pch Point shapes (whole numbers from 0 to 25, see
 #'   \code{\link[graphics]{points}}), either a named vector (names = categories)
-#'   or an unnamed vector in category order. Default \code{NULL}: shapes 21
-#'   (circle), 24 (triangle), 22 (square), 23 (diamond), 25 (inverted triangle)
-#'   and 8 (star).
-#' @param colors Colours, named by category or unnamed in category order. Default
-#'   \code{NULL}: the colour-blind-safe Okabe-Ito palette used by [ggPSE()] for
-#'   groups.
+#'   or an unnamed vector in category order. Each category gets one shape, and
+#'   together with its colour it is the marker of that category. Default
+#'   \code{NULL}: shapes 21 (circle), 24 (triangle), 22 (square), 23 (diamond),
+#'   25 (inverted triangle) and 8 (star), repeated if there are more than six
+#'   categories (the colours then still tell the categories apart).
+#' @param colors Colours, named by category or unnamed in category order. Each
+#'   category gets one colour. Default \code{NULL}: the colour-blind-safe
+#'   Okabe-Ito palette used by [ggPSE()] for groups (further colours are added for
+#'   more than seven categories).
 #' @param size Numeric. Marker size in ggplot2 point units. Default \code{1.6},
 #'   the largest size at which four of the default shapes fit side by side (about
 #'   0.2 of a tile at 1 cm tile size). Larger values are reduced automatically if
@@ -140,11 +144,6 @@ ggPSE_symbols <- function(
   keep <- !is.na(d$category) & nzchar(d$category)
   cats <- if (is.factor(data[[category_col]]))
     levels(droplevels(data[[category_col]][keep])) else sort(unique(d$category[keep]))
-  if (length(cats) > .symbol_max_categories)
-    stop(sprintf(paste0("ggPSE_symbols() supports at most %d categories, but '%s' has %d: %s. ",
-                        "Merge or drop categories."),
-                 .symbol_max_categories, category_col, length(cats), .list_values(cats)),
-         call. = FALSE)
   d <- unique(d[keep, , drop = FALSE])
   if (length(cats) == 0L) {
     warning("'data' has no non-missing categories; nothing added.", call. = FALSE)
@@ -251,7 +250,6 @@ ggPSE_symbols <- function(
 
 # ── Internals ────────────────────────────────────────────────────────────────
 
-.symbol_max_categories <- 6L
 .symbol_default_pch    <- c(21L, 24L, 22L, 23L, 25L, 8L)
 # At most this many markers per element; they always fit into one row.
 .symbol_max_per_tile <- 4L
@@ -266,8 +264,8 @@ ggPSE_symbols <- function(
 # Measured size of every point shape (pch 0-25) in tile units, as straight lines in `size`:
 # width = aw * size + bw, and the distance from the point down to the bottom of the shape
 # = ad * size + bd; _h with the white edge, _p without. Measured by rendering each shape at
-# sizes 1, 1.8 and 3 on dark tiles at 600 dpi and fitting lines (the residuals are below 0.005
-# of a tile). See data-raw/symbol_shapes/.
+# sizes 1, 1.8 and 3 on dark tiles at 600 dpi (stroke 0.6, white edge 0.5) and fitting lines
+# (the residuals are below 0.005 of a tile). Measure again if the stroke or the edge changes.
 .symbol_shapes <- data.frame(
   pch = 0:25,
   aw_h = c(0.0742, 0.0761, 0.1013, 0.106, 0.0761, 0.1055, 0.1018, 0.0742, 0.1055, 0.1055, 0.0742,
@@ -365,7 +363,7 @@ ggPSE_symbols <- function(
 # pch per category: named (by category) or unnamed (by position) or NULL (defaults)
 .resolve_symbol_pch <- function(pch, cats) {
   n <- length(cats)
-  if (is.null(pch)) return(setNames(as.list(.symbol_default_pch[seq_len(n)]), cats))
+  if (is.null(pch)) return(setNames(as.list(rep_len(.symbol_default_pch, n)), cats))
   if (!is.numeric(pch) || anyNA(pch) || any(pch != round(pch)) || any(pch < 0 | pch > 25))
     stop("'pch' must be whole numbers between 0 and 25.", call. = FALSE)
   if (!is.null(names(pch))) {

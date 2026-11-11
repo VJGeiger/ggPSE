@@ -191,11 +191,22 @@ test_that("ggPSE_symbols validates its input", {
   expect_error(ggPSE_symbols(ggPSE(), sym_data(), position_nudge = "a"), "position_nudge")
 })
 
-test_that("at most six categories are allowed", {
-  seven <- data.frame(symbol = c("H", "He", "Li", "Be", "B", "C", "N"), category = letters[1:7])
-  expect_error(ggPSE_symbols(ggPSE(), seven), "at most 6")
-  six <- seven[1:6, ]
-  expect_s3_class(suppressWarnings(ggPSE_symbols(ggPSE(), six)), "ggplot")
+test_that("there is no limit to the number of categories, the defaults continue", {
+  els <- c("H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne", "Na", "Mg")
+  base <- ggPSE()
+  d <- data.frame(symbol = els[1:8], category = letters[1:8])               # one category per element
+  p <- ggPSE_symbols(base, d)
+  expect_s3_class(p, "ggplot")
+  expect_length(levels(p$layers[[length(p$layers)]]$data$category), 8L)      # all eight are in the legend
+  expect_no_error(suppressMessages(ggplot2::ggplot_build(p)))
+  cats <- letters[1:12]
+  shapes <- unlist(ggPSE:::.resolve_symbol_pch(NULL, cats))
+  expect_equal(unname(shapes[1:8]), c(21L, 24L, 22L, 23L, 25L, 8L, 21L, 24L)) # shapes repeat after six ...
+  cols <- unlist(ggPSE:::.resolve_symbol_colors(NULL, cats))
+  expect_equal(length(unique(cols)), 12L)                                   # ... but every category has its own colour
+  p2 <- ggPSE_symbols(base, data.frame(symbol = els, category = cats), pch = rep(21, 12),
+                      colors = grDevices::hcl.colors(12, "Dark 3"))         # own shapes and colours for all
+  expect_s3_class(p2, "ggplot")
 })
 
 test_that("pch and colors are checked", {

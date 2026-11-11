@@ -2,7 +2,7 @@
 % Please edit documentation in R/ggPSE_symbols.R
 \name{ggPSE_symbols}
 \alias{ggPSE_symbols}
-\title{Mark elements with symbols for up to six categories}
+\title{Mark elements with symbols by category}
 \usage{
 ggPSE_symbols(
   plot = NULL,
@@ -30,20 +30,24 @@ empty are dropped.}
 
 \item{category_col}{Character. Column in \code{data} with the category.
 Default \code{"category"}. A factor keeps the order of its levels, other
-columns are sorted alphabetically. At most 6 categories are allowed.}
+columns are sorted alphabetically. There is no limit to the number of
+categories, but an element can have at most four (see \code{data}).}
 
 \item{symbol_col}{Character. Column in \code{data} with the element symbols.
 Default \code{"symbol"}.}
 
 \item{pch}{Point shapes (whole numbers from 0 to 25, see
 \code{\link[graphics]{points}}), either a named vector (names = categories)
-or an unnamed vector in category order. Default \code{NULL}: shapes 21
-(circle), 24 (triangle), 22 (square), 23 (diamond), 25 (inverted triangle)
-and 8 (star).}
+or an unnamed vector in category order. Each category gets one shape, and
+together with its colour it is the marker of that category. Default
+\code{NULL}: shapes 21 (circle), 24 (triangle), 22 (square), 23 (diamond),
+25 (inverted triangle) and 8 (star), repeated if there are more than six
+categories (the colours then still tell the categories apart).}
 
-\item{colors}{Colours, named by category or unnamed in category order. Default
-\code{NULL}: the colour-blind-safe Okabe-Ito palette used by [ggPSE()] for
-groups.}
+\item{colors}{Colours, named by category or unnamed in category order. Each
+category gets one colour. Default \code{NULL}: the colour-blind-safe
+Okabe-Ito palette used by [ggPSE()] for groups (further colours are added for
+more than seven categories).}
 
 \item{size}{Numeric. Marker size in ggplot2 point units. Default \code{1.6},
 the largest size at which four of the default shapes fit side by side (about
