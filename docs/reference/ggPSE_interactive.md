@@ -39,7 +39,12 @@ ggPSE_interactive(
   text_color = NULL,
   symbol_nudge = 0,
   number_nudge = 0,
-  highlight_colors = NULL
+  highlight_colors = NULL,
+  colors = NULL,
+  midpoint = NULL,
+  limits = NULL,
+  breaks = ggplot2::waiver(),
+  labels = ggplot2::waiver()
 )
 ```
 
@@ -70,13 +75,10 @@ ggPSE_interactive(
 
   Integer. Decimal places for displayed values. Default 2.
 
-- color_low:
+- color_low, color_high:
 
-  Hex color for the low end of the gradient. Default "#fdf0f2".
-
-- color_high:
-
-  Hex color for the high end of the gradient. Default "#9a031e".
+  Colors of the low and high end of the gradient. Defaults `"#fdf0f2"`
+  and `"#9a031e"`. Shorthand for `colors = c(color_low, color_high)`.
 
 - color_na:
 
@@ -201,11 +203,11 @@ ggPSE_interactive(
 
 - text_color:
 
-  A single colour used for all tile text instead of the automatic
-  black/white contrast colour. Default `NULL`. Useful when the fill
-  scale is replaced afterwards (e.g. with `scale_fill_gradient2()`),
-  because the automatic colour is derived from `color_low` /
-  `color_high`.
+  Colour of the tile text instead of the automatic black/white contrast
+  colour. Either a single colour for all tiles, or the name of a column
+  in `data` with one colour per element (`NA` = automatic colour for
+  that element), e.g. `ifelse(x > 200, "white", "grey15")`. Default
+  `NULL`.
 
 - symbol_nudge, number_nudge:
 
@@ -222,6 +224,31 @@ ggPSE_interactive(
   matched by position. Any R colour is accepted. Default `NULL` uses a
   colour-blind-safe palette (Okabe-Ito, extended beyond 8 groups).
   Ignored, with a warning, if the groups carry their own `color`.
+
+- colors:
+
+  Character vector of two or more colors for the gradient, from low to
+  high, evenly spaced. Overrides `color_low` and `color_high`. The text
+  colour of every tile is chosen against the colour the tile really
+  gets, so you do not have to replace the fill scale afterwards.
+
+- midpoint:
+
+  Numeric. For diverging scales: the value that gets the middle one of
+  (at least three) `colors`, e.g. `midpoint = 0`.
+
+- limits:
+
+  Numeric vector `c(lower, upper)`: the values that get the first and
+  the last color. Fix it to keep colours (and the legend) identical
+  between plots, e.g. for the frames of an animation; without it the
+  range of each plot's own data is used. Values outside the limits get
+  the end colors.
+
+- breaks, labels:
+
+  Legend breaks (values) and their labels, as in
+  [`ggplot2::scale_fill_gradientn()`](https://ggplot2.tidyverse.org/reference/scale_gradient.html).
 
 ## Value
 

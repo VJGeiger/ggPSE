@@ -33,7 +33,7 @@
 
     <a class="navbar-brand me-2" href="index.html">ggPSE</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -102,6 +102,7 @@
 <li><a href="#period-and-group-profiles">Period and group profiles</a></li>
 <li><a href="#interactive-tooltips">Interactive tooltips</a></li>
 <li><a href="#country-of-origin-badges">Country badges</a></li>
+<li><a href="#category-symbols">Category symbols</a></li>
 </ul>
 </li>
 <li><a href="#themes">Themes</a></li>
@@ -316,12 +317,33 @@
 <span>                 hierarchy <span class="op">=</span> <span class="cn">TRUE</span>, hierarchy_scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.0</span>, <span class="fl">0.6</span>, <span class="fl">0.5</span><span class="op">)</span>, show_legend <span class="op">=</span> <span class="cn">TRUE</span>, legend_position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/ggPSE_plot_flags_multi.png"><img src="reference/figures/ggPSE_plot_flags_multi_ranked.png"> —</p>
 </div>
+<div class="section level3">
+<h3 id="category-symbols">Category symbols<a class="anchor" aria-label="anchor" href="#category-symbols"></a>
+</h3>
+<p><code><a href="reference/ggPSE_symbols.html">ggPSE_symbols()</a></code> marks elements by category with small symbols: one shape and colour per category, up to six categories and max four per element. An element can belong to several categories and then gets one marker per category. In the example, the melting point is the colour, and the markers show which elements are produced aluminothermically or by distillation (an illustrative selection curated reference):</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ggpse_elements</span><span class="op">)</span></span>
+<span><span class="va">prod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  symbol   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Cr"</span>, <span class="st">"V"</span>, <span class="st">"Nb"</span>, <span class="st">"Ca"</span>, <span class="st">"Sr"</span>, <span class="st">"Ba"</span>, <span class="st">"Hg"</span>, <span class="st">"Zn"</span>, <span class="st">"Cd"</span>, <span class="st">"Ca"</span>, <span class="st">"Sr"</span>, <span class="st">"Ba"</span>,</span>
+<span>               <span class="st">"N"</span>, <span class="st">"O"</span>, <span class="st">"Ar"</span>, <span class="st">"Ne"</span>, <span class="st">"Kr"</span>, <span class="st">"Xe"</span><span class="op">)</span>,</span>
+<span>  category <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"aluminothermic"</span>, <span class="fl">6</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"distillation"</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ggPSE.html">ggPSE</a></span><span class="op">(</span><span class="va">ggpse_elements</span>, value_col <span class="op">=</span> <span class="st">"melting_point_K"</span>, label_value <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>           legend_title <span class="op">=</span> <span class="st">"Melting point (K)"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/ggPSE_symbols.html">ggPSE_symbols</a></span><span class="op">(</span><span class="va">p</span>, <span class="va">prod</span>,</span>
+<span>              pch    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>aluminothermic <span class="op">=</span> <span class="fl">24</span>, distillation <span class="op">=</span> <span class="fl">21</span><span class="op">)</span>,</span>
+<span>              colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>aluminothermic <span class="op">=</span> <span class="st">"#D55E00"</span>, distillation <span class="op">=</span> <span class="st">"#56B4E9"</span><span class="op">)</span>,</span>
+<span>              legend_title <span class="op">=</span> <span class="st">"Production"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/ggPSE_symbols.png"></p>
+<p>They have a white edge, so they stay visible on dark or coloured tiles (<code>halo = FALSE</code> switches it off). To make room, the element symbol moves up (<code>move_text = TRUE</code>, the same as <code>symbol_position = "top"</code> in <code><a href="reference/ggPSE.html">ggPSE()</a></code>), and so does a value label.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="interactive-plots">Interactive plots<a class="anchor" aria-label="anchor" href="#interactive-plots"></a>
 </h2>
 <p>The displayed values can be made into interactive plots with <code><a href="reference/ggPSE_interactive.html">ggPSE_interactive()</a></code> 👉 <a href="https://vjgeiger.github.io/ggPSE/interactive.html">Interactive periodic table example</a></p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/ggPSE_interactive.html">ggPSE_interactive</a></span><span class="op">(</span><span class="va">battery</span>, value_col <span class="op">=</span> <span class="st">"importance"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># or </span></span>
@@ -339,7 +361,7 @@
 <h2 id="themes">Themes<a class="anchor" aria-label="anchor" href="#themes"></a>
 </h2>
 <p>There are four prebuilt themes available via <code><a href="reference/ggPSE_theme.html">ggPSE_theme()</a></code>. | Theme | Description | |—|—| | <code>"minimal"</code> | White background, simple| | <code>"dark"</code> | Dark plot background | | <code>"publication"</code> | Minimal ink, transparent background, journal-ready | | <code>"crazy"</code> | Random color per tile, reproducible with <code>seed</code> |</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Minimal</span></span>
 <span><span class="fu"><a href="reference/ggPSE.html">ggPSE</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="reference/ggPSE_theme.html">ggPSE_theme</a></span><span class="op">(</span><span class="st">"minimal"</span><span class="op">)</span></span>
 <span></span>
@@ -356,7 +378,7 @@
 <h2 id="saving-figures">Saving figures<a class="anchor" aria-label="anchor" href="#saving-figures"></a>
 </h2>
 <p>Figures can be saved via the wrapper <code><a href="reference/ggPSE_save.html">ggPSE_save()</a></code> for ease. For more custom plots, <code>ggsave()</code> can be used as well.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">ggpse_elements</span><span class="op">)</span></span>
 <span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ggPSE.html">ggPSE</a></span><span class="op">(</span><span class="va">ggpse_elements</span>, value_col <span class="op">=</span> <span class="st">"electronegativity"</span><span class="op">)</span></span>
 <span></span>
@@ -371,7 +393,7 @@
 </h2>
 <p><code>ggPSE_sparkline()</code> and <code>ggPSE_spark_bar()</code> per-tile time series sparklines was deemed too unstable and in need of further development.</p>
 <p>Available on the <code>feature/sparkline</code> branch:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"VJGeiger/ggPSE@feature/sparkline"</span><span class="op">)</span></span></code></pre></div>
 <hr>
 </div>
